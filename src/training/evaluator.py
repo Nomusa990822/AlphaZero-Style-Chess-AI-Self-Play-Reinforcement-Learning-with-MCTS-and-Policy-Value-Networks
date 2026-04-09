@@ -1,5 +1,5 @@
 """
-Simple evaluation utilities for AlphaZero-style chess training.
+Evaluation utilities for AlphaZero-style chess training.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from src.model.inference import ModelInference
 @dataclass
 class EvaluationResult:
     """
-    Evaluation summary.
+    Evaluation summary from perspective of model A.
     """
     wins: int
     losses: int
@@ -62,11 +62,11 @@ class NetworkEvaluator:
         move_count = 0
 
         while not board.is_game_over() and move_count < max_moves:
-            if board.turn == chess.WHITE:
-                move = agent_white.choose_move(board, temperature=0.0)
-            else:
-                move = agent_black.choose_move(board, temperature=0.0)
-
+            move = (
+                agent_white.choose_move(board, temperature=0.0)
+                if board.turn == chess.WHITE
+                else agent_black.choose_move(board, temperature=0.0)
+            )
             board.push(move)
             move_count += 1
 
@@ -116,3 +116,29 @@ class NetworkEvaluator:
             draws=draws,
             games_played=num_games,
         )
+
+    def should_promote_candidate(
+        self,
+        candidate_inference: ModelInference,
+        best_inference: ModelInference,
+        num_games: int = 6,
+        required_score: float = 0.55,
+    ) -> tuple[bool, EvaluationResult]:
+        """
+        Decide whether the candidate model should replace the best model.
+
+        Args:
+            candidate_inference: Newly trained model
+            best_inference: Current best model
+            num_games: Head-to-head evaluation games
+            required_score: Minimum score required for promotion
+
+        Returns:
+            (should_promote, evaluation_result)
+        """
+        result = self.compare_models(
+            inference_a=candidate_inference,
+            inference_b=best_inference,
+            num_games=num_games,
+        )
+        return result.score >= required_score, result
