@@ -72,7 +72,7 @@ class MCTS:
 
         priors = {}
         for move in legal_moves:
-            idx = self.move_encoding.move_to_tensor_index(move)
+            idx = self.move_encoding.move_to_tensor_index(move, board)
             priors[move.uci()] = float(policy_probs[idx])
 
         total = sum(priors.values())
@@ -237,7 +237,7 @@ class MCTS:
         for child, prob in zip(children, probs):
             move_uci = child.move.uci()
             move_probs[move_uci] = float(prob)
-            idx = self.move_encoding.uci_to_index(move_uci)
+            idx = self.move_encoding.uci_to_index(move_uci, root.board)
             full_probs[idx] = float(prob)
 
         return full_probs, move_probs
