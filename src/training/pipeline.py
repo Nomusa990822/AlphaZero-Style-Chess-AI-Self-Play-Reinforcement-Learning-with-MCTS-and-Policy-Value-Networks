@@ -1,6 +1,4 @@
 """
-Stage 5 orchestration for iterative AlphaZero-style training.
-
 Main ideas:
 - maintain a current best model
 - generate self-play games
