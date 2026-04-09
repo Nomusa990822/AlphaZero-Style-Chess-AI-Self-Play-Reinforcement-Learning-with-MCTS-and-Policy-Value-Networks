@@ -11,6 +11,7 @@ from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet
+from src.engine.utils import pretty_board
 
 
 def main() -> None:
@@ -31,7 +32,7 @@ def main() -> None:
     best_move = inference.best_legal_move(board)
 
     print("Board:")
-    print(board)
+    print(pretty_board(board))
     print("\nAction size:", move_encoding.action_size)
     print("Predicted value:", value)
     print("Best legal move:", best_move.uci() if best_move else None)
