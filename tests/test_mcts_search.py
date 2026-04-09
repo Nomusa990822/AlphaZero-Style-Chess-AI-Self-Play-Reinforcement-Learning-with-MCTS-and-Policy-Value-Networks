@@ -132,6 +132,10 @@ def test_get_action_probs_matches_action_space():
     assert abs(float(full_probs.sum()) - 1.0) < 1e-6
     assert abs(sum(move_probs.values()) - 1.0) < 1e-9
 
+    for move_uci, prob in move_probs.items():
+        idx = move_encoding.uci_to_index(move_uci, board)
+        assert abs(float(full_probs[idx]) - prob) < 1e-6
+
 
 def test_mcts_handles_terminal_position():
     board = chess.Board("7k/5Q2/7K/8/8/8/8/8 b - - 0 1")
