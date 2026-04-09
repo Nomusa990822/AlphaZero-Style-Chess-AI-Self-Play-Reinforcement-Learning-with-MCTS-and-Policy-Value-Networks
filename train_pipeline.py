@@ -23,7 +23,7 @@ def main() -> None:
         replay_buffer_capacity=10000,
         iterations=10,
         self_play_games_per_iteration=8,
-        self_play_max_moves=150,
+        self_play_max_moves=300,
         temperature_moves=10,
         training_batch_size=32,
         training_epochs=3,
