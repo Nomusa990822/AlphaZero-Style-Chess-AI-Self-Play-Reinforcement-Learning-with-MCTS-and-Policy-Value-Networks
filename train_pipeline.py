@@ -1,3 +1,7 @@
+"""
+Stage 5 iterative training entry point.
+"""
+
 from __future__ import annotations
 
 from src.engine.encoder import BoardEncoder
@@ -20,24 +24,41 @@ def main() -> None:
 
     pipeline_config = PipelineConfig(
         device="cpu",
-        replay_buffer_capacity=10000,
-        iterations=10,
+        replay_buffer_capacity=20000,
+        iterations=15,
         self_play_games_per_iteration=8,
         self_play_max_moves=300,
-        temperature_moves=10,
+
+        self_play_opening_temperature_moves=15,
+        self_play_opening_temperature=1.0,
+        self_play_late_temperature=0.1,
+
+        self_play_resign_threshold=-0.9,
+        self_play_min_moves_before_resign=20,
+
+        self_play_adjudicate_on_max_moves=True,
+        self_play_adjudication_threshold=0.25,
+
         training_batch_size=32,
         training_epochs=3,
         learning_rate=1e-3,
         weight_decay=1e-4,
+
         train_mcts_simulations=40,
         eval_mcts_simulations=50,
+
+        train_dirichlet_alpha=0.5,
+        train_dirichlet_epsilon=0.30,
+
         gating_games=6,
         required_promotion_score=0.55,
+
         checkpoint_dir="data/checkpoints",
         log_dir="data/logs",
         replay_buffer_path="data/replay_buffer/latest_buffer.pkl",
         best_model_checkpoint="data/checkpoints/best_model.pt",
         latest_candidate_checkpoint="data/checkpoints/latest_candidate.pt",
+
         resume_best_model=True,
     )
 
