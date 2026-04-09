@@ -1,4 +1,6 @@
 """
+Stage 5 orchestration for iterative AlphaZero-style training.
+
 Main ideas:
 - maintain a current best model
 - generate self-play games
@@ -12,7 +14,6 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from typing import Any
 
 from src.engine.encoder import BoardEncoder
@@ -21,7 +22,7 @@ from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.checkpoint import checkpoint_exists, load_checkpoint, save_checkpoint
-from src.training.evaluator import EvaluationResult, NetworkEvaluator
+from src.training.evaluator import NetworkEvaluator
 from src.training.metrics import IterationMetrics, MetricsLogger
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGameResult, SelfPlayGenerator
@@ -35,23 +36,41 @@ class PipelineConfig:
     """
     device: str = "cpu"
     replay_buffer_capacity: int = 20000
-    iterations: int = 3
-    self_play_games_per_iteration: int = 4
-    self_play_max_moves: int = 100
-    temperature_moves: int = 12
-    training_batch_size: int = 16
-    training_epochs: int = 2
+
+    iterations: int = 15
+    self_play_games_per_iteration: int = 8
+    self_play_max_moves: int = 300
+
+    self_play_opening_temperature_moves: int = 15
+    self_play_opening_temperature: float = 1.0
+    self_play_late_temperature: float = 0.1
+
+    self_play_resign_threshold: float = -0.9
+    self_play_min_moves_before_resign: int = 20
+
+    self_play_adjudicate_on_max_moves: bool = True
+    self_play_adjudication_threshold: float = 0.25
+
+    training_batch_size: int = 32
+    training_epochs: int = 3
     learning_rate: float = 1e-3
     weight_decay: float = 1e-4
-    train_mcts_simulations: int = 20
-    eval_mcts_simulations: int = 25
-    gating_games: int = 4
+
+    train_mcts_simulations: int = 40
+    eval_mcts_simulations: int = 50
+
+    train_dirichlet_alpha: float = 0.5
+    train_dirichlet_epsilon: float = 0.30
+
+    gating_games: int = 6
     required_promotion_score: float = 0.55
+
     checkpoint_dir: str = "data/checkpoints"
     log_dir: str = "data/logs"
     replay_buffer_path: str = "data/replay_buffer/latest_buffer.pkl"
     best_model_checkpoint: str = "data/checkpoints/best_model.pt"
     latest_candidate_checkpoint: str = "data/checkpoints/latest_candidate.pt"
+
     resume_best_model: bool = True
 
 
@@ -124,13 +143,19 @@ class AlphaZeroPipeline:
             mcts_config=MCTSConfig(
                 num_simulations=self.config.train_mcts_simulations,
                 c_puct=1.5,
-                dirichlet_alpha=0.3,
-                dirichlet_epsilon=0.25,
+                dirichlet_alpha=self.config.train_dirichlet_alpha,
+                dirichlet_epsilon=self.config.train_dirichlet_epsilon,
                 add_dirichlet_noise=True,
                 temperature=1.0,
             ),
             max_moves=self.config.self_play_max_moves,
-            temperature_moves=self.config.temperature_moves,
+            opening_temperature_moves=self.config.self_play_opening_temperature_moves,
+            opening_temperature=self.config.self_play_opening_temperature,
+            late_temperature=self.config.self_play_late_temperature,
+            resign_threshold=self.config.self_play_resign_threshold,
+            min_moves_before_resign=self.config.self_play_min_moves_before_resign,
+            adjudicate_on_max_moves=self.config.self_play_adjudicate_on_max_moves,
+            adjudication_threshold=self.config.self_play_adjudication_threshold,
         )
 
     def _result_to_white_score(self, result: str) -> float:
@@ -204,9 +229,17 @@ class AlphaZeroPipeline:
             total_game_length += len(game_result.moves)
             total_white_score += self._result_to_white_score(game_result.result)
 
+            ending_notes = []
+            if game_result.ended_by_resignation:
+                ending_notes.append("resign")
+            if game_result.ended_by_adjudication:
+                ending_notes.append("adjudicated")
+            note_text = f" ({', '.join(ending_notes)})" if ending_notes else ""
+
             print(
                 f"  Game {idx}: result={game_result.result}, "
-                f"moves={len(game_result.moves)}, samples={game_result.num_positions}"
+                f"moves={len(game_result.moves)}, "
+                f"samples={game_result.num_positions}{note_text}"
             )
 
         avg_game_length = total_game_length / max(1, len(game_results))
