@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from src.training.dataset import AlphaZeroDataset
-from src.training.loss import LossBreakdown, alphazero_loss
+from src.training.loss import alphazero_loss
 
 
 @dataclass
@@ -59,7 +59,7 @@ class AlphaZeroTrainer:
             weight_decay=self.config.weight_decay,
         )
 
-    def train_epoch(self, samples: List) -> EpochStats:
+    def train_epoch(self, samples: List, epoch_number: int = 1) -> EpochStats:
         """
         Train model for one epoch on provided samples.
         """
@@ -102,7 +102,7 @@ class AlphaZeroTrainer:
 
         if num_batches == 0:
             return EpochStats(
-                epoch=1,
+                epoch=epoch_number,
                 total_loss=0.0,
                 policy_loss=0.0,
                 value_loss=0.0,
@@ -110,7 +110,7 @@ class AlphaZeroTrainer:
             )
 
         return EpochStats(
-            epoch=1,
+            epoch=epoch_number,
             total_loss=total_loss_sum / num_batches,
             policy_loss=policy_loss_sum / num_batches,
             value_loss=value_loss_sum / num_batches,
@@ -123,7 +123,6 @@ class AlphaZeroTrainer:
         """
         history: list[EpochStats] = []
         for epoch_idx in range(1, self.config.num_epochs + 1):
-            stats = self.train_epoch(samples)
-            stats.epoch = epoch_idx
+            stats = self.train_epoch(samples, epoch_number=epoch_idx)
             history.append(stats)
         return history
