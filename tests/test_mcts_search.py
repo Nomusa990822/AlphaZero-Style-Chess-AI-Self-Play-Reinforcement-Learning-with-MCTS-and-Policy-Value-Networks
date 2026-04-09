@@ -1,7 +1,6 @@
 import chess
 import numpy as np
 
-from src.engine.board_encoder import BoardEncoder  # if you named it encoder.py, see note below
 from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
 from src.mcts.dirichlet_noise import apply_dirichlet_noise
