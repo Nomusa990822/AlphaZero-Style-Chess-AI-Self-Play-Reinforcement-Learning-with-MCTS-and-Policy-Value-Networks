@@ -1,17 +1,15 @@
 """
-main.py
-
-Quick smoke test for Stage 2 network.
+Quick smoke test for Stage 3 MCTS.
 """
 
 import chess
-import torch
 
+from src.agents.mcts_agent import MCTSAgent
 from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
+from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet
-from src.engine.utils import pretty_board
 
 
 def main() -> None:
@@ -25,18 +23,25 @@ def main() -> None:
         model=model,
         move_encoding=move_encoding,
         encoder=encoder,
-        device="cpu"
+        device="cpu",
     )
 
-    policy_probs, value = inference.predict(board)
-    best_move = inference.best_legal_move(board)
+    agent = MCTSAgent(
+        inference=inference,
+        move_encoding=move_encoding,
+        mcts_config=MCTSConfig(
+            num_simulations=50,
+            c_puct=1.5,
+            add_dirichlet_noise=False,
+            temperature=0.0,
+        ),
+    )
 
-    print("Board:")
-    print(pretty_board(board))
-    print("\nAction size:", move_encoding.action_size)
-    print("Predicted value:", value)
-    print("Best legal move:", best_move.uci() if best_move else None)
-    print("Top probability sum:", float(policy_probs.sum()))
+    move = agent.choose_move(board)
+
+    print("Initial board:")
+    print(board)
+    print("\nChosen move from MCTS:", move.uci())
 
 
 if __name__ == "__main__":
