@@ -1,0 +1,28 @@
+{
+  "iteration": 3,
+  "metrics": {
+    "iteration": 3,
+    "self_play_games": 6,
+    "replay_buffer_size": 2700,
+    "total_positions_generated": 900,
+    "average_game_length": 150.0,
+    "average_game_result_white_score": 0.5,
+    "training_epochs": 3,
+    "final_total_loss": 6.304053433548064,
+    "final_policy_loss": 6.302334872928597,
+    "final_value_loss": 0.0017185596283869652,
+    "evaluation_games": 4,
+    "evaluation_wins": 0,
+    "evaluation_losses": 0,
+    "evaluation_draws": 4,
+    "evaluation_score": 0.5,
+    "model_promoted": false
+  },
+  "evaluation_result": {
+    "wins": 0,
+    "losses": 0,
+    "draws": 4,
+    "games_played": 4,
+    "score": 0.5
+  }
+}
