@@ -13,7 +13,7 @@ import torch
 def save_checkpoint(
     path: str | Path,
     model: torch.nn.Module,
-    optimizer: torch.optim.Optimizer,
+    optimizer: torch.optim.Optimizer | None,
     epoch: int,
     extra: dict[str, Any] | None = None,
 ) -> None:
@@ -26,7 +26,7 @@ def save_checkpoint(
     payload = {
         "epoch": epoch,
         "model_state_dict": model.state_dict(),
-        "optimizer_state_dict": optimizer.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict() if optimizer is not None else None,
         "extra": extra or {},
     }
     torch.save(payload, path)
@@ -48,7 +48,15 @@ def load_checkpoint(
 
     model.load_state_dict(payload["model_state_dict"])
 
-    if optimizer is not None:
-        optimizer.load_state_dict(payload["optimizer_state_dict"])
+    optimizer_state = payload.get("optimizer_state_dict")
+    if optimizer is not None and optimizer_state is not None:
+        optimizer.load_state_dict(optimizer_state)
 
     return payload
+
+
+def checkpoint_exists(path: str | Path) -> bool:
+    """
+    Check whether a checkpoint path exists.
+    """
+    return Path(path).exists()
