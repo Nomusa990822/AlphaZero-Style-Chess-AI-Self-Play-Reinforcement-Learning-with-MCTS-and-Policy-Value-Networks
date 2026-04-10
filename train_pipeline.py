@@ -25,50 +25,50 @@ def main() -> None:
     )
 
     pipeline_config = PipelineConfig(
-        device="cpu",
-        replay_buffer_capacity=20000,
+    device="cpu",
+    replay_buffer_capacity=20000,
 
-        iterations=15,
-        self_play_games_per_iteration=8,
-        self_play_max_moves=300,
+    iterations=15,
+    self_play_games_per_iteration=8,
+    self_play_max_moves=600,
 
-        self_play_opening_temperature_moves=15,
-        self_play_opening_temperature=1.0,
-        self_play_late_temperature=0.1,
+    self_play_opening_temperature_moves=15,
+    self_play_opening_temperature=1.0,
+    self_play_late_temperature=0.1,
 
-        self_play_resign_threshold=-0.9,
-        self_play_min_moves_before_resign=20,
+    self_play_resign_threshold=-0.85,
+    self_play_min_moves_before_resign=20,
 
-        self_play_adjudicate_on_max_moves=True,
-        self_play_adjudication_threshold=0.25,
+    self_play_adjudicate_on_max_moves=True,
+    self_play_adjudication_threshold=0.15,
 
-        training_batch_size=32,
-        training_epochs=5,
-        learning_rate=1e-3,
-        candidate_learning_rate=5e-4,
-        weight_decay=1e-4,
+    training_batch_size=32,
+    training_epochs=5,
+    learning_rate=1e-3,
+    candidate_learning_rate=5e-4,
+    weight_decay=1e-4,
 
-        train_mcts_simulations=40,
-        eval_mcts_simulations=50,
+    train_mcts_simulations=40,
+    eval_mcts_simulations=50,
 
-        train_dirichlet_alpha=0.5,
-        train_dirichlet_epsilon=0.30,
+    train_dirichlet_alpha=0.5,
+    train_dirichlet_epsilon=0.30,
 
-        eval_add_dirichlet_noise=True,
-        eval_dirichlet_alpha=0.3,
-        eval_dirichlet_epsilon=0.25,
-        eval_temperature=0.2,
+    eval_add_dirichlet_noise=True,
+    eval_dirichlet_alpha=0.3,
+    eval_dirichlet_epsilon=0.25,
+    eval_temperature=0.2,
 
-        gating_games=10,
-        required_promotion_score=0.52,
+    gating_games=10,
+    required_promotion_score=0.52,
 
-        checkpoint_dir="data/checkpoints",
-        log_dir="data/logs",
-        replay_buffer_path="data/replay_buffer/latest_buffer.pkl",
-        best_model_checkpoint="data/checkpoints/best_model.pt",
-        latest_candidate_checkpoint="data/checkpoints/latest_candidate.pt",
+    checkpoint_dir="data/checkpoints",
+    log_dir="data/logs",
+    replay_buffer_path="data/replay_buffer/latest_buffer.pkl",
+    best_model_checkpoint="data/checkpoints/best_model.pt",
+    latest_candidate_checkpoint="data/checkpoints/latest_candidate.pt",
 
-        resume_best_model=True,
+    resume_best_model=True,
     )
 
     pipeline = AlphaZeroPipeline(
