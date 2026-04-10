@@ -1,4 +1,6 @@
 """
+train_pipeline.py
+
 Stage 5 iterative training entry point.
 """
 
@@ -25,6 +27,7 @@ def main() -> None:
     pipeline_config = PipelineConfig(
         device="cpu",
         replay_buffer_capacity=20000,
+
         iterations=15,
         self_play_games_per_iteration=8,
         self_play_max_moves=300,
@@ -40,8 +43,9 @@ def main() -> None:
         self_play_adjudication_threshold=0.25,
 
         training_batch_size=32,
-        training_epochs=3,
+        training_epochs=5,
         learning_rate=1e-3,
+        candidate_learning_rate=5e-4,
         weight_decay=1e-4,
 
         train_mcts_simulations=40,
@@ -50,8 +54,13 @@ def main() -> None:
         train_dirichlet_alpha=0.5,
         train_dirichlet_epsilon=0.30,
 
-        gating_games=6,
-        required_promotion_score=0.55,
+        eval_add_dirichlet_noise=True,
+        eval_dirichlet_alpha=0.3,
+        eval_dirichlet_epsilon=0.25,
+        eval_temperature=0.2,
+
+        gating_games=10,
+        required_promotion_score=0.52,
 
         checkpoint_dir="data/checkpoints",
         log_dir="data/logs",
