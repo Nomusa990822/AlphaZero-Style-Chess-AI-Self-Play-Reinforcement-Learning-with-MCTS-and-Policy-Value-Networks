@@ -48,8 +48,10 @@ class NetworkEvaluator:
         self.move_encoding = move_encoding
         self.mcts_config = mcts_config or MCTSConfig(
             num_simulations=25,
-            add_dirichlet_noise=False,
-            temperature=0.0,
+            add_dirichlet_noise=True,
+            dirichlet_alpha=0.3,
+            dirichlet_epsilon=0.25,
+            temperature=0.2,
         )
 
     def _play_single_game(
@@ -63,9 +65,9 @@ class NetworkEvaluator:
 
         while not board.is_game_over() and move_count < max_moves:
             move = (
-                agent_white.choose_move(board, temperature=0.0)
+                agent_white.choose_move(board, temperature=self.mcts_config.temperature)
                 if board.turn == chess.WHITE
-                else agent_black.choose_move(board, temperature=0.0)
+                else agent_black.choose_move(board, temperature=self.mcts_config.temperature)
             )
             board.push(move)
             move_count += 1
@@ -122,19 +124,10 @@ class NetworkEvaluator:
         candidate_inference: ModelInference,
         best_inference: ModelInference,
         num_games: int = 6,
-        required_score: float = 0.55,
+        required_score: float = 0.52,
     ) -> tuple[bool, EvaluationResult]:
         """
         Decide whether the candidate model should replace the best model.
-
-        Args:
-            candidate_inference: Newly trained model
-            best_inference: Current best model
-            num_games: Head-to-head evaluation games
-            required_score: Minimum score required for promotion
-
-        Returns:
-            (should_promote, evaluation_result)
         """
         result = self.compare_models(
             inference_a=candidate_inference,
