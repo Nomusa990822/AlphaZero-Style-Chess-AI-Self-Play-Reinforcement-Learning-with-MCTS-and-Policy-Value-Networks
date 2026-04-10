@@ -1,6 +1,4 @@
 """
-Stage 5 orchestration for iterative AlphaZero-style training.
-
 Main ideas:
 - maintain a current best model
 - generate self-play games
@@ -52,8 +50,9 @@ class PipelineConfig:
     self_play_adjudication_threshold: float = 0.25
 
     training_batch_size: int = 32
-    training_epochs: int = 3
+    training_epochs: int = 5
     learning_rate: float = 1e-3
+    candidate_learning_rate: float = 5e-4
     weight_decay: float = 1e-4
 
     train_mcts_simulations: int = 40
@@ -62,8 +61,14 @@ class PipelineConfig:
     train_dirichlet_alpha: float = 0.5
     train_dirichlet_epsilon: float = 0.30
 
-    gating_games: int = 6
-    required_promotion_score: float = 0.55
+    # Make evaluation less deterministic so differences can surface.
+    eval_add_dirichlet_noise: bool = True
+    eval_dirichlet_alpha: float = 0.3
+    eval_dirichlet_epsilon: float = 0.25
+    eval_temperature: float = 0.2
+
+    gating_games: int = 10
+    required_promotion_score: float = 0.52
 
     checkpoint_dir: str = "data/checkpoints"
     log_dir: str = "data/logs"
@@ -189,12 +194,13 @@ class AlphaZeroPipeline:
         candidate_model.load_state_dict(copy.deepcopy(self.best_model.state_dict()))
         candidate_model.to(self.config.device)
 
+        # Train the candidate more deliberately than the current best.
         candidate_trainer = AlphaZeroTrainer(
             model=candidate_model,
             device=self.config.device,
             config=TrainerConfig(
                 batch_size=self.config.training_batch_size,
-                learning_rate=self.config.learning_rate,
+                learning_rate=self.config.candidate_learning_rate,
                 weight_decay=self.config.weight_decay,
                 num_epochs=self.config.training_epochs,
                 shuffle=True,
@@ -275,8 +281,10 @@ class AlphaZeroPipeline:
             move_encoding=self.move_encoding,
             mcts_config=MCTSConfig(
                 num_simulations=self.config.eval_mcts_simulations,
-                add_dirichlet_noise=False,
-                temperature=0.0,
+                add_dirichlet_noise=self.config.eval_add_dirichlet_noise,
+                dirichlet_alpha=self.config.eval_dirichlet_alpha,
+                dirichlet_epsilon=self.config.eval_dirichlet_epsilon,
+                temperature=self.config.eval_temperature,
             ),
         )
 
