@@ -29,7 +29,7 @@ def main() -> None:
         # Start with 1 iteration while debugging training dynamics.
         iterations=1,
         self_play_games_per_iteration=8,
-        self_play_max_moves=300,
+        self_play_max_moves=800,
 
         self_play_opening_temperature_moves=20,
         self_play_opening_temperature=1.5,
