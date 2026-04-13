@@ -121,17 +121,29 @@ class SelfPlayGenerator:
 
     def _adjudicate_result(self, board: chess.Board) -> str:
         """
-        Use both model evaluation and material balance when max_moves is reached.
+        Use material balance first when max_moves is reached.
+        This is intentionally simple and more decisive for early training.
         """
-        _, side_to_move_value = self.inference.predict(board)
-        white_value = self._value_to_white_perspective(board, side_to_move_value)
-        material_score = self._material_score_white(board)
-
-        if white_value >= self.adjudication_threshold and material_score >= 3:
-            return "1-0"
-        if white_value <= -self.adjudication_threshold and material_score <= -3:
-            return "0-1"
-        return "1/2-1/2"
+        piece_values = {
+            chess.PAWN: 1,
+            chess.KNIGHT: 3,
+            chess.BISHOP: 3,
+            chess.ROOK: 5,
+            chess.QUEEN: 9,
+            chess.KING: 0,
+        }
+        
+        material_score = 0
+        for piece_type, value in piece_values.items():
+            material_score += len(board.pieces(piece_type, chess.WHITE)) * value
+            material_score -= len(board.pieces(piece_type, chess.BLACK)) * value
+            
+            if material_score >= 2:
+                return "1-0"
+                
+            if material_score <= -2:
+                return "0-1"
+            return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
