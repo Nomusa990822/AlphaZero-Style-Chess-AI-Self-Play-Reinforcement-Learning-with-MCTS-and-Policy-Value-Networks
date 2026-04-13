@@ -28,8 +28,8 @@ def main() -> None:
 
         # Start with 1 iteration while debugging training dynamics.
         iterations=3,
-        self_play_games_per_iteration=8,
-        self_play_max_moves=350,
+        self_play_games_per_iteration=12,
+        self_play_max_moves=400,
 
         self_play_opening_temperature_moves=20,
         self_play_opening_temperature=1.5,
@@ -42,9 +42,9 @@ def main() -> None:
         self_play_adjudication_threshold=0.10,
 
         training_batch_size=32,
-        training_epochs=8,
+        training_epochs=12,
         learning_rate=1e-3,
-        candidate_learning_rate=3e-4,
+        candidate_learning_rate=2e-4,
         weight_decay=1e-4,
 
         train_mcts_simulations=40,
@@ -58,7 +58,7 @@ def main() -> None:
         eval_dirichlet_epsilon=0.25,
         eval_temperature=0.5,
 
-        gating_games=12,
+        gating_games=16,
         required_promotion_score=0.51,
 
         checkpoint_dir="data/checkpoints",
