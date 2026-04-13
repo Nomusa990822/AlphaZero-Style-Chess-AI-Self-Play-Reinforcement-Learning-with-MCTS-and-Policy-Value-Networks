@@ -25,16 +25,17 @@ def main() -> None:
     )
 
     pipeline_config = PipelineConfig(
+    pipeline_config = PipelineConfig(
     device="cpu",
     replay_buffer_capacity=20000,
 
     iterations=15,
     self_play_games_per_iteration=8,
-    self_play_max_moves=1000,
+    self_play_max_moves=800,
 
-    self_play_opening_temperature_moves=15,
-    self_play_opening_temperature=1.0,
-    self_play_late_temperature=0.1,
+    self_play_opening_temperature_moves=20,
+    self_play_opening_temperature=1.5,
+    self_play_late_temperature=0.3,
 
     self_play_resign_threshold=-0.80,
     self_play_min_moves_before_resign=30,
@@ -57,7 +58,7 @@ def main() -> None:
     eval_add_dirichlet_noise=True,
     eval_dirichlet_alpha=0.3,
     eval_dirichlet_epsilon=0.25,
-    eval_temperature=0.2,
+    eval_temperature=0.5,
 
     gating_games=10,
     required_promotion_score=0.52,
@@ -68,7 +69,7 @@ def main() -> None:
     best_model_checkpoint="data/checkpoints/best_model.pt",
     latest_candidate_checkpoint="data/checkpoints/latest_candidate.pt",
 
-    resume_best_model=True,
+    resume_best_model=False,
     )
 
     pipeline = AlphaZeroPipeline(
