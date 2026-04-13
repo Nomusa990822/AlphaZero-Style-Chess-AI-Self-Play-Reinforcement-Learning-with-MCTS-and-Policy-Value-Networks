@@ -1,11 +1,5 @@
 """
-Main ideas:
-- maintain a current best model
-- generate self-play games
-- train a candidate model
-- compare candidate vs current best
-- promote candidate if it performs well enough
-- log metrics and save checkpoints
+Stage 5 orchestration for iterative AlphaZero-style training.
 """
 
 from __future__ import annotations
@@ -29,9 +23,6 @@ from src.training.trainer import AlphaZeroTrainer, TrainerConfig
 
 @dataclass
 class PipelineConfig:
-    """
-    Outer-loop training configuration.
-    """
     device: str = "cpu"
     replay_buffer_capacity: int = 20000
 
@@ -39,15 +30,15 @@ class PipelineConfig:
     self_play_games_per_iteration: int = 8
     self_play_max_moves: int = 300
 
-    self_play_opening_temperature_moves: int = 15
-    self_play_opening_temperature: float = 1.0
-    self_play_late_temperature: float = 0.1
+    self_play_opening_temperature_moves: int = 20
+    self_play_opening_temperature: float = 1.5
+    self_play_late_temperature: float = 0.3
 
-    self_play_resign_threshold: float = -0.9
-    self_play_min_moves_before_resign: int = 20
+    self_play_resign_threshold: float = -0.80
+    self_play_min_moves_before_resign: int = 30
 
     self_play_adjudicate_on_max_moves: bool = True
-    self_play_adjudication_threshold: float = 0.25
+    self_play_adjudication_threshold: float = 0.10
 
     training_batch_size: int = 32
     training_epochs: int = 5
@@ -61,7 +52,6 @@ class PipelineConfig:
     train_dirichlet_alpha: float = 0.5
     train_dirichlet_epsilon: float = 0.30
 
-    # Make evaluation less deterministic so differences can surface.
     eval_add_dirichlet_noise: bool = True
     eval_dirichlet_alpha: float = 0.3
     eval_dirichlet_epsilon: float = 0.25
@@ -76,7 +66,7 @@ class PipelineConfig:
     best_model_checkpoint: str = "data/checkpoints/best_model.pt"
     latest_candidate_checkpoint: str = "data/checkpoints/latest_candidate.pt"
 
-    resume_best_model: bool = True
+    resume_best_model: bool = False
 
 
 class AlphaZeroPipeline:
@@ -127,9 +117,6 @@ class AlphaZeroPipeline:
             print(f"Loaded best model from {self.config.best_model_checkpoint}")
 
     def _make_inference(self, model: AlphaZeroNet) -> ModelInference:
-        """
-        Build inference wrapper for a model.
-        """
         return ModelInference(
             model=model,
             move_encoding=self.move_encoding,
@@ -138,9 +125,6 @@ class AlphaZeroPipeline:
         )
 
     def _build_self_play_generator(self, inference: ModelInference) -> SelfPlayGenerator:
-        """
-        Build self-play generator for current best model.
-        """
         return SelfPlayGenerator(
             inference=inference,
             move_encoding=self.move_encoding,
@@ -164,9 +148,6 @@ class AlphaZeroPipeline:
         )
 
     def _result_to_white_score(self, result: str) -> float:
-        """
-        Convert chess result to white score.
-        """
         if result == "1-0":
             return 1.0
         if result == "0-1":
@@ -178,15 +159,9 @@ class AlphaZeroPipeline:
         generator: SelfPlayGenerator,
         num_games: int,
     ) -> list[SelfPlayGameResult]:
-        """
-        Generate self-play games.
-        """
         return generator.generate_games(num_games)
 
     def _build_candidate_model(self) -> tuple[AlphaZeroNet, AlphaZeroTrainer]:
-        """
-        Build candidate model initialized from current best weights.
-        """
         candidate_model = AlphaZeroNet(
             action_size=self.move_encoding.action_size,
             config=self.network_config,
@@ -194,7 +169,6 @@ class AlphaZeroPipeline:
         candidate_model.load_state_dict(copy.deepcopy(self.best_model.state_dict()))
         candidate_model.to(self.config.device)
 
-        # Train the candidate more deliberately than the current best.
         candidate_trainer = AlphaZeroTrainer(
             model=candidate_model,
             device=self.config.device,
@@ -209,9 +183,6 @@ class AlphaZeroPipeline:
         return candidate_model, candidate_trainer
 
     def run_iteration(self, iteration: int) -> dict[str, Any]:
-        """
-        Run one outer training iteration.
-        """
         print(f"\n{'=' * 80}")
         print(f"ITERATION {iteration}")
         print(f"{'=' * 80}")
@@ -359,9 +330,6 @@ class AlphaZeroPipeline:
         }
 
     def run(self) -> list[dict[str, Any]]:
-        """
-        Run the full outer-loop training pipeline.
-        """
         results: list[dict[str, Any]] = []
 
         for iteration in range(1, self.config.iterations + 1):
