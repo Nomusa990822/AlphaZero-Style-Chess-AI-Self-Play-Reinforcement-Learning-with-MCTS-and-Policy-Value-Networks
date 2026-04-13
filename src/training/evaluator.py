@@ -75,8 +75,8 @@ class NetworkEvaluator:
         self,
         board: chess.Board,
         inference: ModelInference,
-        value_threshold: float = 0.15,
-        material_threshold: int = 3,
+        value_threshold: float = 0.05,
+        material_threshold: int = 1,
     ) -> str:
         _, side_to_move_value = inference.predict(board)
         white_value = self._value_to_white_perspective(board, side_to_move_value)
