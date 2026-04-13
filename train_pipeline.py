@@ -36,7 +36,7 @@ def main() -> None:
     self_play_opening_temperature=1.0,
     self_play_late_temperature=0.1,
 
-    self_play_resign_threshold=-0.85,
+    self_play_resign_threshold=-0.95,
     self_play_min_moves_before_resign=20,
 
     self_play_adjudicate_on_max_moves=True,
