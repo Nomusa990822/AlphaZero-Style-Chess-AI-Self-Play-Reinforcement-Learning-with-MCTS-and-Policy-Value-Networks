@@ -56,11 +56,11 @@ class SelfPlayGenerator:
         move_encoding: MoveEncoding,
         encoder: BoardEncoder | None = None,
         mcts_config: MCTSConfig | None = None,
-        max_moves: int = 300,
+        max_moves: int = 200,
         opening_temperature_moves: int = 20,
         opening_temperature: float = 1.5,
         late_temperature: float = 0.3,
-        resign_threshold: float = -0.80,
+        resign_threshold: float | None = None,
         min_moves_before_resign: int = 30,
         adjudicate_on_max_moves: bool = True,
         adjudication_threshold: float = 0.10,
@@ -93,17 +93,17 @@ class SelfPlayGenerator:
             return self.opening_temperature
         return self.late_temperature
 
-    def _value_to_white_perspective(
-        self,
-        board: chess.Board,
-        side_to_move_value: float,
-    ) -> float:
-        return side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
-
     def _resignation_result(self, board: chess.Board) -> str:
+        """
+        If the current side to move resigns, determine the game result.
+        """
         return "0-1" if board.turn == chess.WHITE else "1-0"
 
     def _material_score_white(self, board: chess.Board) -> int:
+        """
+        Simple material score from White perspective.
+        Positive means White is ahead, negative means Black is ahead.
+        """
         piece_values = {
             chess.PAWN: 1,
             chess.KNIGHT: 3,
@@ -124,26 +124,13 @@ class SelfPlayGenerator:
         Use material balance first when max_moves is reached.
         This is intentionally simple and more decisive for early training.
         """
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-        
-        material_score = 0
-        for piece_type, value in piece_values.items():
-            material_score += len(board.pieces(piece_type, chess.WHITE)) * value
-            material_score -= len(board.pieces(piece_type, chess.BLACK)) * value
-            
-            if material_score >= 2:
-                return "1-0"
-                
-            if material_score <= -2:
-                return "0-1"
-            return "1/2-1/2"
+        material_score = self._material_score_white(board)
+
+        if material_score >= 2:
+            return "1-0"
+        if material_score <= -2:
+            return "0-1"
+        return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
@@ -173,7 +160,8 @@ class SelfPlayGenerator:
             estimated_value = root.q_value
 
             if (
-                move_number >= self.min_moves_before_resign
+                self.resign_threshold is not None
+                and move_number >= self.min_moves_before_resign
                 and estimated_value <= self.resign_threshold
             ):
                 forced_result = self._resignation_result(board)
@@ -210,6 +198,8 @@ class SelfPlayGenerator:
             history_players,
         ):
             value_target = white_value if player_to_move == chess.WHITE else -white_value
+            value_target = max(min(value_target, 1.0), -1.0)
+
             samples.append(
                 SelfPlaySample(
                     state=state,
