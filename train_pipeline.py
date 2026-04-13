@@ -29,14 +29,14 @@ def main() -> None:
         # Start with 1 iteration while debugging training dynamics.
         iterations=3,
         self_play_games_per_iteration=8,
-        self_play_max_moves=200,
+        self_play_max_moves=350,
 
         self_play_opening_temperature_moves=20,
         self_play_opening_temperature=2.0,
         self_play_late_temperature=0.5,
 
-        self_play_resign_threshold=-0.60,
-        self_play_min_moves_before_resign=40,
+        self_play_resign_threshold=-0.45,
+        self_play_min_moves_before_resign=25,
 
         self_play_adjudicate_on_max_moves=True,
         self_play_adjudication_threshold=0.0,
