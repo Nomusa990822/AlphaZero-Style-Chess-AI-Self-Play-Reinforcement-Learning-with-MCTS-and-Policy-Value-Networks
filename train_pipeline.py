@@ -30,7 +30,7 @@ def main() -> None:
 
     iterations=15,
     self_play_games_per_iteration=8,
-    self_play_max_moves=600,
+    self_play_max_moves=1000,
 
     self_play_opening_temperature_moves=15,
     self_play_opening_temperature=1.0,
