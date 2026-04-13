@@ -61,7 +61,7 @@ class SelfPlayGenerator:
         move_encoding: MoveEncoding,
         encoder: BoardEncoder | None = None,
         mcts_config: MCTSConfig | None = None,
-        max_moves: int = 1000,
+        max_moves: int = 300,
         opening_temperature_moves: int = 15,
         opening_temperature: float = 1.0,
         late_temperature: float = 0.1,
