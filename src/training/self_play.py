@@ -5,11 +5,6 @@ Each game produces training samples of the form:
 - encoded board state
 - MCTS policy target over full action space
 - final game value from the player's perspective at that state
-
-Upgrades in this version:
-- temperature decay (more exploration early, more greed later)
-- resignation logic for clearly lost positions
-- optional adjudication when max_moves is reached, to reduce forced draws
 """
 
 from __future__ import annotations
@@ -62,32 +57,14 @@ class SelfPlayGenerator:
         encoder: BoardEncoder | None = None,
         mcts_config: MCTSConfig | None = None,
         max_moves: int = 300,
-        opening_temperature_moves: int = 15,
-        opening_temperature: float = 1.0,
-        late_temperature: float = 0.1,
-        resign_threshold: float = -0.9,
-        min_moves_before_resign: int = 20,
+        opening_temperature_moves: int = 20,
+        opening_temperature: float = 1.5,
+        late_temperature: float = 0.3,
+        resign_threshold: float = -0.80,
+        min_moves_before_resign: int = 30,
         adjudicate_on_max_moves: bool = True,
-        adjudication_threshold: float = 0.25,
+        adjudication_threshold: float = 0.10,
     ) -> None:
-        """
-        Args:
-            inference: Neural inference helper
-            move_encoding: Move encoding helper
-            encoder: Board encoder
-            mcts_config: MCTS configuration
-            max_moves: Safety cap for game length
-            opening_temperature_moves: Number of opening plies with higher exploration
-            opening_temperature: Early-game temperature
-            late_temperature: Later-game temperature
-            resign_threshold: If estimated value from side-to-move perspective is below
-                this threshold, resign the game
-            min_moves_before_resign: Prevents extremely early resignations
-            adjudicate_on_max_moves: If True, use model evaluation to assign a result
-                when max_moves is reached
-            adjudication_threshold: Minimum white-perspective advantage needed to
-                adjudicate a non-draw result when max_moves is reached
-        """
         self.inference = inference
         self.move_encoding = move_encoding
         self.encoder = encoder or BoardEncoder()
@@ -105,9 +82,6 @@ class SelfPlayGenerator:
         self.adjudication_threshold = adjudication_threshold
 
     def _result_to_white_value(self, result: str) -> float:
-        """
-        Convert result string into scalar from white's perspective.
-        """
         if result == "1-0":
             return 1.0
         if result == "0-1":
@@ -115,11 +89,6 @@ class SelfPlayGenerator:
         return 0.0
 
     def _temperature_for_move(self, move_number: int) -> float:
-        """
-        Temperature schedule:
-        - opening: more exploration
-        - later: more greedy play
-        """
         if move_number < self.opening_temperature_moves:
             return self.opening_temperature
         return self.late_temperature
@@ -129,34 +98,42 @@ class SelfPlayGenerator:
         board: chess.Board,
         side_to_move_value: float,
     ) -> float:
-        """
-        Convert a value from side-to-move perspective into white perspective.
-        """
         return side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
 
     def _resignation_result(self, board: chess.Board) -> str:
-        """
-        If the current side to move resigns, determine the result string.
-        """
         return "0-1" if board.turn == chess.WHITE else "1-0"
 
-    def _adjudicate_result(self, board: chess.Board) -> str:
-        _, side_to_move_value = self.inference.predict(board)
-        white_value = side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
+    def _material_score_white(self, board: chess.Board) -> int:
+        piece_values = {
+            chess.PAWN: 1,
+            chess.KNIGHT: 3,
+            chess.BISHOP: 3,
+            chess.ROOK: 5,
+            chess.QUEEN: 9,
+            chess.KING: 0,
+        }
 
-        if white_value >= self.adjudication_threshold:
+        score = 0
+        for piece_type, value in piece_values.items():
+            score += len(board.pieces(piece_type, chess.WHITE)) * value
+            score -= len(board.pieces(piece_type, chess.BLACK)) * value
+        return score
+
+    def _adjudicate_result(self, board: chess.Board) -> str:
+        """
+        Use both model evaluation and material balance when max_moves is reached.
+        """
+        _, side_to_move_value = self.inference.predict(board)
+        white_value = self._value_to_white_perspective(board, side_to_move_value)
+        material_score = self._material_score_white(board)
+
+        if white_value >= self.adjudication_threshold and material_score >= 3:
             return "1-0"
-        if white_value <= -self.adjudication_threshold:
+        if white_value <= -self.adjudication_threshold and material_score <= -3:
             return "0-1"
         return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
-        """
-        Run one self-play game.
-
-        Returns:
-            SelfPlayGameResult
-        """
         board = chess.Board()
         mcts = MCTS(
             inference=self.inference,
@@ -181,11 +158,12 @@ class SelfPlayGenerator:
             temperature = self._temperature_for_move(move_number)
             full_probs, _ = mcts.get_action_probs(root, temperature=temperature)
 
-            # Use root q-value as the search-based evaluation from side-to-move perspective.
             estimated_value = root.q_value
 
-            # Resign only after some moves to avoid silly early resignations.
-            if move_number >= self.min_moves_before_resign and estimated_value <= self.resign_threshold:
+            if (
+                move_number >= self.min_moves_before_resign
+                and estimated_value <= self.resign_threshold
+            ):
                 forced_result = self._resignation_result(board)
                 ended_by_resignation = True
                 break
@@ -205,7 +183,6 @@ class SelfPlayGenerator:
         elif board.is_game_over():
             result = board.result(claim_draw=True)
         else:
-            # max_moves reached
             if self.adjudicate_on_max_moves:
                 result = self._adjudicate_result(board)
                 ended_by_adjudication = True
@@ -221,7 +198,6 @@ class SelfPlayGenerator:
             history_players,
         ):
             value_target = white_value if player_to_move == chess.WHITE else -white_value
-
             samples.append(
                 SelfPlaySample(
                     state=state,
@@ -241,7 +217,4 @@ class SelfPlayGenerator:
         )
 
     def generate_games(self, num_games: int) -> List[SelfPlayGameResult]:
-        """
-        Generate multiple self-play games.
-        """
         return [self.play_game() for _ in range(num_games)]
