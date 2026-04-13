@@ -65,7 +65,7 @@ class PipelineConfig:
     eval_add_dirichlet_noise: bool = True
     eval_dirichlet_alpha: float = 0.3
     eval_dirichlet_epsilon: float = 0.25
-    eval_temperature: float = 0.2
+    eval_temperature: float = 0.5
 
     gating_games: int = 10
     required_promotion_score: float = 0.52
