@@ -55,35 +55,41 @@ class NetworkEvaluator:
         )
 
     def _play_single_game(
-        self,
-        agent_white: MCTSAgent,
-        agent_black: MCTSAgent,
-        max_moves: int = 600,
-    ) -> str:
-        board = chess.Board()
-        move_count = 0
+    self,
+    agent_white: MCTSAgent,
+    agent_black: MCTSAgent,
+    max_moves: int = 300,
+) -> str:
+    board = chess.Board()
+    move_count = 0
 
-        while not board.is_game_over() and move_count < max_moves:
-            move = (
-                agent_white.choose_move(board, temperature=self.mcts_config.temperature)
-                if board.turn == chess.WHITE
-                else agent_black.choose_move(board, temperature=self.mcts_config.temperature)
+    while not board.is_game_over() and move_count < max_moves:
+        move = (
+            agent_white.choose_move(
+                board,
+                temperature=self.mcts_config.temperature,
             )
-            board.push(move)
-            move_count += 1
+            if board.turn == chess.WHITE
+            else agent_black.choose_move(
+                board,
+                temperature=self.mcts_config.temperature,
+            )
+        )
 
-        if board.is_game_over():
-            return board.result(claim_draw=True)
+        board.push(move)
+        move_count += 1
 
-        # NEW: adjudicate instead of forced draw
-        _, value = agent_white.inference.predict(board)
+    if board.is_game_over():
+        return board.result(claim_draw=True)
 
-        if value > 0.2:
-            return "1-0"
-        elif value < -0.2:
-            return "0-1"
-        else:
-            return "1/2-1/2"
+    # Adjudicate instead of forcing a draw when max_moves is reached.
+    _, value = agent_white.inference.predict(board)
+
+    if value > 0.2:
+        return "1-0"
+    if value < -0.2:
+        return "0-1"
+    return "1/2-1/2"
 
     def compare_models(
         self,
