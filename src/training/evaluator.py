@@ -52,16 +52,10 @@ class NetworkEvaluator:
 
     @staticmethod
     def _value_to_white_perspective(board: chess.Board, side_to_move_value: float) -> float:
-        """
-        Convert model value from side-to-move perspective to White perspective.
-        """
         return side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
 
     @staticmethod
     def _material_score_white(board: chess.Board) -> int:
-        """
-        Simple material score from White perspective.
-        """
         piece_values = {
             chess.PAWN: 1,
             chess.KNIGHT: 3,
@@ -84,9 +78,6 @@ class NetworkEvaluator:
         value_threshold: float = 0.15,
         material_threshold: int = 3,
     ) -> str:
-        """
-        Decide result for non-terminal positions using both model value and material.
-        """
         _, side_to_move_value = inference.predict(board)
         white_value = self._value_to_white_perspective(board, side_to_move_value)
         material_score = self._material_score_white(board)
