@@ -68,7 +68,7 @@ def main() -> None:
         latest_candidate_checkpoint="data/checkpoints/latest_candidate.pt",
 
         # Keep False while debugging so old bad checkpoints do not contaminate runs.
-        resume_best_model=False,
+        resume_best_model=True,
     )
 
     print("Pipeline config:")
