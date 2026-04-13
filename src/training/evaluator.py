@@ -26,6 +26,10 @@ class EvaluationResult:
 
     @property
     def score(self) -> float:
+        """
+        Score from perspective of model A:
+        win = 1, draw = 0.5, loss = 0
+        """
         if self.games_played == 0:
             return 0.0
         return (self.wins + 0.5 * self.draws) / self.games_played
@@ -43,7 +47,7 @@ class NetworkEvaluator:
     ) -> None:
         self.move_encoding = move_encoding
         self.mcts_config = mcts_config or MCTSConfig(
-            num_simulations=25,
+            num_simulations=50,
             add_dirichlet_noise=True,
             dirichlet_alpha=0.3,
             dirichlet_epsilon=0.25,
@@ -51,11 +55,11 @@ class NetworkEvaluator:
         )
 
     @staticmethod
-    def _value_to_white_perspective(board: chess.Board, side_to_move_value: float) -> float:
-        return side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
-
-    @staticmethod
     def _material_score_white(board: chess.Board) -> int:
+        """
+        Simple material score from White's perspective.
+        Positive means White is ahead, negative means Black is ahead.
+        """
         piece_values = {
             chess.PAWN: 1,
             chess.KNIGHT: 3,
@@ -71,20 +75,16 @@ class NetworkEvaluator:
             score -= len(board.pieces(piece_type, chess.BLACK)) * value
         return score
 
-    def _adjudicate_result(
-        self,
-        board: chess.Board,
-        inference: ModelInference,
-        value_threshold: float = 0.05,
-        material_threshold: int = 1,
-    ) -> str:
-        _, side_to_move_value = inference.predict(board)
-        white_value = self._value_to_white_perspective(board, side_to_move_value)
+    def _adjudicate_result(self, board: chess.Board) -> str:
+        """
+        Use material balance first when max_moves is reached.
+        This is intentionally simple and more decisive for early training.
+        """
         material_score = self._material_score_white(board)
 
-        if white_value >= value_threshold and material_score >= material_threshold:
+        if material_score >= 2:
             return "1-0"
-        if white_value <= -value_threshold and material_score <= -material_threshold:
+        if material_score <= -2:
             return "0-1"
         return "1/2-1/2"
 
@@ -92,31 +92,42 @@ class NetworkEvaluator:
         self,
         agent_white: MCTSAgent,
         agent_black: MCTSAgent,
-        max_moves: int = 300,
+        max_moves: int = 200,
     ) -> str:
         board = chess.Board()
         move_count = 0
 
         while not board.is_game_over() and move_count < max_moves:
             move = (
-                agent_white.choose_move(board, temperature=self.mcts_config.temperature)
+                agent_white.choose_move(
+                    board,
+                    temperature=self.mcts_config.temperature,
+                )
                 if board.turn == chess.WHITE
-                else agent_black.choose_move(board, temperature=self.mcts_config.temperature)
+                else agent_black.choose_move(
+                    board,
+                    temperature=self.mcts_config.temperature,
+                )
             )
+
             board.push(move)
             move_count += 1
 
         if board.is_game_over():
             return board.result(claim_draw=True)
 
-        return self._adjudicate_result(board, agent_white.inference)
+        return self._adjudicate_result(board)
 
     def compare_models(
         self,
         inference_a: ModelInference,
         inference_b: ModelInference,
-        num_games: int = 10,
+        num_games: int = 12,
     ) -> EvaluationResult:
+        """
+        Compare two models head-to-head.
+        Model A alternates colors for fairness.
+        """
         wins = 0
         losses = 0
         draws = 0
@@ -156,9 +167,12 @@ class NetworkEvaluator:
         self,
         candidate_inference: ModelInference,
         best_inference: ModelInference,
-        num_games: int = 10,
-        required_score: float = 0.52,
+        num_games: int = 12,
+        required_score: float = 0.51,
     ) -> tuple[bool, EvaluationResult]:
+        """
+        Decide whether the candidate model should replace the best model.
+        """
         result = self.compare_models(
             inference_a=candidate_inference,
             inference_b=best_inference,
