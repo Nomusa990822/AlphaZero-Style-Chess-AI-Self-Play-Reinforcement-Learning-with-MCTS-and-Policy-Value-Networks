@@ -27,19 +27,19 @@ def main() -> None:
         replay_buffer_capacity=20000,
 
         # Start with 1 iteration while debugging training dynamics.
-        iterations=5,
+        iterations=3,
         self_play_games_per_iteration=8,
         self_play_max_moves=350,
 
         self_play_opening_temperature_moves=20,
-        self_play_opening_temperature=2.0,
-        self_play_late_temperature=0.5,
+        self_play_opening_temperature=1.5,
+        self_play_late_temperature=0.3,
 
         self_play_resign_threshold=None,
-        self_play_min_moves_before_resign=25,
+        self_play_min_moves_before_resign=30,
 
         self_play_adjudicate_on_max_moves=True,
-        self_play_adjudication_threshold=0.0,
+        self_play_adjudication_threshold=0.10,
 
         training_batch_size=32,
         training_epochs=8,
