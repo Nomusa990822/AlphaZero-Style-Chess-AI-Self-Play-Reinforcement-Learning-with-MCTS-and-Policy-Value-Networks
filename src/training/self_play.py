@@ -141,12 +141,8 @@ class SelfPlayGenerator:
         return "0-1" if board.turn == chess.WHITE else "1-0"
 
     def _adjudicate_result(self, board: chess.Board) -> str:
-        """
-        Use the network evaluation to determine a non-terminal result when max_moves
-        is reached. If the evaluation is too close to zero, return a draw.
-        """
         _, side_to_move_value = self.inference.predict(board)
-        white_value = self._value_to_white_perspective(board, side_to_move_value)
+        white_value = side_to_move_value if board.turn == chess.WHITE else -side_to_move_value
 
         if white_value >= self.adjudication_threshold:
             return "1-0"
