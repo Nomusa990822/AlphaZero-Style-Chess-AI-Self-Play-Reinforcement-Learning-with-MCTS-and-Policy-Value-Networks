@@ -22,7 +22,7 @@ class MCTSConfig:
     """
     Configuration for MCTS.
     """
-    num_simulations: int = 100
+    num_simulations: int = 50
     c_puct: float = 1.5
     dirichlet_alpha: float = 0.3
     dirichlet_epsilon: float = 0.25
