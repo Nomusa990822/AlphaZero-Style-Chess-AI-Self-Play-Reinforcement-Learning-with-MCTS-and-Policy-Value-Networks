@@ -27,7 +27,7 @@ def main() -> None:
         replay_buffer_capacity=20000,
 
         # Start with 1 iteration while debugging training dynamics.
-        iterations=1,
+        iterations=3,
         self_play_games_per_iteration=8,
         self_play_max_moves=200,
 
@@ -42,9 +42,9 @@ def main() -> None:
         self_play_adjudication_threshold=0.0,
 
         training_batch_size=32,
-        training_epochs=5,
+        training_epochs=8,
         learning_rate=1e-3,
-        candidate_learning_rate=5e-4,
+        candidate_learning_rate=3e-4,
         weight_decay=1e-4,
 
         train_mcts_simulations=40,
@@ -58,8 +58,8 @@ def main() -> None:
         eval_dirichlet_epsilon=0.25,
         eval_temperature=0.5,
 
-        gating_games=10,
-        required_promotion_score=0.52,
+        gating_games=12,
+        required_promotion_score=0.51,
 
         checkpoint_dir="data/checkpoints",
         log_dir="data/logs",
