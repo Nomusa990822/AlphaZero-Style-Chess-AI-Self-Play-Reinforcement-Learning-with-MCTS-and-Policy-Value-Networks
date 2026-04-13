@@ -58,7 +58,7 @@ class NetworkEvaluator:
         self,
         agent_white: MCTSAgent,
         agent_black: MCTSAgent,
-        max_moves: int = 200,
+        max_moves: int = 600,
     ) -> str:
         board = chess.Board()
         move_count = 0
@@ -72,7 +72,18 @@ class NetworkEvaluator:
             board.push(move)
             move_count += 1
 
-        return board.result(claim_draw=True)
+        if board.is_game_over():
+            return board.result(claim_draw=True)
+
+        # NEW: adjudicate instead of forced draw
+        _, value = agent_white.inference.predict(board)
+
+        if value > 0.2:
+            return "1-0"
+        elif value < -0.2:
+            return "0-1"
+        else:
+            return "1/2-1/2"
 
     def compare_models(
         self,
