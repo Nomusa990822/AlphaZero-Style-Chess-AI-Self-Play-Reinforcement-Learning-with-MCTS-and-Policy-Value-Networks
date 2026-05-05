@@ -32,7 +32,7 @@ def main() -> None:
 
         self_play_opening_temperature_moves=30,
         self_play_opening_temperature=1.3,
-        self_play_late_temperature=0.5,
+        self_play_late_temperature=0.2,
 
         # Keep resignation disabled for now.
         self_play_resign_threshold=None,
