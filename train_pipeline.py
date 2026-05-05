@@ -39,7 +39,7 @@ def main() -> None:
         self_play_min_moves_before_resign=30,
 
         self_play_adjudicate_on_max_moves=True,
-        self_play_adjudication_threshold=0.10,
+        self_play_adjudication_threshold=0.30,
 
         training_batch_size=32,
         training_epochs=6,
@@ -47,8 +47,8 @@ def main() -> None:
         candidate_learning_rate=2e-4,
         weight_decay=1e-4,
 
-        train_mcts_simulations=40,
-        eval_mcts_simulations=50,
+        train_mcts_simulations=60,
+        eval_mcts_simulations=80,
 
         train_dirichlet_alpha=0.5,
         train_dirichlet_epsilon=0.30,
