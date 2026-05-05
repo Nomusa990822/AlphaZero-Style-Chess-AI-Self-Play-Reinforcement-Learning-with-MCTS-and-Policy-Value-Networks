@@ -121,16 +121,29 @@ class SelfPlayGenerator:
 
     def _adjudicate_result(self, board: chess.Board) -> str:
         """
-        Use material balance first when max_moves is reached.
-        This is intentionally simple and more decisive for early training.
+        Force decisive outcomes using stronger material threshold.
         """
-        material_score = self._material_score_white(board)
-
-        if material_score >= 2:
+        piece_values = {
+            chess.PAWN: 1,
+            chess.KNIGHT: 3,
+            chess.BISHOP: 3,
+            chess.ROOK: 5,
+            chess.QUEEN: 9,
+        }
+        
+        score = 0
+        for piece_type, value in piece_values.items():
+            score += len(board.pieces(piece_type, chess.WHITE)) * value
+            score -= len(board.pieces(piece_type, chess.BLACK)) * value
+            
+        # MUCH stronger decision boundary
+        if score >= 3:
             return "1-0"
-        if material_score <= -2:
+        elif score <= -3:
             return "0-1"
-        return "1/2-1/2"
+        else:
+            # Break ties using side to move (prevents endless draws)
+            return "1-0" if board.turn == chess.WHITE else "0-1"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
