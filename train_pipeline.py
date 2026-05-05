@@ -28,7 +28,7 @@ def main() -> None:
 
         iterations=5,
         self_play_games_per_iteration=12,
-        self_play_max_moves=300,
+        self_play_max_moves=250,
 
         self_play_opening_temperature_moves=30,
         self_play_opening_temperature=1.3,
@@ -39,7 +39,7 @@ def main() -> None:
         self_play_min_moves_before_resign=30,
 
         self_play_adjudicate_on_max_moves=True,
-        self_play_adjudication_threshold=0.30,
+        self_play_adjudication_threshold=0.00,
 
         training_batch_size=32,
         training_epochs=6,
