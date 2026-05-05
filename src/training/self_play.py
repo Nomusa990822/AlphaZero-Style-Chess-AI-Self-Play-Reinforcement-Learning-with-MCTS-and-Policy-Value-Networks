@@ -192,14 +192,19 @@ class SelfPlayGenerator:
         white_value = self._result_to_white_value(result)
 
         samples: List[SelfPlaySample] = []
-        for state, policy_target, player_to_move in zip(
-            history_states,
-            history_policy_targets,
-            history_players,
+        total_moves = len(history_states)
+        
+        for move_index, (state, policy_target, player_to_move) in enumerate(
+            zip(history_states, history_policy_targets, history_players)
         ):
-            value_target = white_value if player_to_move == chess.WHITE else -white_value
+            base_value = white_value if player_to_move == chess.WHITE else -white_value
+            
+            distance_from_end = total_moves - move_index - 1
+            decay = 0.997 ** distance_from_end
+            
+            value_target = base_value * decay
             value_target = max(min(value_target, 1.0), -1.0)
-
+            
             samples.append(
                 SelfPlaySample(
                     state=state,
