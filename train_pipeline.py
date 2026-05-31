@@ -27,7 +27,7 @@ def main() -> None:
         replay_buffer_capacity=5000,
 
         iterations=5,
-        self_play_games_per_iteration=12,
+        self_play_games_per_iteration=25,
         self_play_max_moves=400,
 
         self_play_opening_temperature_moves=30,
