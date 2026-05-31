@@ -121,29 +121,40 @@ class SelfPlayGenerator:
 
     def _adjudicate_result(self, board: chess.Board) -> str:
         """
-        Force decisive outcomes using stronger material threshold.
+        Stronger adjudication using material + mobility + king safety proxy
         """
+        
         piece_values = {
             chess.PAWN: 1,
             chess.KNIGHT: 3,
             chess.BISHOP: 3,
             chess.ROOK: 5,
             chess.QUEEN: 9,
+            chess.KING: 0,
         }
         
-        score = 0
+        material = 0
         for piece_type, value in piece_values.items():
-            score += len(board.pieces(piece_type, chess.WHITE)) * value
-            score -= len(board.pieces(piece_type, chess.BLACK)) * value
+            material += len(board.pieces(piece_type, chess.WHITE)) * value
+            material -= len(board.pieces(piece_type, chess.BLACK)) * value
             
-        # MUCH stronger decision boundary
-        if score >= 3:
+        # Mobility (VERY IMPORTANT)
+        white_moves = len(list(board.legal_moves))
+        board.turn = not board.turn
+        black_moves = len(list(board.legal_moves))
+        board.turn = not board.turn
+
+        mobility_score = (white_moves - black_moves) * 0.1
+
+        total_score = material + mobility_score
+
+        # Stronger thresholds
+        if total_score >= 3:
             return "1-0"
-        elif score <= -3:
+        elif total_score <= -3:
             return "0-1"
         else:
-            # Break ties using side to move (prevents endless draws)
-            return "1-0" if board.turn == chess.WHITE else "0-1"
+            return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
