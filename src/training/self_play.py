@@ -248,4 +248,25 @@ class SelfPlayGenerator:
         )
 
     def generate_games(self, num_games: int) -> List[SelfPlayGameResult]:
-        return [self.play_game() for _ in range(num_games)]
+        games = []
+        
+        for i in range(num_games):
+            
+            result = self.play_game()
+            
+            suffix = ""
+            if result.ended_by_adjudication:
+                suffix = " (adjudicated)"
+            elif result.ended_by_resignation:
+                suffix = " (resigned)"
+                
+            print(
+                f"[SELF-PLAY {i + 1:02d}/{num_games}] "
+                f"Result={result.result:<7} "
+                f"Moves={len(result.moves):>3}"
+                f"{suffix}"
+            )
+            
+            games.append(result)
+        
+        return games
