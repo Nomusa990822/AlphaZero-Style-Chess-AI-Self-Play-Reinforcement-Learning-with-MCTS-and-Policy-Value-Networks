@@ -24,11 +24,11 @@ def main() -> None:
 
     pipeline_config = PipelineConfig(
         device="cpu",
-        replay_buffer_capacity=5000,
+        replay_buffer_capacity=20000,
 
-        iterations=5,
-        self_play_games_per_iteration=25,
-        self_play_max_moves=400,
+        iterations=2,
+        self_play_games_per_iteration=40,
+        self_play_max_moves=250,
 
         self_play_opening_temperature_moves=30,
         self_play_opening_temperature=1.3,
@@ -42,7 +42,7 @@ def main() -> None:
         self_play_adjudication_threshold=0.00,
 
         training_batch_size=32,
-        training_epochs=6,
+        training_epochs=10,
         learning_rate=1e-3,
         candidate_learning_rate=2e-4,
         weight_decay=1e-4,
@@ -58,7 +58,7 @@ def main() -> None:
         eval_dirichlet_epsilon=0.25,
         eval_temperature=0.5,
 
-        gating_games=16,
+        gating_games=24,
         required_promotion_score=0.55,
 
         checkpoint_dir="data/checkpoints",
