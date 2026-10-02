@@ -91,3 +91,48 @@ PROMOTE OR REJECT
     ↓
 REPEAT
 ```
+
+---
+
+# Core Capabilities
+
+## 1. Self-Play Reinforcement Learning
+The engine generates its own training data by playing chess against itself.
+
+Each self-play game produces training examples containing information derived from the position, search policy, and eventual game outcome.
+
+The system can generate multiple games per training iteration:
+
+```
+Current Best Model
+        ↓
+     Self-Play
+        ↓
+   Game Positions
+        ↓
+   Training Samples
+        ↓
+   Replay Buffer
+```
+
+This allows the model to learn from positions that arise naturally from its own playing behaviour.
+
+## 2. Monte Carlo Tree Search
+MCTS is responsible for exploring possible moves before the engine commits to a move.
+The search repeatedly evaluates candidate actions and builds a search tree around the current position.
+Conceptually:
+
+```
+                  Current Position
+                         │
+          ┌──────────────┼──────────────┐
+          ↓              ↓              ↓
+        Move A         Move B         Move C
+          │              │              │
+       Search          Search          Search
+          │              │              │
+          └──────────────┼──────────────┘
+                         ↓
+                  Select Best Move
+```
+The neural network provides guidance to the search rather than forcing the engine to examine every legal move equally.
