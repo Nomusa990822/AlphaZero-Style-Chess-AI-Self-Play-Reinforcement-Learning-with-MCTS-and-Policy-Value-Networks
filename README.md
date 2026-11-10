@@ -452,14 +452,7 @@ flowchart TB
 The implementation computes the PUCT score using:
 
 $$
-\mathrm{PUCT}(s,a)
-=
-Q(s,a)
-+
-c_{\mathrm{puct}}
-\cdot P(s,a)
-\cdot
-\frac{\sqrt{N(s)}}{1+N(s,a)}
+\mathrm{PUCT}(s,a) = Q(s,a) + c_{\mathrm{puct}} \cdot P(s,a) \cdot \frac{\sqrt{N(s)}}{1+N(s,a)}
 $$
 
 Where:
