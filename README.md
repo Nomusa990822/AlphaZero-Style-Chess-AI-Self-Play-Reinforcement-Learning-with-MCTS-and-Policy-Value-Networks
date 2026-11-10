@@ -1,508 +1,847 @@
 <div align="center">
 
 # AlphaZero-Style Chess AI
-### Self-Play Reinforcement Learning • Monte Carlo Tree Search • Policy-Value Networks
 
----
+### Self-Play Reinforcement Learning · Monte Carlo Tree Search · Policy-Value Neural Networks
 
-<!-- =========================
-     CORE STATUS
-========================= -->
-<p>
-<img src="https://img.shields.io/badge/Status-Active%20Development-020617?style=for-the-badge&logo=github&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Architecture-Modular-020617?style=for-the-badge&logo=databricks&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/AI-Reinforcement%20Learning-020617?style=for-the-badge&logo=pytorch&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Chess-Self--Play-020617?style=for-the-badge&logo=chess.com&logoColor=8ef1e5" />
+**An experimental chess intelligence system that learns through self-play, searches through possible futures, and evaluates its own progress.**
+
+<br/>
+
+<p align="center">
+  <img alt="Status: ongoing development" src="https://img.shields.io/badge/STATUS-ONGOING%20DEVELOPMENT-0f172a?style=for-the-badge&logo=github&logoColor=8ef1e5" />
+  <img alt="Python 3.12+" src="https://img.shields.io/badge/PYTHON-3.12%2B-0f172a?style=for-the-badge&logo=python&logoColor=7c9cff" />
+  <img alt="Framework: PyTorch" src="https://img.shields.io/badge/FRAMEWORK-PyTorch-0f172a?style=for-the-badge&logo=pytorch&logoColor=ee4b2b" />
+  <img alt="Learning: reinforcement learning" src="https://img.shields.io/badge/LEARNING-REINFORCEMENT%20LEARNING-0f172a?style=for-the-badge&logo=databricks&logoColor=8ef1e5" />
 </p>
 
-<!-- =========================
-     TECH STACK
-========================= -->
-<p>
-<img src="https://img.shields.io/badge/Python-3.12+-0f172a?style=for-the-badge&logo=python&logoColor=7c9cff" />
-<img src="https://img.shields.io/badge/PyTorch-Deep%20Learning-0f172a?style=for-the-badge&logo=pytorch&logoColor=7c9cff" />
-<img src="https://img.shields.io/badge/MCTS-Search%20Engine-0f172a?style=for-the-badge&logo=target&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Self--Play-Reinforcement%20Learning-0f172a?style=for-the-badge&logo=python&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Policy--Value-Neural%20Network-0f172a?style=for-the-badge&logo=pytorch&logoColor=7c9cff" />
+<p align="center">
+  <img alt="Search: MCTS" src="https://img.shields.io/badge/SEARCH-MCTS-1e293b?style=for-the-badge&logo=target&logoColor=8ef1e5" />
+  <img alt="Network: policy and value" src="https://img.shields.io/badge/NETWORK-POLICY%20%2B%20VALUE-1e293b?style=for-the-badge&logo=pytorch&logoColor=7c9cff" />
+  <img alt="Training: self-play" src="https://img.shields.io/badge/TRAINING-SELF--PLAY-1e293b?style=for-the-badge&logo=chess.com&logoColor=8ef1e5" />
 </p>
 
-<p>
-<img src="https://img.shields.io/badge/Replay%20Buffer-Experience%20Learning-1e293b?style=for-the-badge&logo=databricks&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Monte%20Carlo%20Tree%20Search-MCTS-1e293b?style=for-the-badge&logo=googlecloud&logoColor=7c9cff" />
-<img src="https://img.shields.io/badge/Neural%20Network-Policy%20%2B%20Value-1e293b?style=for-the-badge&logo=pytorch&logoColor=8ef1e5" />
-<img src="https://img.shields.io/badge/Automated-Evaluation-1e293b?style=for-the-badge&logo=githubactions&logoColor=7c9cff" />
+<p align="center">
+  <img alt="GitHub stars" src="https://img.shields.io/github/stars/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=flat-square&color=334155" />
+  <img alt="GitHub forks" src="https://img.shields.io/github/forks/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=flat-square&color=334155" />
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=flat-square&color=334155" />
+  <img alt="License" src="https://img.shields.io/github/license/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=flat-square&color=334155" />
 </p>
 
-<!-- =========================
-     GITHUB META
-========================= -->
-<p>
-<img src="https://img.shields.io/github/stars/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=for-the-badge&color=020617" />
-<img src="https://img.shields.io/github/forks/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=for-the-badge&color=020617" />
-<img src="https://img.shields.io/github/issues/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=for-the-badge&color=020617" />
-<img src="https://img.shields.io/github/last-commit/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks?style=for-the-badge&color=020617" />
-</p>
-
----
-
-**A chess engine that learns through experience rather than a fixed opening book.**  
-*Play. Learn. Evaluate. Improve.*
+[**Repository**](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks) · [**Issues**](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/issues) · [**Architecture**](#02--system-architecture) · [**Results**](#10--experimental-training-results) · [**Run It**](#14--running-the-project)
 
 </div>
 
 ---
 
-# Overview
+## Contents
 
-This project is an **AlphaZero-inspired chess reinforcement-learning system** built around three core ideas:
-
-- **Self-play**
-- **Monte Carlo Tree Search (MCTS)**
-- **Policy-value neural networks**
-
-Instead of relying primarily on a handcrafted evaluation function or a database of predefined games, the system generates its own chess positions through self-play and uses those experiences to continuously train a neural network.
-
-The trained network learns two complementary tasks:
-
-1. **Policy prediction**  
-   → Which moves are promising from the current position?
-
-2. **Value prediction**  
-   → How favourable is the current position?
-
-MCTS then combines neural-network guidance with tree search to select moves.
-
-The result is a learning system in which the chess engine repeatedly:
-
-```text
-SELF-PLAY
-    ↓
-GENERATE POSITIONS
-    ↓
-MCTS SEARCH
-    ↓
-STORE TRAINING EXPERIENCE
-    ↓
-TRAIN CANDIDATE MODEL
-    ↓
-EVALUATE CANDIDATE
-    ↓
-PROMOTE OR REJECT
-    ↓
-REPEAT
-```
+| | | |
+|---|---|---|
+| [01 Project Overview](#01--project-overview) | [07 Self-Play Experience Generation](#07--self-play-experience-generation) | [13 Installation](#13--installation) |
+| [02 System Architecture](#02--system-architecture) | [08 Replay Buffer and Training](#08--replay-buffer-and-training) | [14 Running the Project](#14--running-the-project) |
+| [03 Chess State Representation](#03--chess-state-representation) | [09 Candidate Training and Model Promotion](#09--candidate-training-and-model-promotion) | [15 Engineering Principles](#15--engineering-principles) |
+| [04 Move Representation and Action Space](#04--move-representation-and-action-space) | [10 Experimental Training Results](#10--experimental-training-results) | [16 Current Development Priorities](#16--current-development-priorities) |
+| [05 Policy-Value Neural Network](#05--policy-value-neural-network) | [11 Checkpoints and Experiment Tracking](#11--checkpoints-and-experiment-tracking) | [17 Research Foundation](#17--research-foundation) |
+| [06 Monte Carlo Tree Search](#06--monte-carlo-tree-search) | [12 Repository Structure](#12--repository-structure) | [18 Project Status](#18--project-status) |
 
 ---
 
-# Core Capabilities
+## 01 · Project Overview
 
-## 1. Self-Play Reinforcement Learning
+This project is an independent, AlphaZero-inspired chess reinforcement-learning implementation built around the interaction of three central components:
 
-The engine generates its own training data by playing chess against itself.
+- **Policy-value neural networks**: learn which moves are promising and how favourable a position is.
+- **Monte Carlo Tree Search (MCTS)**: explores possible continuations using neural-network guidance.
+- **Self-play reinforcement learning**: generates experience that becomes training data for subsequent model iterations.
 
-Each self-play game produces training examples containing information derived from the position, search policy, and eventual game outcome.
+Rather than depending entirely on handcrafted chess evaluation rules or a fixed opening database, the system generates positions through self-play and learns from the outcomes of its own games.
 
-The system can generate multiple games per training iteration:
+The objective is to develop a chess-playing agent whose decision-making improves through repeated cycles of search, experience generation, optimisation and evaluation.
 
-```text
-Current Best Model
-        ↓
-     Self-Play
-        ↓
-   Game Positions
-        ↓
-   Training Samples
-        ↓
-   Replay Buffer
-```
+> [!NOTE]
+> **Development status: ongoing.** The architecture and training pipeline are implemented, and experimental training runs have been conducted. Further work is focused on improving learning stability, evaluation reliability, search efficiency and playing strength.
 
-This allows the model to learn from positions that arise naturally from its own playing behaviour.
+> [!IMPORTANT]
+> This is an AlphaZero-inspired engineering project, not a reproduction of DeepMind's original AlphaZero implementation, training infrastructure or playing strength.
 
----
+### At a Glance
 
-## 2. Monte Carlo Tree Search
-
-MCTS is responsible for exploring possible moves before the engine commits to a move.
-
-The search repeatedly evaluates candidate actions and builds a search tree around the current position.
-
-Conceptually:
-
-```text
-                  Current Position
-                         │
-          ┌──────────────┼──────────────┐
-          ↓              ↓              ↓
-        Move A         Move B         Move C
-          │              │              │
-       Search          Search          Search
-          │              │              │
-          └──────────────┼──────────────┘
-                         ↓
-                  Select Best Move
-```
-
-The neural network provides guidance to the search rather than forcing the engine to examine every legal move equally.
-
----
-
-## 3. Policy-Value Neural Network
-
-The model learns two outputs from a chess position.
-
-### Policy Head
-
-The policy component estimates the probability distribution over possible moves.
-
-```text
-Chess Position
-      ↓
-Neural Network
-      ↓
-Policy Head
-      ↓
-Move Probabilities
-```
-
-This gives MCTS a learned prior about which moves deserve more attention.
-
-### Value Head
-
-The value component estimates the expected outcome of the position.
-
-```text
-Chess Position
-      ↓
-Neural Network
-      ↓
-Value Head
-      ↓
-Position Evaluation
-```
-
-Together, the policy and value predictions provide MCTS with both:
-
-- Where to search
-- How promising a position appears
-
----
-
-# Learning Loop
-
-The complete training pipeline operates iteratively.
-
-```text
-┌───────────────────────────────┐
-│       CURRENT BEST MODEL      │
-└───────────────┬───────────────┘
-                ↓
-        Generate Self-Play
-                ↓
-        ┌───────────────┐
-        │ Chess Games   │
-        └───────┬───────┘
-                ↓
-        Training Samples
-                ↓
-        Replay Buffer
-                ↓
-        Train Candidate Model
-                ↓
-        Candidate Evaluation
-                ↓
-       ┌────────┴─────────┐
-       ↓                  ↓
-   Candidate            Candidate
-   Promoted             Rejected
-       ↓                  ↓
-   New BEST          Keep BEST
-       │                  │
-       └────────┬─────────┘
-                ↓
-          Next Iteration
-```
-
-This creates an iterative improvement mechanism rather than simply training one model once.
-
----
-
-# Candidate Model System
-
-A major part of the training architecture is the separation between the current best model and the candidate model.
-
-The candidate is trained from experience generated from the current best model.
-
-After training, the candidate is evaluated against the current best model.
-
-For example:
-
-```text
-BEST MODEL
-    │
-    ├── Self-play
-    │
-    └── Training data
-            │
-            ↓
-      CANDIDATE MODEL
-            │
-            ↓
-       Evaluation
-            │
-       ┌────┴────┐
-       ↓         ↓
-   Promoted    Rejected
-       │         │
-       ↓         ↓
-    NEW BEST   KEEP BEST
-```
-
-This prevents every newly trained model from automatically replacing the existing model.
-
-A candidate must demonstrate sufficient performance according to the configured promotion criteria.
-
----
-
-# Replay Buffer
-
-The replay buffer stores training experiences generated through self-play.
-
-Its purpose is to provide the neural network with a larger and more diverse collection of positions instead of training only on the most recently generated games.
-
-The pipeline is:
-
-```text
-Self-Play Games
-      ↓
-Training Samples
-      ↓
-Replay Buffer
-      ↓
-Mini-Batches
-      ↓
-Neural Network Training
-```
-
-The replay buffer has a configurable capacity so that training remains bounded as additional self-play games are generated.
-
----
-
-# Training System
-
-The neural network is trained using batches sampled from the replay buffer.
-
-Training tracks multiple loss components, including:
-
-- Total loss
-- Policy loss
-- Value loss
-
-Example training output:
-
-```text
-Epoch 1:
-    total = ...
-    policy = ...
-    value = ...
-
-Epoch 2:
-    total = ...
-    policy = ...
-    value = ...
-
-...
-
-Epoch 6:
-    total = ...
-    policy = ...
-    value = ...
-```
-
-Monitoring both policy and value loss helps provide visibility into how the different learning objectives are behaving during training.
-
----
-
-# Self-Play Configuration
-
-The training pipeline exposes configurable parameters controlling the self-play process.
-
-Examples include:
-
-| Parameter | Purpose |
+| | |
 |---|---|
-| `self_play_games_per_iteration` | Number of self-play games generated per iteration |
-| `self_play_max_moves` | Maximum number of moves allowed in a game |
-| `self_play_opening_temperature_moves` | Number of opening moves affected by exploration temperature |
-| `self_play_opening_temperature` | Exploration temperature during opening play |
-| `self_play_late_temperature` | Exploration temperature later in the game |
-| `self_play_resign_threshold` | Optional resignation threshold |
-| `self_play_min_moves_before_resign` | Minimum game length before resignation |
-| `self_play_adjudicate_on_max_moves` | Whether games reaching the move limit are adjudicated |
-| `self_play_adjudication_threshold` | Threshold used for max-move adjudication |
-
-These parameters allow the balance between exploration, game length, and training-data generation to be adjusted without redesigning the underlying engine.
+| **Input representation** | 19 planes of 8 × 8 (piece placement, side to move, castling rights, move counters) |
+| **Action space** | 4,672 moves (8 × 8 × 73) |
+| **Network** | Convolutional trunk with 3 residual blocks (64 filters), policy head and value head |
+| **Search** | PUCT-based Monte Carlo Tree Search with optional Dirichlet root noise |
+| **Learning** | Self-play, bounded replay buffer (20,000 samples), policy and value loss |
+| **Model gating** | Candidate must score at least 0.55 against the current best model to be promoted |
+| **Engine** | `python-chess` for rules and legal moves |
+| **Status** | Ongoing development; two experimental training iterations completed |
 
 ---
 
-# MCTS Configuration
+## 02 · System Architecture
 
-The search process is also configurable.
+The system is a feedback-driven learning architecture. Neural inference guides search; search generates improved policy targets; self-play converts those targets and game outcomes into experience; training updates a candidate network; and evaluation determines whether that candidate should replace the current best model.
 
-Important parameters include:
+### High-level architecture
 
-| Parameter | Purpose |
+```mermaid
+flowchart TB
+    subgraph ENV["CHESS ENVIRONMENT"]
+        BOARD["Chess Position"]
+        LEGAL["Legal Move Generation"]
+        RESULT["Game Outcome"]
+    end
+
+    subgraph REPRESENTATION["STATE AND ACTION REPRESENTATION"]
+        ENCODER["Board Encoder<br/>19 × 8 × 8"]
+        ACTION["Move Encoder<br/>8 × 8 × 73"]
+    end
+
+    subgraph INTELLIGENCE["NEURAL DECISION SYSTEM"]
+        direction TB
+        INPUT["Encoded Position"]
+        TRUNK["Convolutional Feature Extractor"]
+        RES["Residual Network"]
+        POLICY["Policy Head<br/>Move Logits"]
+        VALUE["Value Head<br/>Position Value"]
+    end
+
+    subgraph SEARCH["MONTE CARLO TREE SEARCH"]
+        ROOT["Root Node"]
+        PUCT["PUCT Selection"]
+        EXPAND["Expansion"]
+        BACKUP["Value Backpropagation"]
+        DISTRIBUTION["Visit-Count Distribution"]
+    end
+
+    subgraph LEARNING["REINFORCEMENT LEARNING"]
+        SELFPLAY["Self-Play Generator"]
+        SAMPLES["Training Samples"]
+        BUFFER["Replay Buffer"]
+        TRAIN["Candidate Training"]
+        LOSS["Policy + Value Loss"]
+    end
+
+    subgraph GOVERNANCE["MODEL EVALUATION AND CHECKPOINTS"]
+        GATE["Candidate vs Best Evaluation"]
+        DECISION{"Promotion Score ≥ Threshold?"}
+        BEST["Best Model"]
+        CANDIDATE["Latest Candidate"]
+        REJECT["Candidate Rejected<br/>Best Model Retained"]
+    end
+
+    BOARD --> ENCODER
+    LEGAL --> ACTION
+    ENCODER --> INPUT
+    INPUT --> TRUNK --> RES
+    RES --> POLICY
+    RES --> VALUE
+
+    POLICY --> PUCT
+    VALUE --> BACKUP
+    ROOT --> PUCT
+    PUCT --> EXPAND
+    EXPAND --> ENCODER
+    EXPAND --> BACKUP
+    BACKUP --> DISTRIBUTION
+    DISTRIBUTION --> SELFPLAY
+
+    BEST --> SELFPLAY
+    SELFPLAY --> BOARD
+    SELFPLAY --> SAMPLES
+    ACTION --> SAMPLES
+    RESULT --> SAMPLES
+    SAMPLES --> BUFFER
+    BUFFER --> TRAIN
+    TRAIN --> LOSS
+    LOSS --> CANDIDATE
+
+    CANDIDATE --> GATE
+    BEST --> GATE
+    GATE --> DECISION
+    DECISION -->|"Yes: promote"| BEST
+    DECISION -->|"No: reject"| REJECT
+
+    classDef neural   fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef search   fill:#312e81,stroke:#a5b4fc,color:#eef2ff
+    classDef learning fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    classDef gate     fill:#3f2b13,stroke:#fbbf24,color:#fffbeb
+    classDef reject   fill:#3b1f2b,stroke:#fb7185,color:#fff1f2
+    class TRUNK,RES,POLICY,VALUE neural
+    class ROOT,PUCT,EXPAND,BACKUP,DISTRIBUTION search
+    class SELFPLAY,SAMPLES,BUFFER,TRAIN,LOSS learning
+    class GATE,DECISION,BEST,CANDIDATE gate
+    class REJECT reject
+```
+
+The diagram describes the conceptual information flow. Individual components are implemented in separate Python modules to keep the system modular and testable.
+
+### Architectural responsibilities
+
+| Component | Responsibility |
 |---|---|
-| `train_mcts_simulations` | Number of MCTS simulations during self-play |
-| `eval_mcts_simulations` | Number of MCTS simulations during evaluation |
-| `eval_add_dirichlet_noise` | Adds exploration noise during evaluation when enabled |
-| `eval_dirichlet_alpha` | Dirichlet noise concentration |
-| `eval_dirichlet_epsilon` | Noise contribution |
-| `eval_temperature` | Move-selection temperature during evaluation |
-
-This separates the computational budget used during training from the budget used when evaluating candidate models.
-
----
-
-# Candidate Evaluation
-
-After a candidate has been trained, the system evaluates it against the current best model.
-
-The evaluation records:
-
-```text
-W     = Candidate Wins
-L     = Candidate Losses
-D     = Draws
-Score = Candidate Evaluation Score
-```
-
-Example:
-
-```text
-Evaluation result:
-W=8, L=4, D=4, Score=0.625
-```
-
-The configured promotion threshold determines whether the candidate becomes the new best model.
-
-For example:
-
-```text
-Candidate score
-      ↓
-Compare against promotion threshold
-      ↓
- ┌───────────────┐
- │               │
- ↓               ↓
-PROMOTE        REJECT
- │               │
- ↓               ↓
-BEST MODEL    KEEP BEST
-```
+| **Board encoder** | Converts chess positions into neural-network inputs |
+| **Move encoder** | Maps legal chess moves to a fixed action space |
+| **Policy-value network** | Produces move logits and position-value predictions |
+| **MCTS** | Searches possible continuations using PUCT |
+| **Self-play generator** | Produces games and training examples |
+| **Replay buffer** | Retains a bounded collection of training experience |
+| **Trainer** | Optimises the policy and value objectives |
+| **Evaluator** | Compares candidate and current best models |
+| **Checkpoint manager** | Persists model and optimiser states |
+| **Metrics logger** | Records iteration-level training and evaluation results |
 
 ---
 
-# Exploration vs Exploitation
+## 03 · Chess State Representation
 
-The system deliberately balances exploration and exploitation.
-
-During self-play, temperature parameters can encourage the model to explore different moves rather than repeatedly selecting the same action.
-
-MCTS provides another layer of exploration by searching alternative branches of the game tree.
-
-This creates a learning cycle where the engine can discover positions and moves that were not explicitly programmed into it.
-
----
-
-# Training Iterations
-
-Training is divided into discrete iterations.
-
-Each iteration follows the same general process:
+A chess position must be converted into a numerical representation before it can be processed by the neural network. The current `BoardEncoder` produces a tensor with the shape:
 
 ```text
-ITERATION N
-│
-├── Generate self-play games
-│
-├── Add samples to replay buffer
-│
-├── Build candidate from BEST model
-│
-├── Train candidate
-│
-├── Save candidate checkpoint
-│
-├── Evaluate candidate
-│
-└── Promote or reject candidate
+(19, 8, 8)
 ```
 
-The process then continues into the next iteration.
+Each plane represents a particular aspect of the chess position.
 
-This makes the training pipeline reproducible and easier to monitor.
+### The 19-plane representation
+
+| Plane | Representation |
+|:---:|---|
+| 0 | White pawns |
+| 1 | White knights |
+| 2 | White bishops |
+| 3 | White rooks |
+| 4 | White queens |
+| 5 | White king |
+| 6 | Black pawns |
+| 7 | Black knights |
+| 8 | Black bishops |
+| 9 | Black rooks |
+| 10 | Black queens |
+| 11 | Black king |
+| 12 | Side to move |
+| 13 | White kingside castling rights |
+| 14 | White queenside castling rights |
+| 15 | Black kingside castling rights |
+| 16 | Black queenside castling rights |
+| 17 | Normalised halfmove clock |
+| 18 | Normalised fullmove number |
+
+The encoder preserves piece placement and selected game-state information in a spatial tensor suitable for convolutional processing.
+
+### State encoding flow
+
+```mermaid
+flowchart LR
+    A["python-chess Board"] --> B["Piece Map"]
+    A --> C["Turn and Castling State"]
+    A --> D["Move Counters"]
+
+    B --> E["12 Piece Planes"]
+    C --> F["5 State Planes"]
+    D --> F
+
+    E --> G["Stack Planes"]
+    F --> G
+    G --> H["Float32 Tensor"]
+    H --> I["Shape: 19 × 8 × 8"]
+    I --> J["Policy-Value Network"]
+
+    classDef source  fill:#172033,stroke:#64748b,color:#f8fafc
+    classDef process fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef output  fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    class A,B,C,D source
+    class E,F,G process
+    class H,I,J output
+```
+
+> [!NOTE]
+> The representation is a simplified AlphaZero-style starting point. It does not claim to reproduce every input feature used in the original system.
 
 ---
 
-# Checkpoints
+## 04 · Move Representation and Action Space
 
-The training system maintains model checkpoints under:
+The project uses an AlphaZero-style move encoding with a fixed action space of:
+
+$$8 \times 8 \times 73 = 4{,}672$$
+
+Each of the 64 origin squares is associated with 73 possible move planes.
+
+| Move category | Number of planes |
+|---|:---:|
+| Queen-like movement | 56 |
+| Knight movement | 8 |
+| Underpromotion movement | 9 |
+| **Total** | **73** |
+
+The 56 queen-like planes represent eight directions and seven possible distances. The knight planes encode the eight possible knight displacements. The underpromotion planes represent three directions and three promotion pieces: rook, bishop and knight.
+
+Queen promotions are encoded as ordinary queen-like moves. Castling is represented as a king move.
+
+### Legal action mapping
+
+```mermaid
+flowchart TB
+    A["Chess Position"] --> B["Generate Legal Moves"]
+    B --> C["Move Encoding"]
+    C --> D["Origin Square"]
+    C --> E["Movement Plane"]
+
+    D --> F["Square Index: 0–63"]
+    E --> G["Plane Index: 0–72"]
+
+    F --> H["Flat Action Index"]
+    G --> H
+
+    H --> I["Action Space: 4,672"]
+    I --> J["Policy Logits"]
+    J --> K["Legal Move Priors"]
+    K --> L["MCTS"]
+
+    classDef input  fill:#172033,stroke:#64748b,color:#f8fafc
+    classDef encode fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef output fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    class A,B input
+    class C,D,E,F,G,H encode
+    class I,J,K,L output
+```
+
+The policy network predicts across the complete action space. MCTS extracts and normalises the probabilities associated with the legal moves available in the current position.
+
+---
+
+## 05 · Policy-Value Neural Network
+
+The neural network is the learned evaluation component of the system. It receives an encoded chess position and produces two complementary outputs:
+
+1. A **policy distribution** over the action space.
+2. A **scalar value estimate** for the current position.
+
+### Network architecture
+
+The implementation uses a shared convolutional feature extractor followed by residual blocks and two independent output heads.
+
+```mermaid
+flowchart TB
+    A["Input Tensor<br/>Batch × 19 × 8 × 8"]
+    B["Initial Convolution<br/>3 × 3"]
+    C["Batch Normalization"]
+    D["ReLU"]
+    E["Residual Block 1"]
+    F["Residual Block 2"]
+    G["Residual Block 3"]
+
+    A --> B --> C --> D --> E --> F --> G
+
+    G --> H["Shared Feature Representation"]
+
+    H --> P1["Policy Head"]
+    P1 --> P2["1 × 1 Convolution"]
+    P2 --> P3["BatchNorm + ReLU"]
+    P3 --> P4["Flatten + Linear"]
+    P4 --> P5["4,672 Policy Logits"]
+
+    H --> V1["Value Head"]
+    V1 --> V2["1 × 1 Convolution"]
+    V2 --> V3["BatchNorm + ReLU"]
+    V3 --> V4["Flatten"]
+    V4 --> V5["Hidden Layer"]
+    V5 --> V6["Linear + Tanh"]
+    V6 --> V7["Scalar Value ∈ [-1, 1]"]
+
+    classDef backbone fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef policy   fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    classDef value    fill:#312e81,stroke:#a5b4fc,color:#eef2ff
+    class A,B,C,D,E,F,G,H backbone
+    class P1,P2,P3,P4,P5 policy
+    class V1,V2,V3,V4,V5,V6,V7 value
+```
+
+### Current training network configuration
+
+The configuration supplied to the training entry point uses:
+
+| Parameter | Current value |
+|---|---:|
+| Input channels | 19 |
+| Board dimensions | 8 × 8 |
+| Convolution filters | 64 |
+| Residual blocks | 3 |
+| Value hidden-layer size | 128 |
+| Policy action size | 4,672 |
+| Value output | Scalar bounded by `tanh` |
+
+The network defaults in the model class are configurable; the table above describes the configuration used by `train_pipeline.py`.
+
+### Policy head
+
+The policy head estimates which moves deserve attention. Its output is a vector of 4,672 logits, which are converted into probabilities during inference and used to give MCTS its move priors.
+
+### Value head
+
+The value head estimates the outcome potential of a position. Its output is a scalar bounded between -1 and +1:
+
+| Value | Interpretation |
+|:---:|---|
+| +1 | Strongly favourable for the player to move |
+| 0 | Approximately balanced |
+| -1 | Strongly unfavourable for the player to move |
+
+The two heads share learned features but optimise different prediction objectives.
+
+---
+
+## 06 · Monte Carlo Tree Search
+
+MCTS provides the search mechanism through which the engine investigates possible chess continuations. Rather than choosing a move solely from the network's initial policy prediction, the search repeatedly explores a tree of possible positions.
+
+The implementation uses PUCT, neural-network priors, visit counts, value estimates and optional Dirichlet noise at the root.
+
+### MCTS search cycle
+
+```mermaid
+flowchart TB
+    START(["START SEARCH"])
+    ROOT["Initialize Root Position"]
+    EVAL["Evaluate Root with Neural Network"]
+    NOISE["Apply Optional Dirichlet Noise"]
+    SELECT["Select Child Using PUCT"]
+    TERMINAL{"Terminal Position?"}
+    EXPAND["Expand Legal Actions"]
+    INFER["Policy-Value Inference"]
+    BACKUP["Backpropagate Value"]
+    COUNT["Update Visit Counts and Value Sums"]
+    MORE{"Simulations Remaining?"}
+    FINAL["Build Root Visit Distribution"]
+    ACTION["Select Move Using Temperature"]
+    END(["RETURN MOVE"])
+
+    START --> ROOT --> EVAL --> NOISE --> SELECT
+    SELECT --> TERMINAL
+    TERMINAL -->|Yes| BACKUP
+    TERMINAL -->|No| EXPAND --> INFER --> BACKUP
+    BACKUP --> COUNT --> MORE
+    MORE -->|Yes| SELECT
+    MORE -->|No| FINAL --> ACTION --> END
+
+    classDef entry     fill:#172033,stroke:#64748b,color:#f8fafc
+    classDef search    fill:#312e81,stroke:#a5b4fc,color:#eef2ff
+    classDef inference fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef decision  fill:#3f2b13,stroke:#fbbf24,color:#fffbeb
+    class START,END entry
+    class ROOT,SELECT,EXPAND,BACKUP,COUNT,FINAL,ACTION search
+    class EVAL,INFER,NOISE inference
+    class TERMINAL,MORE decision
+```
+
+### Search phases
+
+| Phase | Function |
+|---|---|
+| **Selection** | Traverses the existing tree using PUCT |
+| **Expansion** | Creates child nodes for legal moves |
+| **Evaluation** | Obtains policy priors and a value estimate |
+| **Backpropagation** | Updates visit counts and accumulated values along the search path |
+| **Move selection** | Selects an action using root visit counts and temperature |
+
+### PUCT selection
+
+The implementation computes the PUCT score using:
+
+$$
+\operatorname{PUCT}(s,a)=Q(s,a)+c_{\mathrm{puct}}\,P(s,a)\,\frac{\sqrt{N(s)}}{1+N(s,a)}
+$$
+
+Where:
+
+- $Q(s,a)$ is the child node's mean value.
+- $P(s,a)$ is the policy prior.
+- $N(s)$ is the parent visit count.
+- $N(s,a)$ is the child visit count.
+- $c_{\mathrm{puct}}$ controls exploration.
+
+This balances exploitation of promising branches with exploration of less-visited actions.
+
+### Dirichlet exploration
+
+During self-play, optional Dirichlet noise is blended into the root move priors:
+
+$$
+P'(a)=(1-\epsilon)\,P(a)+\epsilon\,\eta_a
+$$
+
+Here, $\eta$ is sampled from a Dirichlet distribution. This introduces additional exploration into self-play decisions. The implementation also allows separate search configurations for training and evaluation.
+
+### Temperature-based move selection
+
+The search produces a move distribution based on child visit counts. Temperature controls how strongly the move selection favours the most visited child:
+
+- Higher temperature encourages exploration.
+- Lower temperature concentrates probability on the strongest search choices.
+- Near-zero temperature selects the highest-visit child.
+
+---
+
+## 07 · Self-Play Experience Generation
+
+Self-play is the source of the system's training experience. The current best model plays both sides of a chess game. At each position, MCTS searches the available continuations and generates a visit-count distribution.
+
+The system records:
+
+- Encoded board state
+- MCTS policy target
+- Player to move
+- Final game outcome, transformed into the relevant player's perspective
+
+### Self-play data pipeline
+
+```mermaid
+flowchart TB
+    BEST["Current Best Model"]
+    GAME["Initialize Chess Game"]
+    POSITION["Current Board Position"]
+    ENCODE["Encode Position"]
+    SEARCH["Run MCTS"]
+    POLICY["Generate Visit-Count Policy"]
+    MOVE["Select and Play Move"]
+    RECORD["Record State, Policy and Player"]
+    OVER{"Game Over or Move Limit?"}
+    OUTCOME["Determine Game Outcome"]
+    TARGET["Generate Value Targets"]
+    SAMPLE["Construct Training Samples"]
+    BUFFER["Replay Buffer"]
+
+    BEST --> GAME --> POSITION --> ENCODE --> SEARCH
+    SEARCH --> POLICY --> MOVE --> RECORD
+    MOVE --> POSITION
+    RECORD --> OVER
+    OVER -->|No| POSITION
+    OVER -->|Yes| OUTCOME --> TARGET --> SAMPLE --> BUFFER
+
+    classDef model  fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef game   fill:#172033,stroke:#64748b,color:#f8fafc
+    classDef search fill:#312e81,stroke:#a5b4fc,color:#eef2ff
+    classDef data   fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    class BEST model
+    class GAME,POSITION,MOVE,OVER game
+    class ENCODE,SEARCH,POLICY search
+    class RECORD,OUTCOME,TARGET,SAMPLE,BUFFER data
+```
+
+### Training sample structure
+
+Each self-play sample contains:
+
+| Field | Description |
+|---|---|
+| `state` | Encoded board tensor |
+| `policy_target` | MCTS-derived probability distribution |
+| `value_target` | Outcome-derived value for the player to move |
+| `player_to_move` | Side whose decision produced the sample |
+
+The current implementation also applies a small distance-from-game-end decay to value targets.
+
+### Game termination
+
+The self-play generator supports:
+
+- Normal chess game termination
+- Optional resignation
+- Maximum move limits
+- Optional adjudication when the move limit is reached
+
+Resignation can be disabled through configuration. The current training entry point does so.
+
+---
+
+## 08 · Replay Buffer and Training
+
+Training examples are retained in a bounded replay buffer. This allows the model to train on a broader collection of self-play experience instead of relying exclusively on the latest generated games.
+
+### Replay buffer architecture
+
+```mermaid
+flowchart LR
+    A["Self-Play Game 1"] --> D["Experience Ingestion"]
+    B["Self-Play Game 2"] --> D
+    C["Self-Play Game N"] --> D
+
+    D --> E["Fixed-Capacity Replay Buffer"]
+    E --> F["Random Mini-Batch Sampling"]
+    F --> G["Training Dataset"]
+    G --> H["Neural Network"]
+    H --> I["Updated Candidate Weights"]
+
+    E -.-> J["Persisted Buffer"]
+    J -.-> E
+
+    classDef source   fill:#172033,stroke:#64748b,color:#f8fafc
+    classDef storage  fill:#123047,stroke:#38bdf8,color:#e0f2fe
+    classDef training fill:#172554,stroke:#60a5fa,color:#eff6ff
+    class A,B,C,D source
+    class E,F,G,J storage
+    class H,I training
+```
+
+The replay buffer is implemented as a fixed-size deque. When its capacity is reached, older samples are displaced as new experience is added.
+
+### Training objectives
+
+The network is optimised using two loss components.
+
+**Policy loss**: cross-entropy against the MCTS policy target:
+
+$$
+L_{\mathrm{policy}} = -\frac{1}{B}\sum_{i=1}^{B}\sum_a \pi_{i,a}\log p_{i,a}
+$$
+
+**Value loss**: mean squared error between predicted values and training targets:
+
+$$
+L_{\mathrm{value}} = \frac{1}{B}\sum_{i=1}^{B}(v_i - z_i)^2
+$$
+
+**Combined objective:**
+
+$$
+L = L_{\mathrm{policy}} + L_{\mathrm{value}}
+$$
+
+The training loop records total loss, policy loss, value loss and batch count for each epoch.
+
+---
+
+## 09 · Candidate Training and Model Promotion
+
+A trained candidate is not automatically accepted as the new best model. The pipeline separates the current best model from the candidate model. The candidate begins with a copy of the current best model's weights, is trained using replay-buffer experience, and is subsequently evaluated against the current best model.
+
+This protects the accepted checkpoint from being overwritten by every training attempt.
+
+### Model lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> BestModel
+    BestModel --> SelfPlay: Generate experience
+    SelfPlay --> ReplayBuffer: Store samples
+    ReplayBuffer --> Candidate: Initialize from BEST
+    Candidate --> Training: Optimize policy and value
+    Training --> CandidateCheckpoint: Save candidate
+    CandidateCheckpoint --> Evaluation: Head-to-head games
+
+    state Evaluation {
+        [*] --> Compare
+        Compare --> CalculateScore
+        CalculateScore --> ApplyThreshold
+        ApplyThreshold --> [*]
+    }
+
+    Evaluation --> Promoted: Score meets threshold
+    Evaluation --> Rejected: Score below threshold
+
+    Promoted --> BestModel: Replace accepted weights
+    Rejected --> BestModel: Preserve accepted weights
+```
+
+### Evaluation score
+
+The evaluator calculates the candidate's score as:
+
+$$
+S = \frac{W + 0.5\,D}{G}
+$$
+
+Where $W$ is candidate wins, $D$ is draws and $G$ is the total number of games. The candidate and current best alternate colours during evaluation.
+
+**The current configured promotion threshold is 0.55.**
+
+```mermaid
+flowchart TB
+    A["Trained Candidate"]
+    B["Current Best Model"]
+    C["Head-to-Head Evaluation"]
+    D["Alternate White and Black"]
+    E["Record Wins, Losses and Draws"]
+    F["Calculate Candidate Score"]
+    G{"Score ≥ 0.55?"}
+    H["Promote Candidate"]
+    I["Save as Best Model"]
+    J["Reject Candidate"]
+    K["Retain Existing Best Model"]
+    L["Continue to Next Iteration"]
+
+    A --> C
+    B --> C
+    C --> D --> E --> F --> G
+    G -->|Yes| H --> I --> L
+    G -->|No| J --> K --> L
+
+    classDef evaluation fill:#172554,stroke:#60a5fa,color:#eff6ff
+    classDef decision   fill:#3f2b13,stroke:#fbbf24,color:#fffbeb
+    classDef accept     fill:#123b32,stroke:#34d399,color:#ecfdf5
+    classDef reject     fill:#3b1f2b,stroke:#fb7185,color:#fff1f2
+    class A,B,C,D,E,F,L evaluation
+    class G decision
+    class H,I accept
+    class J,K reject
+```
+
+> [!WARNING]
+> The current evaluator uses a limited head-to-head game set and a material-based adjudication rule when its evaluation games reach the move limit. Evaluation scores should therefore be interpreted as experimental signals, not definitive estimates of playing strength.
+
+---
+
+## 10 · Experimental Training Results
+
+The project has progressed beyond architecture design into actual training experiments. The results below are from a two-iteration training run using the configuration recorded for the current training pipeline.
+
+### Experiment configuration
+
+| Parameter | Value |
+|---|---:|
+| Device | CPU |
+| Training iterations | 2 |
+| Self-play games per iteration | 40 |
+| Maximum self-play moves | 250 |
+| Opening temperature moves | 30 |
+| Opening temperature | 1.3 |
+| Late temperature | 0.5 |
+| Replay buffer capacity | 20,000 |
+| Training batch size | 32 |
+| Training epochs | 10 |
+| Initial learning rate | 0.001 |
+| Candidate learning rate | 0.0002 |
+| Weight decay | 0.0001 |
+| Training MCTS simulations | 80 |
+| Evaluation MCTS simulations | 100 |
+| Evaluation games | 24 |
+| Promotion threshold | 0.55 |
+
+### Observed results
+
+| Metric | Iteration 1 | Iteration 2 |
+|---|---:|---:|
+| Final total loss | 5.3383 | 4.7476 |
+| Final policy loss | 5.3073 | 4.7082 |
+| Final value loss | 0.0310 | 0.0393 |
+| Training batches | 313 | 621 |
+| Evaluation wins | 6 | 7 |
+| Evaluation losses | 15 | 13 |
+| Evaluation draws | 3 | 4 |
+| **Candidate score** | **0.312** | **0.375** |
+| **Promotion decision** | Rejected | Rejected |
+
+### Candidate evaluation
+
+```mermaid
+xychart-beta
+    title "Candidate Evaluation Score"
+    x-axis ["Iteration 1", "Iteration 2"]
+    y-axis "Score" 0 --> 0.60
+    bar [0.312, 0.375]
+    line [0.55, 0.55]
+```
+
+<sub>The horizontal line is the configured 0.55 promotion threshold.</sub>
+
+### Interpretation
+
+The second iteration produced a higher candidate evaluation score than the first. The recorded losses also decreased overall, although the value loss increased slightly between the two final epoch measurements.
+
+Neither observation independently establishes a reliable improvement in playing strength.
+
+Both candidates were rejected because their evaluation scores remained below the promotion threshold, so the existing best model was retained. This is an important outcome of the experiment: **the model-selection mechanism is functioning as a gate** rather than automatically promoting every newly trained candidate.
+
+---
+
+## 11 · Checkpoints and Experiment Tracking
+
+The training pipeline separates accepted and experimental model states.
+
+| Artifact | Purpose |
+|---|---|
+| `best_model.pt` | Accepted model used for subsequent training |
+| `latest_candidate.pt` | Most recently trained candidate |
+| `latest_buffer.pkl` | Persisted replay-buffer experience |
+| `training_metrics.jsonl` | Iteration-level training metrics |
+| `iteration_001_summary.json` | First iteration summary |
+| `iteration_002_summary.json` | Second iteration summary |
+
+The relevant data directories are:
 
 ```text
 data/
-└── checkpoints/
-    ├── best_model.pt
-    └── latest_candidate.pt
+├── checkpoints/
+│   ├── best_model.pt
+│   └── latest_candidate.pt
+│
+├── logs/
+│   ├── training_metrics.jsonl
+│   ├── iteration_001_summary.json
+│   └── iteration_002_summary.json
+│
+└── replay_buffer/
+    └── latest_buffer.pkl
 ```
 
-### `best_model.pt`
-
-The currently accepted best-performing model.
-
-This is the model used as the foundation for subsequent training iterations.
-
-### `latest_candidate.pt`
-
-The most recently trained candidate model.
-
-A candidate can exist without becoming the best model.
-
-This distinction is important because a trained model is not automatically considered an improvement.
+> [!NOTE]
+> The actual presence of individual generated artifacts depends on the training run and repository ignore rules. Model checkpoints and replay-buffer data should be preserved when they are needed to resume experiments.
 
 ---
 
-# Training Logs
+## 12 · Repository Structure
 
-Training metrics are stored under:
-
-```text
-data/logs/
-```
-
-The logs provide a persistent record of training progress, allowing experiments to be compared without relying solely on terminal output.
-
----
-
-# Project Structure
+The project separates the chess environment, neural architecture, search logic, agents and training pipeline.
 
 ```text
-AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/
+AlphaZero-Style-Chess-AI/
 │
 ├── configs/
 │
 ├── data/
 │   ├── checkpoints/
-│   │   ├── best_model.pt
-│   │   └── latest_candidate.pt
-│   │
-│   └── logs/
+│   ├── logs/
+│   └── replay_buffer/
 │
 ├── docs/
 │
 ├── notebooks/
 │
 ├── src/
+│   ├── agents/
+│   │   ├── human_agent.py
+│   │   └── mcts_agent.py
+│   │
+│   ├── engine/
+│   │   ├── encoder.py
+│   │   └── move_encoding.py
+│   │
+│   ├── mcts/
+│   │   ├── dirichlet_noise.py
+│   │   ├── node.py
+│   │   ├── puct.py
+│   │   └── search.py
+│   │
+│   ├── model/
+│   │   ├── inference.py
+│   │   ├── network.py
+│   │   ├── policy_head.py
+│   │   ├── residual_block.py
+│   │   └── value_head.py
+│   │
+│   └── training/
+│       ├── checkpoint.py
+│       ├── dataset.py
+│       ├── evaluator.py
+│       ├── loss.py
+│       ├── metrics.py
+│       ├── pipeline.py
+│       ├── replay_buffer.py
+│       ├── self_play.py
+│       └── trainer.py
 │
 ├── tests/
 │
@@ -510,353 +849,195 @@ AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-V
 ├── play.py
 ├── train_pipeline.py
 ├── requirements.txt
+├── .gitignore
 ├── LICENSE
 └── README.md
 ```
 
-The project separates the training pipeline, gameplay interface, source modules, tests, configuration, checkpoints, and experiment data.
-
 ---
 
-# Training Pipeline
+## 13 · Installation
 
-The main training pipeline is launched with:
+### Requirements
 
-```bash
-python train_pipeline.py
-```
+- Python 3.10 or later
+- PyTorch
+- NumPy
+- python-chess
+- pytest for running the test suite
 
-The pipeline loads the current best model when configured to resume training:
-
-```text
-Loaded best model from data/checkpoints/best_model.pt
-```
-
-It then begins the iterative self-play and training process.
-
----
-
-# Installation
-
-Clone the repository:
+### Clone the repository
 
 ```bash
 git clone https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks.git
-```
 
-Enter the project directory:
-
-```bash
 cd AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks
 ```
 
-Create a virtual environment:
+### Create a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it on Linux/macOS:
+Linux / macOS:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Activate it on Windows:
+Windows:
 
 ```bash
 .venv\Scripts\activate
 ```
 
-Install dependencies:
+### Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
+The current requirements file specifies:
+
+```text
+python-chess>=1.999
+numpy>=1.26.0
+pytest>=8.0.0
+torch>=2.2.0
+```
+
 ---
 
-# Running Training
+## 14 · Running the Project
 
-Start the reinforcement-learning pipeline:
+### Run the MCTS smoke test
+
+```bash
+python main.py
+```
+
+This initialises a chess board, constructs the model and inference pipeline, and asks the MCTS agent to select a move.
+
+### Run the training pipeline
 
 ```bash
 python train_pipeline.py
 ```
 
-The terminal displays the current training configuration and progress.
+The training entry point constructs the board encoder, move encoder, network configuration and iterative training pipeline. It currently uses CPU execution and the two-iteration experimental configuration documented in [section 10](#10--experimental-training-results).
 
-Example:
-
-```text
-Pipeline config:
-    iterations=5
-    self_play_games_per_iteration=12
-    self_play_max_moves=400
-    training_epochs=6
-    train_mcts_simulations=80
-    eval_mcts_simulations=100
-    gating_games=16
-```
-
-The pipeline then generates self-play games and trains the candidate model.
-
----
-
-# Playing Against the AI
-
-The project also provides a gameplay interface through:
+### Play against the AI
 
 ```bash
 python play.py
 ```
 
-This allows the trained model to be used outside the training loop.
+The terminal interface supports:
 
-The gameplay system uses the trained neural network together with MCTS to select moves.
+- Playing as White or Black
+- AI move selection using MCTS
+- Loading a model checkpoint
+- Configuring the number of simulations
+- Entering moves in UCI notation
 
----
+### Gameplay options
 
-# Training Output
-
-A typical training iteration follows this pattern:
-
-```text
-ITERATION 1
-
-Generating self-play games...
-
-Game 1: result=...
-Game 2: result=...
-Game 3: result=...
-...
-
-Replay buffer size: ...
-
-Building candidate model from best model...
-
-Training candidate model...
-
-Epoch 1: ...
-Epoch 2: ...
-...
-
-Saving latest candidate checkpoint...
-
-Evaluating candidate vs current best...
-
-Evaluation result:
-W=...
-L=...
-D=...
-Score=...
-
-Candidate promoted to BEST model.
+```bash
+python play.py --help
 ```
 
-or:
+| Argument | Purpose | Default |
+|---|---|---|
+| `--checkpoint` | Model checkpoint path | `data/checkpoints/best_model.pt` |
+| `--human-color` | Human colour (`white` or `black`) | `white` |
+| `--simulations` | MCTS simulations per AI move | `50` |
 
-```text
-Candidate rejected. Keeping current BEST model.
+Example:
+
+```bash
+python play.py --human-color black --simulations 100
 ```
 
-This makes the learning process observable directly from the terminal.
+If no checkpoint exists at the specified path, the gameplay script reports that it is using an untrained model.
 
 ---
 
-# Design Philosophy
+## 15 · Engineering Principles
 
-This project is built around several principles.
-
-### 1. Learn Through Experience
-
-The engine generates its own training data through self-play instead of depending entirely on manually labelled chess positions.
-
-### 2. Search + Learning
-
-The neural network and MCTS serve different but complementary purposes.
-
-```text
-Neural Network
-      +
-     MCTS
-      ↓
-Better Move Selection
-```
-
-### 3. Continuous Improvement
-
-A candidate must demonstrate sufficient performance before replacing the current best model.
-
-### 4. Experimentation
-
-Training parameters are intentionally configurable so that different learning strategies can be tested.
-
-### 5. Observable Learning
-
-Training metrics, self-play results, replay-buffer size, candidate evaluation, and checkpoints provide visibility into the learning process.
+| Principle | In practice |
+|---|---|
+| **Separation of concerns** | Board encoding, action encoding, inference, search, self-play, optimisation and evaluation are distinct components |
+| **Learning through generated experience** | The system uses its own self-play games to construct training examples |
+| **Search-guided decisions** | Neural-network predictions guide the search, while MCTS visit statistics influence the final move decision |
+| **Controlled model replacement** | Candidate models must satisfy a promotion criterion before replacing the accepted model |
+| **Experiment visibility** | Loss components, evaluation outcomes, replay-buffer size and checkpoints provide a record of the training process |
+| **Honest performance reporting** | Training loss, evaluation score and chess playing strength are treated as different measurements; no playing-strength rating is claimed without an appropriate benchmark |
 
 ---
 
-# AlphaZero-Inspired Architecture
+## 16 · Current Development Priorities
 
-The project takes inspiration from the general AlphaZero approach:
+The project remains under active development.
 
-```text
-                 CHESS POSITION
-                       │
-                       ↓
-              POLICY-VALUE NETWORK
-                  │           │
-                  ↓           ↓
-               POLICY       VALUE
-                  │           │
-                  └─────┬─────┘
-                        ↓
-                       MCTS
-                        │
-                        ↓
-                  SELECT MOVE
-                        │
-                        ↓
-                   SELF-PLAY
-                        │
-                        ↓
-               TRAINING EXAMPLES
-                        │
-                        ↓
-                 REPLAY BUFFER
-                        │
-                        ↓
-                 CANDIDATE MODEL
-                        │
-                        ↓
-                  EVALUATION
-                        │
-                 ┌──────┴──────┐
-                 ↓             ↓
-              PROMOTE        REJECT
-                 │             │
-                 └──────┬──────┘
-                        ↓
-                  NEXT ITERATION
-```
+| Area | Development direction |
+|---|---|
+| **Self-play** | Improve experience quality and game-generation efficiency |
+| **Search** | Investigate search performance and simulation efficiency |
+| **Neural network** | Experiment with model capacity and optimisation |
+| **Evaluation** | Improve statistical reliability and evaluation methodology |
+| **Training** | Investigate stability across longer training runs |
+| **Data management** | Strengthen checkpoint and replay-buffer persistence |
+| **Observability** | Improve visibility into self-play and training behaviour |
+| **Benchmarking** | Establish repeatable playing-strength comparisons |
 
-The implementation is AlphaZero-inspired, not a claim of reproducing the original AlphaZero system or its training scale.
+> [!NOTE]
+> These are development priorities, not claims that the corresponding improvements have already been completed.
 
 ---
 
-# What Makes This Project Different
+## 17 · Research Foundation
 
-This project is not simply a chess program with a neural network attached.
+The project draws inspiration from the general approach described in:
 
-The model participates in a feedback loop:
+> Silver, D. et al. (2018). *A general reinforcement learning algorithm that masters chess, shogi, and Go through self-play.* Science, 362(6419), 1140–1144.
+> [Read the research paper](https://www.science.org/doi/10.1126/science.aar6404)
 
-```text
-PLAY
- ↓
-OBSERVE
- ↓
-LEARN
- ↓
-SEARCH
- ↓
-PLAY AGAIN
-```
-
-The objective is to allow playing strength to emerge from repeated self-play and training rather than hard-coding a complete chess strategy.
+The implementation adapts the broad combination of self-play, policy-value learning and Monte Carlo Tree Search into an independent experimental project.
 
 ---
 
-# Experimentation Roadmap
+## 18 · Project Status
 
-Future development can explore:
+<p align="center"><sub><b>ONGOING DEVELOPMENT</b></sub></p>
 
-- Larger self-play batches
-- Longer training runs
-- Increased MCTS simulations
-- Improved neural-network architectures
-- Stronger position encoding
-- More efficient replay-buffer sampling
-- Candidate-vs-best evaluation improvements
-- Interactive self-play visualisation
-- Human-vs-AI gameplay
-- AI-vs-AI gameplay
-- Training dashboards
-- Model strength benchmarking
-- Persistent experiment tracking
+This repository represents an evolving implementation of an AlphaZero-inspired chess learning system. The project already includes:
 
----
+- [x] A 19-plane chess board representation
+- [x] A 4,672-action move encoding
+- [x] A residual policy-value neural network
+- [x] PUCT-based Monte Carlo Tree Search
+- [x] Self-play game generation
+- [x] A bounded replay buffer
+- [x] Policy and value optimisation
+- [x] Candidate-versus-best model evaluation
+- [x] Promotion gating and checkpoint management
+- [x] A terminal interface for playing against the model
 
-# Current Training Direction
+The next stage is to improve the quality, efficiency and reliability of the learning process through further experimentation.
 
-The training system is designed to support progressively larger self-play experiments.
-
-For example:
-
-```text
-12 games / iteration
-        ↓
-25 games / iteration
-        ↓
-More training positions
-        ↓
-More diverse experience
-        ↓
-Potentially stronger learning signal
-```
-
-Increasing the number of self-play games increases the amount of experience available to each training iteration, while also increasing computational cost.
-
-The appropriate configuration therefore depends on the available compute and the behaviour observed during evaluation.
-
----
-
-# Technical Demonstrations
-
-This project demonstrates practical implementation of:
-
-- Reinforcement learning
-- Self-play learning
-- Monte Carlo Tree Search
-- Neural-network inference
-- Policy prediction
-- Value prediction
-- Experience replay
-- Candidate model training
-- Automated model evaluation
-- Model checkpointing
-- Iterative learning pipelines
-- Exploration strategies
-- Chess state representation
-- AI experimentation
-
----
-
-# Project Goals
-
-The long-term objective is to develop a chess-playing system that progressively improves through its own generated experience.
-
-The project therefore focuses not only on:
-
-> Can the model play chess?
-
-but also on:
-
-> Can the model learn to play better through repeated self-play?
-
-That distinction is the foundation of the project.
+The objective is not simply to build a chess-playing program. It is to engineer a system that can generate experience, learn from it, evaluate its own progress and iteratively develop its decision-making capability.
 
 ---
 
 <div align="center">
 
-**Play. Learn. Search. Improve.**
+### PLAY · SEARCH · LEARN · EVALUATE · REPEAT
 
-*An AlphaZero-inspired experiment in autonomous chess learning.*
+*An independent exploration of reinforcement learning, neural search and self-improving game-playing systems.*
 
----
+Built by [**Nomusa Shongwe**](https://github.com/Nomusa990822)
 
-© 2026 Built by Nomusa Shongwe
+<sub>[Back to top](#alphazero-style-chess-ai)</sub>
 
 </div>
