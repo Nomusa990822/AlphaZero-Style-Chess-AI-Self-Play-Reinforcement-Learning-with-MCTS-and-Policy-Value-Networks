@@ -173,3 +173,41 @@ def test_mcts_handles_terminal_position():
 
     assert root.is_terminal()
     assert len(root.children) == 0
+
+
+def test_puct_uses_correct_perspective_when_black_moves():
+    board = chess.Board()
+    board.push_uci("e2e4")
+    parent = MCTSNode(board=board)
+    parent.expand({"e7e5": 0.5, "c7c5": 0.5})
+    parent.visit_count = 20
+
+    good_for_black = parent.children["e7e5"]
+    bad_for_black = parent.children["c7c5"]
+    good_for_black.visit_count = 4
+    bad_for_black.visit_count = 4
+    good_for_black.value_sum = -3.2
+    bad_for_black.value_sum = 3.2
+
+    assert compute_puct_score(parent, good_for_black, 0.0) == 0.8
+    assert compute_puct_score(parent, bad_for_black, 0.0) == -0.8
+    assert select_best_child(parent, 0.0) is good_for_black
+
+
+def test_mcts_root_preserves_threefold_repetition_history():
+    board = chess.Board()
+    for move in ("g1f3", "g8f6", "f3g1", "f6g8",
+                 "g1f3", "g8f6", "f3g1", "f6g8"):
+        board.push_uci(move)
+
+    move_encoding, inference = build_test_stack()
+    mcts = MCTS(
+        inference=inference,
+        move_encoding=move_encoding,
+        config=MCTSConfig(num_simulations=2, add_dirichlet_noise=False),
+    )
+
+    root = mcts.run(board)
+
+    assert root.is_terminal()
+    assert root.terminal_value() == 0.0
