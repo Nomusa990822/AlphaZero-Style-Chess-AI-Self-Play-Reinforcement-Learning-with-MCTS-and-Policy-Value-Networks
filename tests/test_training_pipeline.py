@@ -19,7 +19,7 @@ def build_stack():
     model = AlphaZeroNet(
         action_size=move_encoding.action_size,
         config=NetworkConfig(
-            input_channels=19,
+            input_channels=20,
             board_size=8,
             num_filters=32,
             num_res_blocks=2,
@@ -36,7 +36,7 @@ def build_stack():
 
 
 def make_dummy_sample(action_size: int) -> SelfPlaySample:
-    state = np.zeros((19, 8, 8), dtype=np.float32)
+    state = np.zeros((20, 8, 8), dtype=np.float32)
     policy_target = np.zeros(action_size, dtype=np.float32)
     policy_target[0] = 1.0
 
@@ -77,7 +77,7 @@ def test_dataset_shapes():
 def test_alphazero_loss_runs():
     move_encoding, model, _ = build_stack()
 
-    states = torch.randn(2, 19, 8, 8)
+    states = torch.randn(2, 20, 8, 8)
     policy_target = torch.zeros(2, move_encoding.action_size)
     policy_target[:, 0] = 1.0
     value_target = torch.tensor([[1.0], [-1.0]])
