@@ -1,5 +1,6 @@
 import chess
 import numpy as np
+import pickle
 import torch
 
 from src.engine.encoder import BoardEncoder
@@ -7,6 +8,7 @@ from src.engine.move_encoding import MoveEncoding
 from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
+from src.training.checkpoint import load_checkpoint
 from src.training.dataset import AlphaZeroDataset
 from src.training.loss import alphazero_loss
 from src.training.replay_buffer import ReplayBuffer
@@ -141,3 +143,60 @@ def test_max_move_adjudication_does_not_invent_material_win():
     materially_unbalanced = chess.Board("4k3/8/8/8/8/8/PP6/4K3 w - - 0 1")
 
     assert generator._adjudicate_result(materially_unbalanced) == "1/2-1/2"
+
+
+def test_legacy_replay_buffer_adds_empty_en_passant_plane(tmp_path):
+    sample = make_dummy_sample(MoveEncoding().action_size)
+    sample.state = sample.state[:19]
+    legacy_path = tmp_path / "legacy.pkl"
+    with legacy_path.open("wb") as handle:
+        pickle.dump([sample], handle)
+
+    restored = ReplayBuffer(capacity=10)
+    restored.load(legacy_path)
+
+    assert restored.buffer[0].state.shape == (20, 8, 8)
+    assert np.all(restored.buffer[0].state[19] == 0.0)
+
+
+def test_legacy_checkpoint_migrates_first_convolution_to_20_planes(tmp_path):
+    move_encoding = MoveEncoding()
+    old_model = AlphaZeroNet(
+        action_size=move_encoding.action_size,
+        config=NetworkConfig(
+            input_channels=19,
+            board_size=8,
+            num_filters=8,
+            num_res_blocks=1,
+            value_hidden_size=16,
+        ),
+    )
+    with torch.no_grad():
+        old_model.input_block[0].weight.fill_(0.125)
+
+    checkpoint_path = tmp_path / "legacy_checkpoint.pt"
+    torch.save(
+        {
+            "epoch": 3,
+            "model_state_dict": old_model.state_dict(),
+            "optimizer_state_dict": None,
+            "extra": {},
+        },
+        checkpoint_path,
+    )
+
+    new_model = AlphaZeroNet(
+        action_size=move_encoding.action_size,
+        config=NetworkConfig(
+            input_channels=20,
+            board_size=8,
+            num_filters=8,
+            num_res_blocks=1,
+            value_hidden_size=16,
+        ),
+    )
+    load_checkpoint(checkpoint_path, new_model)
+
+    migrated = new_model.input_block[0].weight.detach()
+    torch.testing.assert_close(migrated[:, :19], old_model.input_block[0].weight)
+    assert torch.count_nonzero(migrated[:, 19]).item() == 0
