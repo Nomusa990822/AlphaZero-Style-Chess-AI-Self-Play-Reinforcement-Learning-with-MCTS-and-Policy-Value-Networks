@@ -23,6 +23,7 @@ def save_checkpoint(
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
+        "format_version": 2,
         "epoch": epoch,
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict() if optimizer is not None else None,
@@ -53,11 +54,46 @@ def load_checkpoint(
     """Load a checkpoint and restore model and optional optimizer state."""
     payload = torch.load(path, map_location=map_location)
 
-    model.load_state_dict(payload["model_state_dict"])
+    saved_state = payload["model_state_dict"]
+    current_state = model.state_dict()
+    migrated_input_channels = False
+
+    for key, saved_tensor in list(saved_state.items()):
+        if key not in current_state or saved_tensor.shape == current_state[key].shape:
+            continue
+        current_tensor = current_state[key]
+        if (
+            key == "input_block.0.weight"
+            and saved_tensor.ndim == 4
+            and current_tensor.ndim == 4
+            and saved_tensor.shape[0] == current_tensor.shape[0]
+            and saved_tensor.shape[1] == 19
+            and current_tensor.shape[1] == 20
+            and saved_tensor.shape[2:] == current_tensor.shape[2:]
+        ):
+            migrated = torch.zeros_like(current_tensor)
+            migrated[:, :19] = saved_tensor
+            saved_state[key] = migrated
+            migrated_input_channels = True
+        else:
+            raise RuntimeError(
+                f"Checkpoint tensor shape mismatch for {key}: "
+                f"saved={tuple(saved_tensor.shape)}, "
+                f"model={tuple(current_tensor.shape)}"
+            )
+
+    model.load_state_dict(saved_state)
 
     optimizer_state = payload.get("optimizer_state_dict")
-    if optimizer is not None and optimizer_state is not None:
+    if optimizer is not None and optimizer_state is not None and not migrated_input_channels:
         optimizer.load_state_dict(optimizer_state)
+    elif migrated_input_channels:
+        payload.setdefault("extra", {})["optimizer_state_reset_for_encoder_migration"] = True
+        print(
+            "Migrated checkpoint from 19 to 20 input planes. "
+            "The optimizer state was reset because its first-layer tensors "
+            "use the old shape."
+        )
 
     return payload
 
