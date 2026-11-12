@@ -16,7 +16,7 @@ def build_test_stack():
     model = AlphaZeroNet(
         action_size=move_encoding.action_size,
         config=NetworkConfig(
-            input_channels=19,
+            input_channels=20,
             board_size=8,
             num_filters=64,
             num_res_blocks=2,
