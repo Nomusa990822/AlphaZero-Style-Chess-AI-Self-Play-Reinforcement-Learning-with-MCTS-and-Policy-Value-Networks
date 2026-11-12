@@ -8,6 +8,8 @@ import os
 import pickle
 import random
 import tempfile
+
+import numpy as np
 from collections import deque
 from collections.abc import Iterable
 from pathlib import Path
@@ -81,4 +83,21 @@ class ReplayBuffer:
         else:
             raise ValueError(f"Invalid replay buffer payload: {path}")
 
-        self.buffer = deque(items, maxlen=self.capacity)
+        upgraded = []
+        for sample in items:
+            state = np.asarray(sample.state, dtype=np.float32)
+            if state.shape == (19, 8, 8):
+                # Legacy samples retain the original 19 features. Add an empty
+                # en-passant plane because the old buffer did not store it.
+                state = np.concatenate(
+                    [state, np.zeros((1, 8, 8), dtype=np.float32)], axis=0
+                )
+                sample.state = state
+            elif state.shape != (20, 8, 8):
+                raise ValueError(
+                    f"Unsupported replay sample state shape {state.shape}; "
+                    "expected (19, 8, 8) or (20, 8, 8)."
+                )
+            upgraded.append(sample)
+
+        self.buffer = deque(upgraded, maxlen=self.capacity)
