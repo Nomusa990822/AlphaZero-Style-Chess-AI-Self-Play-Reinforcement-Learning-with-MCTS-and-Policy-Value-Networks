@@ -5,6 +5,7 @@ Deterministic, colour-balanced evaluation for AlphaZero-style chess training.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 import chess
 
@@ -29,6 +30,18 @@ class EvaluationResult:
         if self.games_played == 0:
             return 0.0
         return (self.wins + 0.5 * self.draws) / self.games_played
+
+    @property
+    def lower_confidence_bound(self) -> float:
+        """Approximate one-sided 90% lower confidence bound for match score."""
+        n = self.games_played
+        if n < 2:
+            return 0.0
+        mean = self.score
+        sum_squares = self.wins + 0.25 * self.draws
+        sample_variance = max(0.0, (sum_squares - n * mean * mean) / (n - 1))
+        standard_error = math.sqrt(sample_variance / n)
+        return max(0.0, mean - 1.645 * standard_error)
 
 
 class NetworkEvaluator:
@@ -112,4 +125,5 @@ class NetworkEvaluator:
     ) -> tuple[bool, EvaluationResult]:
         """Promote only when the candidate reaches the configured score."""
         result = self.compare_models(candidate_inference, best_inference, num_games)
-        return result.score >= required_score, result
+        promoted = result.score >= required_score and result.lower_confidence_bound > 0.50
+        return promoted, result
