@@ -126,7 +126,7 @@ class SelfPlayGenerator:
         forced_result: Optional[str] = None
 
         move_number = 0
-        while not board.is_game_over() and move_number < self.max_moves:
+        while not board.is_game_over(claim_draw=True) and move_number < self.max_moves:
             encoded_state = self.encoder.encode(board)
             root = mcts.run(board)
 
@@ -156,7 +156,7 @@ class SelfPlayGenerator:
 
         if forced_result is not None:
             result = forced_result
-        elif board.is_game_over():
+        elif board.is_game_over(claim_draw=True):
             result = board.result(claim_draw=True)
         else:
             if self.adjudicate_on_max_moves:
