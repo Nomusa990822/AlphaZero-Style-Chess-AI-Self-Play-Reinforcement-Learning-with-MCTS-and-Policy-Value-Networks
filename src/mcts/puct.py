@@ -1,5 +1,10 @@
 """
 PUCT scoring for AlphaZero-style MCTS.
+
+Node values are always stored from the perspective of the player to move
+at that node. A child therefore evaluates the position from the opponent's
+perspective relative to its parent, so its Q value must be negated when the
+parent selects among its actions.
 """
 
 from __future__ import annotations
@@ -10,26 +15,11 @@ from src.mcts.node import MCTSNode
 
 
 def compute_puct_score(parent: MCTSNode, child: MCTSNode, c_puct: float) -> float:
-    """
-    Compute the PUCT score for a child node.
-
-    Formula:
-        score = Q + U
-
-    where:
-        Q = child.q_value
-        U = c_puct * prior * sqrt(parent_visits) / (1 + child_visits)
-
-    Args:
-        parent: Parent node
-        child: Candidate child node
-        c_puct: Exploration constant
-
-    Returns:
-        PUCT score
-    """
+    """Return the parent-player PUCT score for one child action."""
     parent_visits = max(1, parent.visit_count)
-    q_value = child.q_value
+    # Child Q is from the child's side-to-move perspective (the opponent).
+    # Convert it to the parent player's perspective before action selection.
+    q_value = -child.q_value
     u_value = (
         c_puct
         * child.prior
@@ -40,24 +30,11 @@ def compute_puct_score(parent: MCTSNode, child: MCTSNode, c_puct: float) -> floa
 
 
 def select_best_child(node: MCTSNode, c_puct: float) -> MCTSNode:
-    """
-    Select the child with highest PUCT score.
-
-    Args:
-        node: Expanded MCTS node
-        c_puct: Exploration constant
-
-    Returns:
-        Best child node
-
-    Raises:
-        ValueError: If node has no children
-    """
+    """Select the child with the highest parent-perspective PUCT score."""
     if not node.children:
         raise ValueError("Cannot select child from node with no children.")
 
-    best_child = max(
+    return max(
         node.children.values(),
-        key=lambda child: compute_puct_score(node, child, c_puct)
+        key=lambda child: compute_puct_score(node, child, c_puct),
     )
-    return best_child
