@@ -37,7 +37,7 @@ def save_checkpoint(
         ) as handle:
             temp_name = handle.name
         torch.save(payload, temp_name)
-        with open(temp_name, "rb") as handle:
+        with open(temp_name, "rb+") as handle:
             os.fsync(handle.fileno())
         os.replace(temp_name, path)
     finally:
