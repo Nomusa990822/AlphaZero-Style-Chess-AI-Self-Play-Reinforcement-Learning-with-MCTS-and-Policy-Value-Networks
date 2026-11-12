@@ -1,5 +1,5 @@
 """
-Evaluation utilities for AlphaZero-style chess training.
+Deterministic, colour-balanced evaluation for AlphaZero-style chess training.
 """
 
 from __future__ import annotations
@@ -16,9 +16,8 @@ from src.model.inference import ModelInference
 
 @dataclass
 class EvaluationResult:
-    """
-    Evaluation summary from perspective of model A.
-    """
+    """Evaluation summary from the perspective of model A."""
+
     wins: int
     losses: int
     draws: int
@@ -26,19 +25,14 @@ class EvaluationResult:
 
     @property
     def score(self) -> float:
-        """
-        Score from perspective of model A:
-        win = 1, draw = 0.5, loss = 0
-        """
+        """Score from model A's perspective: win=1, draw=0.5, loss=0."""
         if self.games_played == 0:
             return 0.0
         return (self.wins + 0.5 * self.draws) / self.games_played
 
 
 class NetworkEvaluator:
-    """
-    Lets two networks play head-to-head via MCTS.
-    """
+    """Compare two networks using deterministic MCTS and swapped colours."""
 
     def __init__(
         self,
@@ -48,45 +42,11 @@ class NetworkEvaluator:
         self.move_encoding = move_encoding
         self.mcts_config = mcts_config or MCTSConfig(
             num_simulations=50,
-            add_dirichlet_noise=True,
-            dirichlet_alpha=0.3,
-            dirichlet_epsilon=0.25,
-            temperature=0.5,
+            add_dirichlet_noise=False,
+            temperature=0.0,
         )
-
-    @staticmethod
-    def _material_score_white(board: chess.Board) -> int:
-        """
-        Simple material score from White's perspective.
-        Positive means White is ahead, negative means Black is ahead.
-        """
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-
-        score = 0
-        for piece_type, value in piece_values.items():
-            score += len(board.pieces(piece_type, chess.WHITE)) * value
-            score -= len(board.pieces(piece_type, chess.BLACK)) * value
-        return score
-
-    def _adjudicate_result(self, board: chess.Board) -> str:
-        """
-        Use material balance first when max_moves is reached.
-        This is intentionally simple and more decisive for early training.
-        """
-        material_score = self._material_score_white(board)
-
-        if material_score >= 2:
-            return "1-0"
-        if material_score <= -2:
-            return "0-1"
-        return "1/2-1/2"
+        # Evaluation must not inject exploration noise.
+        self.mcts_config.add_dirichlet_noise = False
 
     def _play_single_game(
         self,
@@ -97,26 +57,20 @@ class NetworkEvaluator:
         board = chess.Board()
         move_count = 0
 
-        while not board.is_game_over() and move_count < max_moves:
-            move = (
-                agent_white.choose_move(
-                    board,
-                    temperature=self.mcts_config.temperature,
-                )
-                if board.turn == chess.WHITE
-                else agent_black.choose_move(
-                    board,
-                    temperature=self.mcts_config.temperature,
-                )
-            )
-
+        while not board.is_game_over(claim_draw=True) and move_count < max_moves:
+            agent = agent_white if board.turn == chess.WHITE else agent_black
+            move = agent.choose_move(board, temperature=0.0)
+            if move not in board.legal_moves:
+                raise RuntimeError(f"Evaluator agent returned illegal move: {move}")
             board.push(move)
             move_count += 1
 
-        if board.is_game_over():
+        if board.is_game_over(claim_draw=True):
             return board.result(claim_draw=True)
 
-        return self._adjudicate_result(board)
+        # A move-limit result is a draw. Material-only adjudication is too
+        # crude and can systematically reward a candidate for material grabs.
+        return "1/2-1/2"
 
     def compare_models(
         self,
@@ -124,44 +78,30 @@ class NetworkEvaluator:
         inference_b: ModelInference,
         num_games: int = 12,
     ) -> EvaluationResult:
-        """
-        Compare two models head-to-head.
-        Model A alternates colors for fairness.
-        """
-        wins = 0
-        losses = 0
-        draws = 0
+        """Compare models with alternating colours in paired game order."""
+        if num_games < 1:
+            raise ValueError("num_games must be at least 1")
+
+        wins = losses = draws = 0
+        agent_a = MCTSAgent(inference_a, self.move_encoding, self.mcts_config)
+        agent_b = MCTSAgent(inference_b, self.move_encoding, self.mcts_config)
 
         for game_idx in range(num_games):
             if game_idx % 2 == 0:
-                agent_white = MCTSAgent(inference_a, self.move_encoding, self.mcts_config)
-                agent_black = MCTSAgent(inference_b, self.move_encoding, self.mcts_config)
-                result = self._play_single_game(agent_white, agent_black)
-
-                if result == "1-0":
-                    wins += 1
-                elif result == "0-1":
-                    losses += 1
-                else:
-                    draws += 1
+                result = self._play_single_game(agent_a, agent_b)
+                model_a_result = result
             else:
-                agent_white = MCTSAgent(inference_b, self.move_encoding, self.mcts_config)
-                agent_black = MCTSAgent(inference_a, self.move_encoding, self.mcts_config)
-                result = self._play_single_game(agent_white, agent_black)
+                result = self._play_single_game(agent_b, agent_a)
+                model_a_result = "0-1" if result == "1-0" else "1-0" if result == "0-1" else result
 
-                if result == "1-0":
-                    losses += 1
-                elif result == "0-1":
-                    wins += 1
-                else:
-                    draws += 1
+            if model_a_result == "1-0":
+                wins += 1
+            elif model_a_result == "0-1":
+                losses += 1
+            else:
+                draws += 1
 
-        return EvaluationResult(
-            wins=wins,
-            losses=losses,
-            draws=draws,
-            games_played=num_games,
-        )
+        return EvaluationResult(wins, losses, draws, num_games)
 
     def should_promote_candidate(
         self,
@@ -170,12 +110,6 @@ class NetworkEvaluator:
         num_games: int = 12,
         required_score: float = 0.51,
     ) -> tuple[bool, EvaluationResult]:
-        """
-        Decide whether the candidate model should replace the best model.
-        """
-        result = self.compare_models(
-            inference_a=candidate_inference,
-            inference_b=best_inference,
-            num_games=num_games,
-        )
+        """Promote only when the candidate reaches the configured score."""
+        result = self.compare_models(candidate_inference, best_inference, num_games)
         return result.score >= required_score, result
