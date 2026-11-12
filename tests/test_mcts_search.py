@@ -68,6 +68,28 @@ def test_compute_puct_score_returns_float():
     assert isinstance(score, float)
 
 
+def test_puct_negates_child_value_for_parent_perspective():
+    board = chess.Board()
+    parent = MCTSNode(board=board)
+    parent.expand({move.uci(): 0.5 for move in list(board.legal_moves)[:2]})
+    parent.visit_count = 20
+
+    good_for_parent = parent.children["e2e4"]
+    bad_for_parent = parent.children["d2d4"]
+    good_for_parent.visit_count = 4
+    bad_for_parent.visit_count = 4
+    # Child values are from the opponent-to-move perspective.
+    good_for_parent.value_sum = -3.2  # opponent is losing: good for parent
+    bad_for_parent.value_sum = 3.2    # opponent is winning: bad for parent
+
+    good_score = compute_puct_score(parent, good_for_parent, c_puct=0.0)
+    bad_score = compute_puct_score(parent, bad_for_parent, c_puct=0.0)
+
+    assert good_score == 0.8
+    assert bad_score == -0.8
+    assert select_best_child(parent, c_puct=0.0) is good_for_parent
+
+
 def test_mcts_run_expands_root():
     board = chess.Board()
     move_encoding, inference = build_test_stack()
