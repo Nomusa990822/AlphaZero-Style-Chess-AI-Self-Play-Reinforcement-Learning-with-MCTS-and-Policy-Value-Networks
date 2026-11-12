@@ -139,7 +139,7 @@ class MCTS:
         Returns:
             Root node after simulations
         """
-        root = MCTSNode(board=board.copy(stack=False))
+        root = MCTSNode(board=board.copy(stack=True))
         root_value = self._evaluate_and_expand(root, is_root=True)
         root.visit_count += 1
         root.value_sum += root_value
