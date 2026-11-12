@@ -9,7 +9,7 @@ def test_encoder_output_shape():
     encoder = BoardEncoder()
     tensor = encoder.encode(board)
 
-    assert tensor.shape == (19, 8, 8)
+    assert tensor.shape == (20, 8, 8)
     assert tensor.dtype == np.float32
 
 
@@ -101,11 +101,11 @@ def test_en_passant_target_is_encoded():
     tensor = BoardEncoder().encode(board)
 
     # e3 is row 5, file e is column 4 in the board tensor.
-    assert tensor[18, 5, 4] == 1.0
-    assert float(tensor[18].sum()) == 1.0
+    assert tensor[19, 5, 4] == 1.0
+    assert float(tensor[19].sum()) == 1.0
 
 
 def test_no_en_passant_target_has_empty_plane():
     tensor = BoardEncoder().encode(chess.Board())
 
-    assert np.all(tensor[18] == 0.0)
+    assert np.all(tensor[19] == 0.0)
