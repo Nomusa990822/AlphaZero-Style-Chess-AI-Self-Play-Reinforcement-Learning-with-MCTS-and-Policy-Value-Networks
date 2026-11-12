@@ -98,3 +98,36 @@ def test_decode_best_legal_move():
 
     assert best_move is not None
     assert best_move.uci() == "e2e4"
+
+
+
+def test_en_passant_move_round_trip():
+    encoder = MoveEncoding()
+    board = chess.Board()
+    for move in ("e2e4", "a7a6", "e4e5", "d7d5"):
+        board.push_uci(move)
+
+    move = "e5d6"
+    assert chess.Move.from_uci(move) in board.legal_moves
+    index = encoder.uci_to_index(move, board)
+    assert encoder.index_to_uci(index, board) == move
+
+
+def test_castling_move_round_trip():
+    encoder = MoveEncoding()
+    board = chess.Board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1")
+
+    move = "e1g1"
+    assert chess.Move.from_uci(move) in board.legal_moves
+    index = encoder.uci_to_index(move, board)
+    assert encoder.index_to_uci(index, board) == move
+
+
+def test_black_underpromotion_round_trip():
+    encoder = MoveEncoding()
+    board = chess.Board("k6K/8/8/8/8/8/p7/8 b - - 0 1")
+
+    move = "a2a1n"
+    assert chess.Move.from_uci(move) in board.legal_moves
+    index = encoder.uci_to_index(move, board)
+    assert encoder.index_to_uci(index, board) == move
