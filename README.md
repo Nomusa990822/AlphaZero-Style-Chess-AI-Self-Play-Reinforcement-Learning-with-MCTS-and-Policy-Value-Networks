@@ -69,7 +69,7 @@ The objective is to develop a chess-playing agent whose decision-making improves
 
 | | |
 |---|---|
-| **Input representation** | 19 planes of 8 × 8 (piece placement, side to move, castling rights, move counters) |
+| **Input representation** | 20 planes of 8 × 8 (piece placement, side to move, castling rights, move counters) |
 | **Action space** | 4,672 moves (8 × 8 × 73) |
 | **Network** | Convolutional trunk with 3 residual blocks (64 filters), policy head and value head |
 | **Search** | PUCT-based Monte Carlo Tree Search with optional Dirichlet root noise |
@@ -95,7 +95,7 @@ flowchart TB
     end
 
     subgraph REPRESENTATION["STATE AND ACTION REPRESENTATION"]
-        ENCODER["Board Encoder<br/>19 × 8 × 8"]
+        ENCODER["Board Encoder<br/>20 × 8 × 8"]
         ACTION["Move Encoder<br/>8 × 8 × 73"]
     end
 
@@ -200,12 +200,12 @@ The diagram describes the conceptual information flow. Individual components are
 A chess position must be converted into a numerical representation before it can be processed by the neural network. The current `BoardEncoder` produces a tensor with the shape:
 
 ```text
-(19, 8, 8)
+(20, 8, 8)
 ```
 
 Each plane represents a particular aspect of the chess position.
 
-### The 19-plane representation
+### The 20-plane representation
 
 | Plane | Representation |
 |:---:|---|
@@ -227,7 +227,7 @@ Each plane represents a particular aspect of the chess position.
 | 15 | Black kingside castling rights |
 | 16 | Black queenside castling rights |
 | 17 | Normalised halfmove clock |
-| 18 | En-passant target square (one-hot) |
+| 18 | Normalised fullmove number |\n| 19 | En-passant target square (one-hot) |
 
 The encoder preserves piece placement and selected game-state information in a spatial tensor suitable for convolutional processing.
 
@@ -246,7 +246,7 @@ flowchart LR
     E --> G["Stack Planes"]
     F --> G
     G --> H["Float32 Tensor"]
-    H --> I["Shape: 19 × 8 × 8"]
+    H --> I["Shape: 20 × 8 × 8"]
     I --> J["Policy-Value Network"]
 
     classDef source  fill:#172033,stroke:#64748b,color:#f8fafc
@@ -326,7 +326,7 @@ The implementation uses a shared convolutional feature extractor followed by res
 
 ```mermaid
 flowchart TB
-    A["Input Tensor<br/>Batch × 19 × 8 × 8"]
+    A["Input Tensor<br/>Batch × 20 × 8 × 8"]
     B["Initial Convolution<br/>3 × 3"]
     C["Batch Normalization"]
     D["ReLU"]
@@ -366,7 +366,7 @@ The configuration supplied to the training entry point uses:
 
 | Parameter | Current value |
 |---|---:|
-| Input channels | 19 |
+| Input channels | 20 |
 | Board dimensions | 8 × 8 |
 | Convolution filters | 64 |
 | Residual blocks | 3 |
@@ -1013,7 +1013,7 @@ The implementation adapts the broad combination of self-play, policy-value learn
 
 This repository represents an evolving implementation of an AlphaZero-inspired chess learning system. The project already includes:
 
-- [x] A 19-plane chess board representation
+- [x] A 20-plane chess board representation
 - [x] A 4,672-action move encoding
 - [x] A residual policy-value neural network
 - [x] PUCT-based Monte Carlo Tree Search
