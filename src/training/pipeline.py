@@ -220,12 +220,15 @@ class AlphaZeroPipeline:
 
         print("Generating self-play games...")
         completed_record = {"white_wins": 0, "black_wins": 0, "draws": 0}
+        elapsed_self_play_seconds = 0.0
 
         def record_completed_game(
             game_number: int,
             game_result: SelfPlayGameResult,
             elapsed_seconds: float,
         ) -> None:
+            nonlocal elapsed_self_play_seconds
+            elapsed_self_play_seconds += elapsed_seconds
             self.replay_buffer.add_game(game_result.samples)
             self.replay_buffer.save(self.config.replay_buffer_path)
             self.metrics_logger.append_self_play_game(
@@ -244,13 +247,17 @@ class AlphaZeroPipeline:
                 completed_record["black_wins"] += 1
             else:
                 completed_record["draws"] += 1
+            average_game_seconds = elapsed_self_play_seconds / game_number
+            remaining_games = self.config.self_play_games_per_iteration - game_number
+            eta_seconds = average_game_seconds * remaining_games
             print(
                 f"  Progress: {game_number}/{self.config.self_play_games_per_iteration} games | "
                 f"W={completed_record['white_wins']} "
                 f"L={completed_record['black_wins']} "
                 f"D={completed_record['draws']} | "
                 f"replay={len(self.replay_buffer)} | "
-                f"game_time={elapsed_seconds:.1f}s"
+                f"game_time={elapsed_seconds:.1f}s | "
+                f"ETA~{eta_seconds / 60:.1f} min"
             )
 
         game_results = self._collect_self_play_games(
