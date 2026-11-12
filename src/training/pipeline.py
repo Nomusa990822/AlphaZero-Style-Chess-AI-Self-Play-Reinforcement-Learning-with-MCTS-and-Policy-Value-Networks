@@ -7,7 +7,7 @@ from __future__ import annotations
 import copy
 from pathlib import Path
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Callable
 
 import torch
 
@@ -185,8 +185,9 @@ class AlphaZeroPipeline:
         self,
         generator: SelfPlayGenerator,
         num_games: int,
+        on_game_complete: Callable[[int, SelfPlayGameResult, float], None] | None = None,
     ) -> list[SelfPlayGameResult]:
-        return generator.generate_games(num_games)
+        return generator.generate_games(num_games, on_game_complete=on_game_complete)
 
     def _build_candidate_model(self) -> tuple[AlphaZeroNet, AlphaZeroTrainer]:
         candidate_model = AlphaZeroNet(
@@ -218,9 +219,44 @@ class AlphaZeroPipeline:
         self_play_generator = self._build_self_play_generator(best_inference)
 
         print("Generating self-play games...")
+        completed_record = {"white_wins": 0, "black_wins": 0, "draws": 0}
+
+        def record_completed_game(
+            game_number: int,
+            game_result: SelfPlayGameResult,
+            elapsed_seconds: float,
+        ) -> None:
+            self.replay_buffer.add_game(game_result.samples)
+            self.replay_buffer.save(self.config.replay_buffer_path)
+            self.metrics_logger.append_self_play_game(
+                iteration=iteration,
+                game_number=game_number,
+                result=game_result.result,
+                moves=game_result.moves,
+                samples=game_result.num_positions,
+                elapsed_seconds=elapsed_seconds,
+                ended_by_resignation=game_result.ended_by_resignation,
+                ended_by_adjudication=game_result.ended_by_adjudication,
+            )
+            if game_result.result == "1-0":
+                completed_record["white_wins"] += 1
+            elif game_result.result == "0-1":
+                completed_record["black_wins"] += 1
+            else:
+                completed_record["draws"] += 1
+            print(
+                f"  Progress: {game_number}/{self.config.self_play_games_per_iteration} games | "
+                f"W={completed_record['white_wins']} "
+                f"L={completed_record['black_wins']} "
+                f"D={completed_record['draws']} | "
+                f"replay={len(self.replay_buffer)} | "
+                f"game_time={elapsed_seconds:.1f}s"
+            )
+
         game_results = self._collect_self_play_games(
             self_play_generator,
             self.config.self_play_games_per_iteration,
+            on_game_complete=record_completed_game,
         )
 
         total_positions = 0
@@ -228,24 +264,9 @@ class AlphaZeroPipeline:
         total_white_score = 0.0
 
         for idx, game_result in enumerate(game_results, start=1):
-            self.replay_buffer.add_game(game_result.samples)
-            self.replay_buffer.save(self.config.replay_buffer_path)
             total_positions += game_result.num_positions
             total_game_length += len(game_result.moves)
             total_white_score += self._result_to_white_score(game_result.result)
-
-            ending_notes = []
-            if game_result.ended_by_resignation:
-                ending_notes.append("resign")
-            if game_result.ended_by_adjudication:
-                ending_notes.append("adjudicated")
-            note_text = f" ({', '.join(ending_notes)})" if ending_notes else ""
-
-            print(
-                f"  Game {idx}: result={game_result.result}, "
-                f"moves={len(game_result.moves)}, "
-                f"samples={game_result.num_positions}{note_text}"
-            )
 
         avg_game_length = total_game_length / max(1, len(game_results))
         avg_white_score = total_white_score / max(1, len(game_results))
