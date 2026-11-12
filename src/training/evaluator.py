@@ -79,8 +79,8 @@ class NetworkEvaluator:
         num_games: int = 12,
     ) -> EvaluationResult:
         """Compare models with alternating colours in paired game order."""
-        if num_games < 1:
-            raise ValueError("num_games must be at least 1")
+        if num_games < 2 or num_games % 2 != 0:
+            raise ValueError("num_games must be an even number of at least 2 for colour balance.")
 
         wins = losses = draws = 0
         agent_a = MCTSAgent(inference_a, self.move_encoding, self.mcts_config)
