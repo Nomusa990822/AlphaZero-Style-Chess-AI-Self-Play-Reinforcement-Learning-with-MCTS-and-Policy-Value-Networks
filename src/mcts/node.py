@@ -67,7 +67,7 @@ class MCTSNode:
             move_uci = move.uci()
             prior = float(policy_probs.get(move_uci, 0.0))
 
-            child_board = self.board.copy(stack=False)
+            child_board = self.board.copy(stack=True)
             child_board.push(move)
 
             self.children[move_uci] = MCTSNode(
@@ -83,7 +83,7 @@ class MCTSNode:
         """
         Check whether the node position is terminal.
         """
-        return self.board.is_game_over()
+        return self.board.is_game_over(claim_draw=True)
 
     def terminal_value(self) -> float:
         """
@@ -97,7 +97,7 @@ class MCTSNode:
         Returns:
             Scalar value in [-1, 1]
         """
-        outcome = self.board.outcome()
+        outcome = self.board.outcome(claim_draw=True)
         if outcome is None or outcome.winner is None:
             return 0.0
 
