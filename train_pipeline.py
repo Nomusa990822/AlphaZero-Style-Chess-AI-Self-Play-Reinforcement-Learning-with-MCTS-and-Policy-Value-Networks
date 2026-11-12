@@ -53,10 +53,10 @@ def main() -> None:
         train_dirichlet_alpha=0.5,
         train_dirichlet_epsilon=0.30,
 
-        eval_add_dirichlet_noise=True,
+        eval_add_dirichlet_noise=False,
         eval_dirichlet_alpha=0.3,
         eval_dirichlet_epsilon=0.25,
-        eval_temperature=0.5,
+        eval_temperature=0.0,
 
         gating_games=24,
         required_promotion_score=0.55,
