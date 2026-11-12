@@ -71,7 +71,7 @@ def test_dataset_shapes():
 
     state, policy_target, value_target = dataset[0]
 
-    assert state.shape == (19, 8, 8)
+    assert state.shape == (20, 8, 8)
     assert policy_target.shape == (move_encoding.action_size,)
     assert value_target.shape == (1,)
 
