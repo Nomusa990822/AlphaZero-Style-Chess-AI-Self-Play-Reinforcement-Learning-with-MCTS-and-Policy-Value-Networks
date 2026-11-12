@@ -71,7 +71,7 @@ def test_compute_puct_score_returns_float():
 def test_puct_negates_child_value_for_parent_perspective():
     board = chess.Board()
     parent = MCTSNode(board=board)
-    parent.expand({move.uci(): 0.5 for move in list(board.legal_moves)[:2]})
+    parent.expand({"e2e4": 0.5, "d2d4": 0.5})
     parent.visit_count = 20
 
     good_for_parent = parent.children["e2e4"]
