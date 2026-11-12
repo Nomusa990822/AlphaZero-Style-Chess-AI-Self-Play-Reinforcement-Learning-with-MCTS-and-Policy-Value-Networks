@@ -99,62 +99,13 @@ class SelfPlayGenerator:
         """
         return "0-1" if board.turn == chess.WHITE else "1-0"
 
-    def _material_score_white(self, board: chess.Board) -> int:
-        """
-        Simple material score from White perspective.
-        Positive means White is ahead, negative means Black is ahead.
-        """
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-
-        score = 0
-        for piece_type, value in piece_values.items():
-            score += len(board.pieces(piece_type, chess.WHITE)) * value
-            score -= len(board.pieces(piece_type, chess.BLACK)) * value
-        return score
-
     def _adjudicate_result(self, board: chess.Board) -> str:
+        """Treat a training move-cap as a draw rather than inventing a result.
+
+        Material-only or pseudo-mobility adjudication can label a strategically
+        lost position as won and inject biased value targets into self-play.
         """
-        Stronger adjudication using material + mobility + king safety proxy
-        """
-        
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-        
-        material = 0
-        for piece_type, value in piece_values.items():
-            material += len(board.pieces(piece_type, chess.WHITE)) * value
-            material -= len(board.pieces(piece_type, chess.BLACK)) * value
-            
-        # Mobility (VERY IMPORTANT)
-        white_moves = len(list(board.legal_moves))
-        board.turn = not board.turn
-        black_moves = len(list(board.legal_moves))
-        board.turn = not board.turn
-
-        mobility_score = (white_moves - black_moves) * 0.1
-
-        total_score = material + mobility_score
-
-        # Stronger thresholds
-        if total_score >= 3:
-            return "1-0"
-        elif total_score <= -3:
-            return "0-1"
-        else:
-            return "1/2-1/2"
+        return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
