@@ -92,3 +92,20 @@ def test_specific_piece_location():
 
     # Black king starts on e8 => row 0, col 4
     assert tensor[11, 0, 4] == 1.0
+
+
+def test_en_passant_target_is_encoded():
+    board = chess.Board()
+    board.push_uci("e2e4")
+
+    tensor = BoardEncoder().encode(board)
+
+    # e3 is row 5, file e is column 4 in the board tensor.
+    assert tensor[18, 5, 4] == 1.0
+    assert float(tensor[18].sum()) == 1.0
+
+
+def test_no_en_passant_target_has_empty_plane():
+    tensor = BoardEncoder().encode(chess.Board())
+
+    assert np.all(tensor[18] == 0.0)
