@@ -1,6 +1,7 @@
 import chess
 import numpy as np
 import pickle
+import json
 import torch
 
 from src.engine.encoder import BoardEncoder
@@ -11,6 +12,7 @@ from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.checkpoint import load_checkpoint
 from src.training.dataset import AlphaZeroDataset
 from src.training.loss import alphazero_loss
+from src.training.metrics import MetricsLogger
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGenerator, SelfPlaySample
 from src.training.trainer import AlphaZeroTrainer, TrainerConfig
@@ -200,3 +202,21 @@ def test_legacy_checkpoint_migrates_first_convolution_to_20_planes(tmp_path):
     migrated = new_model.input_block[0].weight.detach()
     torch.testing.assert_close(migrated[:, :19], old_model.input_block[0].weight)
     assert torch.count_nonzero(migrated[:, 19]).item() == 0
+
+
+def test_self_play_game_report_contains_pgn_and_termination(tmp_path):
+    logger = MetricsLogger(tmp_path)
+    logger.append_self_play_game(
+        iteration=2,
+        game_number=3,
+        result="1/2-1/2",
+        moves=["e2e4", "e7e5"],
+        samples=2,
+        elapsed_seconds=1.25,
+        ended_by_adjudication=True,
+    )
+
+    record = json.loads((tmp_path / "self_play_games.jsonl").read_text().strip())
+    assert record["termination"] == "move-cap draw"
+    assert record["move_count"] == 2
+    assert "1. e4 e5" in record["pgn"]
