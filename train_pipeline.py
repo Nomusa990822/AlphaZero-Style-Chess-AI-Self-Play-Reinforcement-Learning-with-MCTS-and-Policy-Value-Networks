@@ -23,7 +23,7 @@ def main() -> None:
     )
 
     pipeline_config = PipelineConfig(
-        device="cpu",
+        device="auto",
         replay_buffer_capacity=20000,
 
         iterations=2,
