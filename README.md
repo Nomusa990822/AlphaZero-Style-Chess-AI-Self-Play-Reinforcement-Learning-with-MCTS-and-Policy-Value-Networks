@@ -227,9 +227,10 @@ Each plane represents a particular aspect of the chess position.
 | 15 | Black kingside castling rights |
 | 16 | Black queenside castling rights |
 | 17 | Normalised halfmove clock |
-| 18 | Normalised fullmove number |\n| 19 | En-passant target square (one-hot) |
+| 18 | Normalised fullmove number |
+| 19 | En-passant target square (one-hot) |
 
-The encoder preserves piece placement and selected game-state information in a spatial tensor suitable for convolutional processing.
+The encoder preserves both colours' piece placement, side to move, castling rights, move counters and the en-passant target. A dedicated en-passant plane allows the policy-value network to distinguish positions where an en-passant capture is available. Existing 19-plane checkpoints and replay buffers are migrated without discarding their learned weights or historical samples.
 
 ### State encoding flow
 
@@ -240,14 +241,15 @@ flowchart LR
     A --> D["Halfmove Clock and En-Passant State"]
 
     B --> E["12 Piece Planes"]
-    C --> F["5 State Planes"]
-    D --> F
+    C --> F["5 Turn and Castling Planes"]
+    D --> G["3 Rule-State Planes"]
 
-    E --> G["Stack Planes"]
-    F --> G
-    G --> H["Float32 Tensor"]
-    H --> I["Shape: 20 × 8 × 8"]
-    I --> J["Policy-Value Network"]
+    E --> H["Stack Planes"]
+    F --> H
+    G --> H
+    H --> I["Float32 Tensor"]
+    I --> J["Shape: 20 × 8 × 8"]
+    J --> K["Policy-Value Network"]
 
     classDef source  fill:#172033,stroke:#64748b,color:#f8fafc
     classDef process fill:#172554,stroke:#60a5fa,color:#eff6ff
