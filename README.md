@@ -74,7 +74,7 @@ The objective is to develop a chess-playing agent whose decision-making improves
 | **Network** | Convolutional trunk with 3 residual blocks (64 filters), policy head and value head |
 | **Search** | PUCT-based Monte Carlo Tree Search with optional Dirichlet root noise |
 | **Learning** | Self-play, bounded replay buffer (20,000 samples), policy and value loss |
-| **Model gating** | Candidate must score at least 0.55 against the current best model to be promoted |
+| **Model gating** | Candidate must meet the score threshold and a confidence-bound improvement gate |
 | **Engine** | `python-chess` for rules and legal moves |
 | **Status** | Ongoing development; two experimental training iterations completed |
 
@@ -227,7 +227,7 @@ Each plane represents a particular aspect of the chess position.
 | 15 | Black kingside castling rights |
 | 16 | Black queenside castling rights |
 | 17 | Normalised halfmove clock |
-| 18 | Normalised fullmove number |
+| 18 | En-passant target square (one-hot) |
 
 The encoder preserves piece placement and selected game-state information in a spatial tensor suitable for convolutional processing.
 
@@ -237,7 +237,7 @@ The encoder preserves piece placement and selected game-state information in a s
 flowchart LR
     A["python-chess Board"] --> B["Piece Map"]
     A --> C["Turn and Castling State"]
-    A --> D["Move Counters"]
+    A --> D["Halfmove Clock and En-Passant State"]
 
     B --> E["12 Piece Planes"]
     C --> F["5 State Planes"]
@@ -457,7 +457,7 @@ $$
 
 Where:
 
-- $Q(s,a)$ is the child node's mean value.
+- $Q(s,a)$ is the child value converted to the parent player's perspective (the negative of the child's side-to-move value).
 - $P(s,a)$ is the policy prior.
 - $N(s)$ is the parent visit count.
 - $N(s,a)$ is the child visit count.
@@ -610,7 +610,7 @@ $$
 L = L_{\mathrm{policy}} + L_{\mathrm{value}}
 $$
 
-The training loop records total loss, policy loss, value loss and batch count for each epoch.
+The training loop records total loss, policy loss, value loss and batch count for each epoch. Completed self-play games are written immediately to `self_play_games.jsonl`, and the replay buffer is saved after every game using an atomic file replacement.
 
 ---
 
