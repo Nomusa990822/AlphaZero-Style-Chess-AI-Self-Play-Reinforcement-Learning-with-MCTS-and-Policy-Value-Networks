@@ -52,7 +52,7 @@ def test_value_head_output_shape_and_range():
 def test_alphazero_network_output_shapes():
     move_encoding = MoveEncoding()
     config = NetworkConfig(
-        input_channels=19,
+        input_channels=20,
         board_size=8,
         num_filters=64,
         num_res_blocks=3,
@@ -63,7 +63,7 @@ def test_alphazero_network_output_shapes():
         config=config
     )
 
-    x = torch.randn(2, 19, 8, 8)
+    x = torch.randn(2, 20, 8, 8)
     policy_logits, value = model(x)
 
     assert policy_logits.shape == (2, move_encoding.action_size)
@@ -74,7 +74,7 @@ def test_predict_outputs_probabilities():
     move_encoding = MoveEncoding()
     model = AlphaZeroNet(action_size=move_encoding.action_size)
 
-    x = torch.randn(1, 19, 8, 8)
+    x = torch.randn(1, 20, 8, 8)
     policy_probs, value = model.predict(x)
 
     assert policy_probs.shape == (1, move_encoding.action_size)
