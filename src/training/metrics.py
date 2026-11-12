@@ -54,6 +54,34 @@ class MetricsLogger:
         with open(path, "a", encoding="utf-8") as f:
             f.write(json.dumps(asdict(metrics)) + "\n")
 
+    def append_self_play_game(
+        self,
+        iteration: int,
+        game_number: int,
+        result: str,
+        moves: list[str],
+        samples: int,
+        elapsed_seconds: float,
+        ended_by_resignation: bool = False,
+        ended_by_adjudication: bool = False,
+        filename: str = "self_play_games.jsonl",
+    ) -> None:
+        """Persist a complete game record as soon as self-play finishes."""
+        path = self.log_dir / filename
+        record = {
+            "iteration": iteration,
+            "game": game_number,
+            "result": result,
+            "move_count": len(moves),
+            "moves_uci": moves,
+            "samples": samples,
+            "elapsed_seconds": round(elapsed_seconds, 3),
+            "ended_by_resignation": ended_by_resignation,
+            "ended_by_adjudication": ended_by_adjudication,
+        }
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record) + "\\n")
+
     def save_json_summary(
         self,
         payload: dict[str, Any],
