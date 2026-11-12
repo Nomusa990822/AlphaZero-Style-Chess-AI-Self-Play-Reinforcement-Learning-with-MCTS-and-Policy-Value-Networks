@@ -80,7 +80,7 @@ class MetricsLogger:
             "ended_by_adjudication": ended_by_adjudication,
         }
         with open(path, "a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record) + "\\n")
+            handle.write(json.dumps(record) + "\n")
 
     def save_json_summary(
         self,
