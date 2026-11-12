@@ -2,7 +2,7 @@
 Main AlphaZero-style policy-value network for chess.
 
 This network:
-- accepts encoded board tensors of shape (B, 19, 8, 8)
+- accepts encoded board tensors of shape (B, 20, 8, 8)
 - processes them through an initial convolution block
 - applies residual blocks
 - outputs:
@@ -27,7 +27,7 @@ class NetworkConfig:
     """
     Configuration for AlphaZero-style chess network.
     """
-    input_channels: int = 19
+    input_channels: int = 20
     board_size: int = 8
     num_filters: int = 128
     num_res_blocks: int = 6
@@ -105,7 +105,7 @@ class AlphaZeroNet(nn.Module):
         Forward pass.
 
         Args:
-            x: Input tensor of shape (B, 19, 8, 8)
+            x: Input tensor of shape (B, 20, 8, 8)
 
         Returns:
             policy_logits: Tensor of shape (B, action_size)
@@ -124,7 +124,7 @@ class AlphaZeroNet(nn.Module):
         Inference helper with eval mode and no gradient tracking.
 
         Args:
-            x: Input tensor of shape (B, 19, 8, 8)
+            x: Input tensor of shape (B, 20, 8, 8)
 
         Returns:
             policy_probs: Tensor of shape (B, action_size)
