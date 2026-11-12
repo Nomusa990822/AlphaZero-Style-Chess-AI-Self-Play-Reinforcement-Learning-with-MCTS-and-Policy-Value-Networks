@@ -10,7 +10,8 @@ Each game produces training samples of the form:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
+from time import perf_counter
+from typing import Callable, List, Optional
 
 import chess
 import numpy as np
@@ -198,12 +199,18 @@ class SelfPlayGenerator:
             ended_by_adjudication=ended_by_adjudication,
         )
 
-    def generate_games(self, num_games: int) -> List[SelfPlayGameResult]:
+    def generate_games(
+        self,
+        num_games: int,
+        on_game_complete: Callable[[int, SelfPlayGameResult, float], None] | None = None,
+    ) -> List[SelfPlayGameResult]:
         games = []
         
         for i in range(num_games):
             
+            game_started = perf_counter()
             result = self.play_game()
+            elapsed_seconds = perf_counter() - game_started
             
             suffix = ""
             if result.ended_by_adjudication:
@@ -218,6 +225,8 @@ class SelfPlayGenerator:
                 f"{suffix}"
             )
             
+            if on_game_complete is not None:
+                on_game_complete(i + 1, result, elapsed_seconds)
             games.append(result)
         
         return games
