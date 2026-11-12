@@ -319,7 +319,8 @@ class AlphaZeroPipeline:
         print(
             f"Evaluation result: W={eval_result.wins}, "
             f"L={eval_result.losses}, D={eval_result.draws}, "
-            f"Score={eval_result.score:.3f}"
+            f"Score={eval_result.score:.3f}, "
+            f"90% LCB={eval_result.lower_confidence_bound:.3f}"
         )
 
         if should_promote:
@@ -367,6 +368,7 @@ class AlphaZeroPipeline:
                     "draws": eval_result.draws,
                     "games_played": eval_result.games_played,
                     "score": eval_result.score,
+                    "lower_confidence_bound_90": eval_result.lower_confidence_bound,
                 },
             },
             filename=f"iteration_{iteration:03d}_summary.json",
