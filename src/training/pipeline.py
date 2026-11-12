@@ -148,7 +148,7 @@ class AlphaZeroPipeline:
             model=model,
             move_encoding=self.move_encoding,
             encoder=self.encoder,
-            device=self.config.device,
+            device=self.device,
         )
 
     def _build_self_play_generator(self, inference: ModelInference) -> SelfPlayGenerator:
@@ -195,11 +195,11 @@ class AlphaZeroPipeline:
             config=self.network_config,
         )
         candidate_model.load_state_dict(copy.deepcopy(self.best_model.state_dict()))
-        candidate_model.to(self.config.device)
+        candidate_model.to(self.device)
 
         candidate_trainer = AlphaZeroTrainer(
             model=candidate_model,
-            device=self.config.device,
+            device=self.device,
             config=TrainerConfig(
                 batch_size=self.config.training_batch_size,
                 learning_rate=self.config.candidate_learning_rate,
