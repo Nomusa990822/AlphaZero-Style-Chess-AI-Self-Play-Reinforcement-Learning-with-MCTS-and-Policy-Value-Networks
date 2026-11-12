@@ -79,7 +79,7 @@ def test_encode_batch_shape():
     encoder = BoardEncoder()
     batch = encoder.encode_batch(boards)
 
-    assert batch.shape == (2, 19, 8, 8)
+    assert batch.shape == (2, 20, 8, 8)
 
 
 def test_specific_piece_location():
