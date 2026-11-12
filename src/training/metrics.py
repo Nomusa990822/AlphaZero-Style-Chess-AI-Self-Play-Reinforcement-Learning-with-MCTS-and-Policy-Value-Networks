@@ -4,7 +4,11 @@ Training metrics utilities for logging AlphaZero-style experiments.
 
 from __future__ import annotations
 
+import io
 import json
+
+import chess
+import chess.pgn
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -68,12 +72,39 @@ class MetricsLogger:
     ) -> None:
         """Persist a complete game record as soon as self-play finishes."""
         path = self.log_dir / filename
+        game = chess.pgn.Game()
+        game.headers["Event"] = "AlphaZero Self-Play"
+        game.headers["Round"] = str(iteration)
+        game.headers["White"] = "Current Model"
+        game.headers["Black"] = "Current Model"
+        game.headers["Result"] = result
+        if ended_by_resignation:
+            termination = "resignation"
+        elif ended_by_adjudication:
+            termination = "move-cap draw"
+        else:
+            termination = "chess rules"
+        game.headers["Termination"] = termination
+
+        board = chess.Board()
+        node = game
+        for move_uci in moves:
+            move = chess.Move.from_uci(move_uci)
+            if move not in board.legal_moves:
+                raise ValueError(f"Invalid self-play move in game report: {move_uci}")
+            node = node.add_variation(move)
+            board.push(move)
+        pgn_stream = io.StringIO()
+        print(game, file=pgn_stream)
+
         record = {
             "iteration": iteration,
             "game": game_number,
             "result": result,
+            "termination": termination,
             "move_count": len(moves),
             "moves_uci": moves,
+            "pgn": pgn_stream.getvalue().strip(),
             "samples": samples,
             "elapsed_seconds": round(elapsed_seconds, 3),
             "ended_by_resignation": ended_by_resignation,
