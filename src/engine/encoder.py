@@ -23,7 +23,8 @@ Planes:
 15 - Black kingside castling rights
 16 - Black queenside castling rights
 17 - Halfmove clock normalized
-18 - Fullmove number normalized\n19 - En-passant target square (one-hot)
+18 - Fullmove number normalized
+19 - En-passant target square (one-hot)
 
 This is a simplified AlphaZero-style starting point.
 """
@@ -121,7 +122,11 @@ class BoardEncoder:
         # Clocks / move counters
         # Light normalization for stability
         planes[17, :, :] = min(board.halfmove_clock / 100.0, 1.0)
-        planes[18, :, :] = min(board.fullmove_number / 200.0, 1.0)\n\n        if board.ep_square is not None:\n            ep_row, ep_col = self.square_to_coords(board.ep_square)\n            planes[19, ep_row, ep_col] = 1.0
+        planes[18, :, :] = min(board.fullmove_number / 200.0, 1.0)
+
+        if board.ep_square is not None:
+            ep_row, ep_col = self.square_to_coords(board.ep_square)
+            planes[19, ep_row, ep_col] = 1.0
 
         return planes
 
