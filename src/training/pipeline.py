@@ -5,8 +5,11 @@ Stage 5 orchestration for iterative AlphaZero-style training.
 from __future__ import annotations
 
 import copy
+from pathlib import Path
 from dataclasses import asdict, dataclass
 from typing import Any
+
+import torch
 
 from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
@@ -23,7 +26,7 @@ from src.training.trainer import AlphaZeroTrainer, TrainerConfig
 
 @dataclass
 class PipelineConfig:
-    device: str = "cpu"
+    device: str = "auto"
     replay_buffer_capacity: int = 20000
 
     iterations: int = 15
@@ -52,10 +55,10 @@ class PipelineConfig:
     train_dirichlet_alpha: float = 0.5
     train_dirichlet_epsilon: float = 0.30
 
-    eval_add_dirichlet_noise: bool = True
+    eval_add_dirichlet_noise: bool = False
     eval_dirichlet_alpha: float = 0.3
     eval_dirichlet_epsilon: float = 0.25
-    eval_temperature: float = 0.5
+    eval_temperature: float = 0.0
 
     gating_games: int = 10
     required_promotion_score: float = 0.52
@@ -85,19 +88,25 @@ class AlphaZeroPipeline:
         self.encoder = encoder
         self.network_config = network_config
         self.config = pipeline_config or PipelineConfig()
+        self.device = self._resolve_device(self.config.device)
+        print(f"Using training device: {self.device}")
 
         self.metrics_logger = MetricsLogger(self.config.log_dir)
         self.replay_buffer = ReplayBuffer(capacity=self.config.replay_buffer_capacity)
+        replay_path = Path(self.config.replay_buffer_path)
+        if replay_path.is_file():
+            self.replay_buffer.load(replay_path)
+            print(f"Loaded {len(self.replay_buffer)} replay samples from {replay_path}")
 
         self.best_model = AlphaZeroNet(
             action_size=self.move_encoding.action_size,
             config=self.network_config,
         )
-        self.best_model.to(self.config.device)
+        self.best_model.to(self.device)
 
         self.best_trainer = AlphaZeroTrainer(
             model=self.best_model,
-            device=self.config.device,
+            device=self.device,
             config=TrainerConfig(
                 batch_size=self.config.training_batch_size,
                 learning_rate=self.config.learning_rate,
@@ -112,9 +121,27 @@ class AlphaZeroPipeline:
                 self.config.best_model_checkpoint,
                 self.best_model,
                 optimizer=self.best_trainer.optimizer,
-                map_location=self.config.device,
+                map_location=self.device,
             )
             print(f"Loaded best model from {self.config.best_model_checkpoint}")
+
+    @staticmethod
+    def _resolve_device(requested: str) -> torch.device:
+        """Resolve auto to the best supported local accelerator."""
+        if requested != "auto":
+            device = torch.device(requested)
+            if device.type == "cuda" and not torch.cuda.is_available():
+                raise RuntimeError("CUDA was requested but is not available.")
+            if device.type == "mps" and not (
+                hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+            ):
+                raise RuntimeError("MPS was requested but is not available.")
+            return device
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
 
     def _make_inference(self, model: AlphaZeroNet) -> ModelInference:
         return ModelInference(
@@ -202,6 +229,7 @@ class AlphaZeroPipeline:
 
         for idx, game_result in enumerate(game_results, start=1):
             self.replay_buffer.add_game(game_result.samples)
+            self.replay_buffer.save(self.config.replay_buffer_path)
             total_positions += game_result.num_positions
             total_game_length += len(game_result.moves)
             total_white_score += self._result_to_white_score(game_result.result)
@@ -276,6 +304,7 @@ class AlphaZeroPipeline:
         if should_promote:
             print("Candidate promoted to BEST model.")
             self.best_model.load_state_dict(candidate_model.state_dict())
+            self.best_trainer.optimizer.load_state_dict(candidate_trainer.optimizer.state_dict())
             save_checkpoint(
                 self.config.best_model_checkpoint,
                 self.best_model,
