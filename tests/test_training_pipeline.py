@@ -1,3 +1,4 @@
+import chess
 import numpy as np
 import torch
 
@@ -9,7 +10,7 @@ from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.dataset import AlphaZeroDataset
 from src.training.loss import alphazero_loss
 from src.training.replay_buffer import ReplayBuffer
-from src.training.self_play import SelfPlaySample
+from src.training.self_play import SelfPlayGenerator, SelfPlaySample
 from src.training.trainer import AlphaZeroTrainer, TrainerConfig
 
 
@@ -111,3 +112,32 @@ def test_trainer_runs_one_epoch():
 
     assert stats.num_batches > 0
     assert stats.total_loss >= 0
+
+
+def test_replay_buffer_save_and_load(tmp_path):
+    move_encoding = MoveEncoding()
+    sample = make_dummy_sample(move_encoding.action_size)
+    original = ReplayBuffer(capacity=5)
+    original.add_sample(sample)
+
+    path = tmp_path / "buffer.pkl"
+    original.save(path)
+
+    restored = ReplayBuffer(capacity=5)
+    restored.load(path)
+
+    assert len(restored) == 1
+    assert isinstance(restored.buffer[0], SelfPlaySample)
+    np.testing.assert_array_equal(restored.buffer[0].state, sample.state)
+
+
+def test_max_move_adjudication_does_not_invent_material_win():
+    generator = SelfPlayGenerator(
+        inference=None,
+        move_encoding=MoveEncoding(),
+        adjudicate_on_max_moves=True,
+        adjudication_threshold=0.0,
+    )
+    materially_unbalanced = chess.Board("4k3/8/8/8/8/8/PP6/4K3 w - - 0 1")
+
+    assert generator._adjudicate_result(materially_unbalanced) == "1/2-1/2"
