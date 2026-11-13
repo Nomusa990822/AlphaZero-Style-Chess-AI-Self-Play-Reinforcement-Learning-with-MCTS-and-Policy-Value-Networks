@@ -42,6 +42,11 @@ class TacticalPosition:
             board = chess.Board(fen)
         except ValueError as exc:
             raise ValueError(f"Invalid FEN for position {position_id!r}: {exc}") from exc
+        if not board.is_valid():
+            raise ValueError(
+                f"Position {position_id!r} is an invalid chess position "
+                f"(python-chess status: {board.status()})."
+            )
         if board.is_game_over(claim_draw=True):
             raise ValueError(f"Position {position_id!r} is already terminal.")
 
