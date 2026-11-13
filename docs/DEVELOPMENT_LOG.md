@@ -1,3 +1,19 @@
+## 2026-11-13 — Add discovered attack, defensive resource and promotion tactics
+
+### Changes
+- Expanded the tactical corpus from nine to thirteen positions.
+- Added a White-to-move discovered check that attacks a queen, a Black-to-move capture of a checking rook, and pawn promotions with check for both colours.
+- Added tests for each position's motif, side to move, phase and accepted legal UCI move; strengthened corpus coverage checks.
+- The corpus now has seven White-to-move and six Black-to-move positions and represents eight tactical labels. It remains a small diagnostic set.
+
+### Verification
+- The existing corpus loader checks FEN validity, terminal-state status, duplicate identifiers and accepted-move legality. CI is required to verify this batch.
+- Tactical annotations explain the intended idea but do not substitute for engine analysis or a large independent puzzle source.
+- No real-checkpoint benchmark or playing-strength gain is claimed.
+
+### Follow-up
+- Review CI, then consider adding more examples and improving benchmark ground truth with engine-assisted review before relying on scores.
+
 ## 2026-11-13 — Expand tactical corpus with skewers and black-to-move examples
 
 ### Changes
