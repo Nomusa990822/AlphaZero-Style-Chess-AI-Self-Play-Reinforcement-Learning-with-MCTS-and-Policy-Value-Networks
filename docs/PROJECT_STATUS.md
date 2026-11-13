@@ -509,3 +509,15 @@ For every meaningful development batch:
 - Durable backup prerelease: [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1). It contains baseline and candidate checkpoints plus SHA-256 manifest. Actions artifact [14071428532](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) contains the replay buffer and detailed logs as well.
 - This is a successful pipeline smoke test, not evidence of playing strength or an Elo rating. The two-game evaluation is too small to support a strength conclusion.
 - Full experiment details and hashes are in docs/EXPERIMENT_LOG.md.
+
+
+## Checkpoint tactical evaluation dispatch repair — 2026-11-13
+
+- Select **Main** under **Use workflow from**. The workflow then checks out
+  `chess-strength-training-upgrade` internally for evaluator code and corpora.
+- Confirmation remains default `NO`; evaluation requires explicit `YES`.
+  No evaluation has been launched by this repair.
+- Corrected the release manifest filename and confirmed evaluator script paths
+  and CLI arguments against the feature branch.
+- Workflow repair is pending GitHub Actions verification. Both checkpoints
+  remain unchanged and separately backed up.
