@@ -68,6 +68,7 @@ class MetricsLogger:
         elapsed_seconds: float,
         ended_by_resignation: bool = False,
         ended_by_adjudication: bool = False,
+        ended_by_move_limit: bool = False,
         filename: str = "self_play_games.jsonl",
     ) -> None:
         """Persist a complete game record as soon as self-play finishes."""
@@ -80,8 +81,10 @@ class MetricsLogger:
         game.headers["Result"] = result
         if ended_by_resignation:
             termination = "resignation"
-        elif ended_by_adjudication:
+        elif ended_by_move_limit:
             termination = "move-cap draw"
+        elif ended_by_adjudication:
+            termination = "adjudicated"
         else:
             termination = "chess rules"
         game.headers["Termination"] = termination
@@ -109,6 +112,7 @@ class MetricsLogger:
             "elapsed_seconds": round(elapsed_seconds, 3),
             "ended_by_resignation": ended_by_resignation,
             "ended_by_adjudication": ended_by_adjudication,
+            "ended_by_move_limit": ended_by_move_limit,
         }
         with open(path, "a", encoding="utf-8") as handle:
             handle.write(json.dumps(record) + "\n")
