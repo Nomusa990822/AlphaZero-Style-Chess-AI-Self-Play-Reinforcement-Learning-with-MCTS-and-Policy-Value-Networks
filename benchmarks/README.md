@@ -73,3 +73,31 @@ acceptable moves are treated as a set: selecting any curated move is a success. 
 suite: CI verifies the benchmark implementation, while benchmark scores
 measure playing decisions. Never treat an unreviewed or tiny corpus as
 evidence of tactical strength.
+
+
+## Stockfish-assisted corpus review
+
+The optional CI workflow `.github/workflows/tactical-engine-audit.yml` runs
+Stockfish against every curated position and uploads a JSON artifact named
+`tactical-engine-audit`. The report includes the engine/version identity,
+search depth, top principal variations, and a separate fixed-depth evaluation
+for every human-accepted move. It flags accepted moves that fall more than the
+configured centipawn tolerance behind the engine's best line.
+
+The default CI audit uses depth 16, MultiPV 5, one thread, and a 150-centipawn
+tolerance. These settings make the review reproducible and affordable in CI;
+they are not proof of optimal play. A flagged position requires human review,
+and an unflagged position still requires review of its motif annotation and
+chess explanation. Engine scores are sensitive to version, depth, hash and
+hardware. Do not silently replace human labels with engine top moves.
+
+Run it where Stockfish is installed:
+
+```bash
+python scripts/audit_tactical_corpus.py \\
+  --engine stockfish \\
+  --depth 18 \\
+  --multipv 5 \\
+  --max-loss-cp 150 \\
+  --output reports/tactical-engine-audit.json
+```
