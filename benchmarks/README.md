@@ -227,7 +227,7 @@ defences. CI validates sequence legality and the evaluator; it does not run
 training or measure neural-network playing strength.
 
 
-The sequence corpus has since grown to five combinations and nineteen
+The sequence corpus has since grown to seven combinations and twenty-five
 annotated plies. The two added removal-of-the-defender lines cover both
 colours: White removes a rook to win a knight, while Black removes a pawn
 defender to open a mating square. Both are still evaluated as annotated
