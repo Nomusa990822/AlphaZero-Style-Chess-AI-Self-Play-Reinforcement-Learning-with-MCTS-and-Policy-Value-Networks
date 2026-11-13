@@ -63,9 +63,12 @@ jobs:
             --dir data/checkpoints
           echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  data/checkpoints/best_model.pt" | sha256sum --check -
 
+      - name: Verify training module imports
+        run: python -m scripts.train_tactical_policy --help
+
       - name: Run tactical policy-only training pilot
         run: |
-          python scripts/train_tactical_policy.py \
+          python -m scripts.train_tactical_policy \
             --checkpoint data/checkpoints/best_model.pt \
             --epochs "${{ inputs.epochs }}" \
             --learning-rate 0.00001 \
@@ -74,7 +77,6 @@ jobs:
             --output-report reports/tactical-policy-learning-report.json
 
       - name: Upload isolated candidate and report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: tactical-policy-learning-pilot-${{ github.run_id }}
