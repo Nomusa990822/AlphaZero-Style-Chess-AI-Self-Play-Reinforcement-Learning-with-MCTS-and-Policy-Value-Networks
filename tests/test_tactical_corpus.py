@@ -10,13 +10,16 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 9
+    assert len(positions) >= 13
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
         "hanging_piece",
         "pin",
         "skewer",
+        "discovered_attack",
+        "defensive_resource",
+        "endgame_tactic",
     }
     sides_to_move = set()
     for case in positions:
@@ -27,8 +30,8 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         sides_to_move.add(board.turn)
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
-    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 5
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 4
+    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 7
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 6
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
@@ -46,5 +49,33 @@ def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
         board = chess.Board(case.fen)
         assert case.motif == motif
         assert board.turn == turn
+        assert move in case.acceptable_moves
+        assert chess.Move.from_uci(move) in board.legal_moves
+
+
+def test_discovered_attack_defensive_resource_and_endgame_examples():
+    path = Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl"
+    positions = {case.position_id: case for case in load_tactical_positions(path)}
+
+    expected = {
+        "white-knight-discovered-check-queen-attack-001": (
+            "discovered_attack", chess.WHITE, "e4f6", "middlegame"
+        ),
+        "black-knight-captures-checking-rook-001": (
+            "defensive_resource", chess.BLACK, "c2e1", "middlegame"
+        ),
+        "white-pawn-promotes-with-check-001": (
+            "endgame_tactic", chess.WHITE, "a7a8q", "endgame"
+        ),
+        "black-pawn-promotes-with-check-001": (
+            "endgame_tactic", chess.BLACK, "a2a1q", "endgame"
+        ),
+    }
+    for position_id, (motif, turn, move, phase) in expected.items():
+        case = positions[position_id]
+        board = chess.Board(case.fen)
+        assert case.motif == motif
+        assert board.turn == turn
+        assert case.phase == phase
         assert move in case.acceptable_moves
         assert chess.Move.from_uci(move) in board.legal_moves
