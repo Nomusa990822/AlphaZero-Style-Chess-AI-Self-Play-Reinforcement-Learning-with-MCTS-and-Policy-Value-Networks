@@ -58,7 +58,7 @@ def test_hanging_piece_moves_capture_an_undefended_major_piece():
         assert victim.piece_type in {chess.QUEEN, chess.ROOK}
         assert not board.attackers(not board.turn, move.to_square)
         board.push(move)
-        assert board.piece_at(move.to_square).color == not board.turn
+        assert board.piece_at(move.to_square).color == (not board.turn)
 
 
 def test_pin_examples_capture_the_absolutely_pinned_piece():
