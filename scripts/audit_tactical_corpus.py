@@ -25,6 +25,8 @@ BENCHMARK_MODULE = importlib.util.module_from_spec(MODULE_SPEC)
 sys.modules[MODULE_SPEC.name] = BENCHMARK_MODULE
 MODULE_SPEC.loader.exec_module(BENCHMARK_MODULE)
 load_tactical_positions = BENCHMARK_MODULE.load_tactical_positions
+load_tactical_sequences = BENCHMARK_MODULE.load_tactical_sequences
+TacticalPosition = BENCHMARK_MODULE.TacticalPosition
 
 
 MATE_SCORE = 100_000
@@ -113,9 +115,64 @@ def audit_position(
     }
 
 
+
+def audit_sequence(
+    engine: chess.engine.SimpleEngine,
+    sequence: Any,
+    *,
+    depth: int,
+    multipv: int,
+    max_loss_cp: int,
+) -> dict[str, Any]:
+    """Review every annotated ply in a tactical combination line."""
+    board = chess.Board(sequence.fen)
+    ply_results = []
+    for index, ply in enumerate(sequence.plies, start=1):
+        case = TacticalPosition(
+            position_id=f"{sequence.sequence_id}-ply-{index}",
+            motif="+".join(sequence.motifs),
+            fen=board.fen(),
+            acceptable_moves=ply.acceptable_moves,
+            annotation=ply.annotation,
+            phase=sequence.phase,
+        )
+        result = audit_position(
+            engine,
+            case,
+            depth=depth,
+            multipv=multipv,
+            max_loss_cp=max_loss_cp,
+        )
+        result["ply"] = index
+        ply_results.append(result)
+        # The corpus defines an illustrative principal variation. Continue
+        # the audit along its canonical accepted move at each ply.
+        board.push(chess.Move.from_uci(sorted(ply.acceptable_moves)[0]))
+
+    flagged = sum(
+        item["review_status"] != "engine_supports_at_least_one_accepted_move"
+        for item in ply_results
+    )
+    return {
+        "id": sequence.sequence_id,
+        "motifs": list(sequence.motifs),
+        "phase": sequence.phase,
+        "plies": len(ply_results),
+        "supported_plies": len(ply_results) - flagged,
+        "flagged_plies_for_human_review": flagged,
+        "review_status": (
+            "engine_supports_all_annotated_plies"
+            if not flagged
+            else "human_review_required_engine_disagrees"
+        ),
+        "line_review": ply_results,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--positions", type=Path, default=Path("benchmarks/tactical_positions.jsonl"))
+    parser.add_argument("--sequences", type=Path, default=Path("benchmarks/tactical_sequences.jsonl"))
     parser.add_argument("--engine", default="stockfish", help="Stockfish executable path")
     parser.add_argument("--depth", type=int, default=18)
     parser.add_argument("--multipv", type=int, default=5)
@@ -130,10 +187,21 @@ def main() -> int:
         parser.error(f"Stockfish executable not found: {args.engine}")
 
     positions = load_tactical_positions(args.positions)
+    sequences = load_tactical_sequences(args.sequences)
     with chess.engine.SimpleEngine.popen_uci(engine_path) as engine:
         engine.configure({"Threads": 1, "Hash": 256})
         engine_name = engine.id.get("name", "unknown")
         engine_author = engine.id.get("author", "unknown")
+        sequence_results = [
+            audit_sequence(
+                engine,
+                sequence,
+                depth=args.depth,
+                multipv=args.multipv,
+                max_loss_cp=args.max_loss_cp,
+            )
+            for sequence in sequences
+        ]
         results = [
             audit_position(
                 engine,
@@ -160,13 +228,20 @@ def main() -> int:
             "positions": len(results),
             "supported_positions": len(results) - flagged,
             "flagged_for_human_review": flagged,
+            "sequences": len(sequence_results),
+            "supported_sequences": sum(item["review_status"] == "engine_supports_all_annotated_plies" for item in sequence_results),
+            "flagged_sequences_for_human_review": sum(item["review_status"] != "engine_supports_all_annotated_plies" for item in sequence_results),
+            "sequence_plies": sum(item["plies"] for item in sequence_results),
+            "supported_sequence_plies": sum(item["supported_plies"] for item in sequence_results),
         },
         "limitations": [
             "This is a finite-depth engine review, not a proof of tactical correctness.",
             "Engine support does not validate the human motif label or prove the move is uniquely best.",
             "Review flagged positions and annotations manually before treating them as benchmark ground truth.",
+            "Sequence review follows the curated principal variation and does not prove the line is forced against every defence.",
         ],
         "positions": results,
+        "sequences": sequence_results,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
