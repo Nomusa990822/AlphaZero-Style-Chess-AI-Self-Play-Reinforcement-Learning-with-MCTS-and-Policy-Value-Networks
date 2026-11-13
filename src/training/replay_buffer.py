@@ -124,6 +124,8 @@ class ReplayBuffer:
     def load(self, path: str | Path) -> None:
         """Restore a snapshot and replay every journal chunk not yet snapshotted."""
         path = Path(path)
+        self.buffer = deque(maxlen=self.capacity)
+        self._pending_journal_files.clear()
         included_journal_files: set[str] = set()
 
         if path.is_file():
