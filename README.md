@@ -544,7 +544,7 @@ Each self-play sample contains:
 | `value_target` | Outcome-derived value for the player to move |
 | `player_to_move` | Side whose decision produced the sample |
 
-The current implementation also applies a small distance-from-game-end decay to value targets.
+Every value target uses the final game outcome from the perspective of the player to move at that position, without temporal discounting.
 
 ### Game termination
 
