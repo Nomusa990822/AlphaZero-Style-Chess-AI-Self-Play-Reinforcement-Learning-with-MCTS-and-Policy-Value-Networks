@@ -1,3 +1,20 @@
+## 2026-11-13 — Expand tactical corpus with skewers and black-to-move examples
+
+### Changes
+- Expanded `benchmarks/tactical_positions.jsonl` from five to nine positions.
+- Added a White-to-move rook skewer, a Black-to-move rook skewer, a Black-to-move knight capture of an undefended rook, and a Black-to-move queen checking fork.
+- Added explicit tests for each new position's side to move, motif, and accepted legal UCI move; strengthened corpus coverage checks.
+- Corrected a literal escaped newline in the benchmark README and updated corpus/report descriptions.
+- The corpus now has five White-to-move and four Black-to-move positions. This improves balance but remains a small diagnostic sample, not a comprehensive tactics suite.
+
+### Verification
+- FEN validity, terminal-state checks, and accepted-move legality are enforced by the existing `python-chess` corpus loader and the GitHub Actions test suite.
+- The new positions have not yet been CI-verified; the latest workflow result must be checked before calling this batch complete.
+- No real-checkpoint tactical benchmark was run and no playing-strength gain is claimed.
+
+### Follow-up
+- Review the new CI run. Then add defensive-resource, discovered-attack, and endgame examples only when their tactical correctness and acceptable move sets can be checked.
+
 ## 2026-11-13 — Add explicit game-phase tactical reporting
 
 ### Changes
