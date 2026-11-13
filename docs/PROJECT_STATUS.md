@@ -481,3 +481,20 @@ For every meaningful development batch:
 - Stockfish: **22/22 positions, 5/5 sequences and 19/19 annotated plies supported; zero flags** ([43490761420](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761420)).
 - Two duplicate push-triggered runs were cancelled and replaced by the passing PR-triggered runs; they were not failures.
 - The pilot was not run. GitHub requires manual-dispatch workflows to exist on the default branch; because `main` is intentionally unchanged, the new workflow cannot be dispatched until it is merged or otherwise installed on the default branch. The PR remains unmerged.
+
+
+## Post-merge fresh-start pilot status — 2026-11-13
+
+- PR #1 is merged into `main` at
+  `cb8ddd0ee3ae332dfeda500bbf961fc80451a07f`.
+- `.github/workflows/fresh-start-pilot.yml` is now on the default branch and
+  available in GitHub Actions. Select `chess-strength-training-upgrade` as
+  the run branch. The job is restricted to that branch and requires the
+  explicit `YES` input (default `NO`).
+- Post-merge CPU workflow [43491543336](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43491543336)
+  passed on the merge commit. The final PR-head verification recorded 172
+  passing CPU tests and a clean Stockfish audit of 22 positions, five
+  sequences and nineteen annotated plies.
+- The fresh-start pilot has not been launched. No new checkpoint or training
+  output exists. The pilot is a bounded pipeline smoke test, not an Elo or
+  playing-strength evaluation.

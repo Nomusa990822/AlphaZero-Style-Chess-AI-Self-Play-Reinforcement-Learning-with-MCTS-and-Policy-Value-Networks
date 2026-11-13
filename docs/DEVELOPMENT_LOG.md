@@ -1018,3 +1018,27 @@ Copy this section for each future engineering batch.
 - Duplicate push-triggered runs [43490750907](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750907) (CPU) and [43490750811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750811) (Stockfish) were **cancelled** when the pull-request-triggered runs superseded them. They are cancellations, not failures; the replacement runs above passed.
 - No training workflow was dispatched. No checkpoint was created, no replay data was generated, and no playing-strength result was measured.
 - Dispatch limitation: GitHub requires a `workflow_dispatch` workflow file to exist on the repository's default branch. This pilot workflow currently exists only on the feature branch, so it is prepared and CI-verified but cannot be manually dispatched until the PR is merged or the workflow is otherwise made available on the default branch. The PR remains unmerged and `main` remains unchanged.
+
+
+## 2026-11-13 — Post-merge pilot workflow readiness review
+
+- PR #1 was squash-merged into `main`; merge commit:
+  `cb8ddd0ee3ae332dfeda500bbf961fc80451a07f`.
+- Confirmed `.github/workflows/fresh-start-pilot.yml` is present on the
+  default branch. The manual workflow can now be opened from Actions; select
+  `chess-strength-training-upgrade` in the branch selector. Its job condition
+  still requires that exact feature branch and the explicit `YES` input;
+  the default remains `NO`.
+- Reviewed the manifest helper: a missing pilot checkpoint directory produces
+  an empty manifest rather than aborting the always-run manifest step. The
+  workflow uploads available pilot outputs and publishes a checkpoint
+  prerelease only after a successful pilot with a generated `.pt` file.
+- Default-branch post-merge CPU workflow [43491543336](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43491543336)
+  completed successfully on the merge commit. The pre-merge PR-head
+  verification remains 172 passing CPU tests plus Stockfish support for
+  22/22 positions, 5/5 sequences and 19/19 annotated plies, with zero flags.
+- Corrected the stale manual-dispatch instructions in `docs/training_flow.md`
+  and updated `docs/PROJECT_STATUS.md` to distinguish merged/dispatchable
+  workflow status from training status.
+- No training workflow was dispatched. No checkpoint or replay artifact was
+  generated, and no playing-strength or Elo result is claimed.
