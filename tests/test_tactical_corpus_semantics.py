@@ -342,3 +342,39 @@ def test_black_queen_decoy_attracts_white_queen_and_exposes_bishop():
     board.push(knight_check)
     assert board.piece_at(chess.G4) == chess.Piece(chess.KNIGHT, chess.BLACK)
     assert board.is_check()
+
+
+
+def test_white_rooks_remove_the_defending_rook_before_capturing_knight():
+    case = cases_by_id()["white-rooks-remove-defending-rook-before-taking-knight-001"]
+    board = chess.Board(case.fen)
+    remove_defender = chess.Move.from_uci("e4d4")
+
+    assert case.motif == "removal_of_defender"
+    assert board.turn == chess.WHITE
+    assert board.piece_at(chess.D4) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert board.piece_at(chess.D3) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert chess.D3 in board.attacks(chess.D4)
+    assert remove_defender in board.legal_moves
+    board.push(remove_defender)
+    assert board.piece_at(chess.D4) == chess.Piece(chess.ROOK, chess.WHITE)
+
+    pawn_recapture = chess.Move.from_uci("e5d4")
+    assert pawn_recapture in board.legal_moves
+    board.push(pawn_recapture)
+    assert board.piece_at(chess.D4) == chess.Piece(chess.PAWN, chess.BLACK)
+
+    knight_capture = chess.Move.from_uci("e3d3")
+    assert knight_capture in board.legal_moves
+    board.push(knight_capture)
+    assert board.piece_at(chess.D3) == chess.Piece(chess.ROOK, chess.WHITE)
+    assert board.piece_at(chess.D3) != chess.Piece(chess.KNIGHT, chess.BLACK)
+
+    rook_check = chess.Move.from_uci("c8c1")
+    assert rook_check in board.legal_moves
+    board.push(rook_check)
+    assert board.is_check()
+    king_escape = chess.Move.from_uci("g1h2")
+    assert king_escape in board.legal_moves
+    board.push(king_escape)
+    assert not board.is_check()

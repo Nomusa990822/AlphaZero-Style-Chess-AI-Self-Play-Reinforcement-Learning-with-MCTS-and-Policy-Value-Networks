@@ -908,3 +908,11 @@ Copy this section for each future engineering batch.
 - The new Black decoy `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+` was supported within the configured engine tolerance and is retained.
 - The first run pair [43436238211](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436238211) (CPU) and [43436238354](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436238354) (Stockfish) was cancelled and replaced by the completed pair above. The replacement CPU passed; the replacement Stockfish run completed successfully as a workflow but flagged the unsound candidate. Cancellation and review flag are not test failures.
 - Next revision removes the rejected candidate. Expected corpus: **20 positions (White 10 / Black 10)**. No training or checkpoint evaluation was run.
+
+
+### White removal-of-the-defender candidate — verification pending (2026-11-13)
+- Added a White-to-move example from ChessFlame/Lichess puzzle 03lR8: `32.Rxd4 exd4 33.Rxd3`, removing the black rook that defends the knight on d3, then capturing the knight. Source: https://www.chessflame.com/puzzles/lichess_03lR8.
+- Added semantic coverage for the exchange sequence and the checking counterplay `...Rc1+ 34.Kh2`.
+- Candidate corpus: **21 positions (White 11 / Black 10)**. CPU and Stockfish verification are pending. The last verified baseline is 20 positions (White 10 / Black 10) on `4e90222`.
+- The earlier White `Re8+` deflection candidate was rejected after Stockfish disagreed by about 452 centipawns; its failure is preserved above. The Black decoy is retained and supported by Stockfish.
+- No training or checkpoint evaluation was run.

@@ -391,3 +391,9 @@ For every meaningful development batch:
 - The Black decoy example is retained; Stockfish supported its accepted move within the configured tolerance.
 - Candidate corpus is reduced to **20 positions (White 10 / Black 10)**. The rejected position and its semantic test are removed in the next correction revision. The 21-position review's single flag remains recorded in DEVELOPMENT_LOG.md.
 - No training, checkpoint evaluation, or Elo claim was made.
+
+
+### White removal-of-the-defender candidate — verification pending (2026-11-13)
+- Added the White-to-move `Rxd4 exd4 Rxd3` example from ChessFlame/Lichess puzzle 03lR8, with a semantic test covering the removal and follow-up capture.
+- Candidate corpus: **21 positions (White 11 / Black 10)**. Awaiting CPU and Stockfish checks; last verified baseline is 20/20 supported with no flags on commit `4e90222`.
+- The White `Re8+` deflection proposal has been rejected and removed after the Stockfish review; do not count it. The Black decoy candidate remains supported.
