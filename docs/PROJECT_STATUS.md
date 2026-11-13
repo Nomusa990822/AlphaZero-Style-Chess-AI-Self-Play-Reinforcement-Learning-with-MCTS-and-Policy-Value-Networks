@@ -480,7 +480,7 @@ For every meaningful development batch:
 - CPU CI: **172 passed in 4.01 seconds** ([43490761455](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761455)).
 - Stockfish: **22/22 positions, 5/5 sequences and 19/19 annotated plies supported; zero flags** ([43490761420](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761420)).
 - Two duplicate push-triggered runs were cancelled and replaced by the passing PR-triggered runs; they were not failures.
-- The pilot was not run. GitHub requires manual-dispatch workflows to exist on the default branch; because `main` is intentionally unchanged, the new workflow cannot be dispatched until it is merged or otherwise installed on the default branch. The PR remains unmerged.
+- The pilot was not run. The workflow has since been merged into `main` and is available for manual dispatch. Select `chess-strength-training-upgrade` as the run branch and keep the confirmation input at `NO` unless the fresh-start pilot is explicitly authorised.
 
 
 ## Post-merge fresh-start pilot status — 2026-11-13
