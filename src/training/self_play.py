@@ -177,10 +177,8 @@ class SelfPlayGenerator:
         white_value = self._result_to_white_value(result)
 
         samples: List[SelfPlaySample] = []
-        total_moves = len(history_states)
-        
-        for move_index, (state, policy_target, player_to_move) in enumerate(
-            zip(history_states, history_policy_targets, history_players)
+        for state, policy_target, player_to_move in zip(
+            history_states, history_policy_targets, history_players
         ):
             # AlphaZero value targets use the final game outcome without
             # distance discounting; the side-to-move perspective is flipped.
