@@ -137,3 +137,31 @@ The JSON report records `tactical_root_filter` so the configuration is
 explicit. Keep every other setting fixed when comparing results. This is an
 ablation facility, not a strength claim; run it on a real checkpoint and
 review the full per-position failures before drawing conclusions.
+
+
+## Paired tactical-filter comparison
+
+Use `compare_tactical_filters.py` to run both settings in one process with
+one loaded checkpoint and one inference wrapper. It evaluates every corpus
+position with filter-on and filter-off MCTS using the same device, simulation
+budget, deterministic temperature-zero selection and disabled Dirichlet noise:
+
+```bash
+python compare_tactical_filters.py \
+  --checkpoint data/checkpoints/best_model.pt \
+  --positions benchmarks/tactical_positions.jsonl \
+  --simulations 100 \
+  --device cpu \
+  --output reports/tactical-filter-ablation.json
+```
+
+The report includes the checkpoint SHA-256 and epoch, per-position selected
+moves and correctness, per-motif/colour/phase summaries, runtime, changed
+selections and paired correctness disagreements. This makes the comparison
+easier to audit than correlating two independent reports. Runtime is
+descriptive and may vary with system load; it is not a strength metric.
+
+A checkpoint must exist locally at the supplied path. Model checkpoints are
+not committed to the repository. If no compatible checkpoint is available,
+do not substitute an untrained random network and present its score as learned
+playing strength. A small tactical corpus remains diagnostic, not an Elo test.

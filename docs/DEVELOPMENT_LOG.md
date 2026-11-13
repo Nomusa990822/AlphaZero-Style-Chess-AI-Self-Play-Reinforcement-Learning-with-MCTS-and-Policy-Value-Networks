@@ -1,3 +1,20 @@
+## 2026-11-13 — Add a single-process paired tactical-filter benchmark
+
+### Goal and implementation
+- Added `compare_tactical_filters.py` to compare root tactical filtering enabled versus disabled using one checkpoint load, one shared model/inference wrapper, the same corpus, device, simulation budget, no Dirichlet noise and deterministic temperature-zero selection.
+- The JSON report records checkpoint SHA-256/epoch, per-position moves and correctness, paired selection changes and correctness disagreements, per-motif/colour/phase scores, and descriptive runtime.
+- Added `tests/test_compare_tactical_filters.py` to verify both configurations, shared checkpoint/inference setup, paired result accounting and report writing.
+- Documented the one-command workflow and report interpretation in `benchmarks/README.md`.
+
+### Verification
+- Implementation commits: `6c74171c3f1fae51fb649a7dca6fb3155c8e8347` (runner), `12817ee5ec53bcb03aa09320bb8c8180b97a6932` (test), and `861602a6f258266f3c39561b58cbb1aa3af74ce5` (report newline correction).
+- Documentation and tracking update: CI pending on the final commit created for this batch.
+- Repository tree inspection found no committed checkpoint file. A compatible local checkpoint is required to produce a meaningful paired benchmark; no untrained-network result will be presented as learned strength.
+- No benchmark experiment has been run and no playing-strength or Elo claim is made.
+
+### Follow-up
+- Verify the new test and both CI workflows. Once a compatible checkpoint is available locally, run the documented paired command and preserve its JSON report and checkpoint hash in `EXPERIMENT_LOG.md`.
+
 ## 2026-11-13 — Verify configurable tactical-root-filter ablation
 
 ### Verification
