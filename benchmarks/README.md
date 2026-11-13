@@ -31,11 +31,7 @@ controlled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
-The committed `tactical_positions.jsonl` is still a small starter corpus. It
-now includes a mating net, knight forks, hanging-piece captures, pins, and
-rook skewers, discovered attacks, defensive resources and promotion tactics,
-with examples for both sides to move. Its thirteen positions are
-not large or diverse enough to support a general tactical-strength claim.
+The committed `tactical_positions.jsonl` is a small curated diagnostic corpus. It includes mating nets, forks, hanging pieces, pins, skewers, discovered attacks, defensive resources, promotion tactics, deflections, decoys, removal of defenders, interference, overloaded defenders and trapped pieces. The current 26 positions include both colours to move (14 White, 12 Black). Several motifs still have only one or two examples; this is not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
@@ -105,7 +101,7 @@ python scripts/audit_tactical_corpus.py \\
 
 ## First recorded engine review
 
-The thirteen-position starter corpus was reviewed by Stockfish 17.1 in GitHub
+The original thirteen-position starter corpus was reviewed by Stockfish 17.1 in GitHub
 Actions on 2026-11-13 (depth 16, MultiPV 5, one thread, 256 MB hash). All
 13 curated acceptable moves were within 150 centipawns of the engine's best
 line, and no positions were flagged by the configured comparison. The JSON
