@@ -961,3 +961,11 @@ Copy this section for each future engineering batch.
 - Added the Black decoy combination `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+`. Sequence tests now validate three combinations and account for eleven annotated plies (White 5 / Black 6).
 - Initial workflow attempts [43437573943](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437573943) (CPU) and [43437573942](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437573942) (Stockfish) were cancelled; the replacement pair above passed on the same revision. These cancellations are not failures.
 - The sequence metric remains annotated principal-variation line-following; it does not prove the line is forced against every defence. No training or checkpoint evaluation was run.
+
+
+### Add White and Black removal-of-the-defender combinations (2026-11-13)
+- Added two multi-ply combinations using the already reviewed corpus positions:
+  - White: `Rxd4 exd4 Rxd3 Rc1+ Kh2`, removing the rook that guards the d3-knight, then winning the knight.
+  - Black: `...Rxc4+ Rxc4 ...Nb5#`, sacrificing the rook to remove the c4-pawn defender and open a mating square.
+- Sequence corpus expanded from three to **five combinations and nineteen annotated plies**, with White 9 / Black 10 plies in the complete evaluator test path.
+- Updated evaluator tests and benchmark documentation. CPU and Stockfish sequence-review checks are pending. Sequence scoring remains principal-variation line-following; no training or checkpoint evaluation was run.

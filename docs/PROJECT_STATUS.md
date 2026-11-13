@@ -437,3 +437,9 @@ For every meaningful development batch:
 - Stockfish audit: **22/22 positions supported, 0 flagged; 3/3 sequences and 11/11 annotated plies supported, 0 flagged** ([43437583217](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437583217), artifact `14044310522`).
 - The sequence corpus contains three multi-motif combinations: Black checking fork/hanging queen, White discovered check/hanging queen, and Black decoy/hanging bishop. Both colours are represented across eleven annotated plies.
 - Sequence scoring follows curated principal variations and does not prove forcedness against every possible defence. No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.
+
+
+### Combined removal-of-the-defender sequences — verification pending (2026-11-13)
+- Added White `Rxd4 exd4 Rxd3 Rc1+ Kh2` and Black `...Rxc4+ Rxc4 ...Nb5#` combinations.
+- Sequence corpus now contains **five combinations and nineteen annotated plies**. Tests account for both colours (White 9 / Black 10).
+- CPU and Stockfish sequence audit are pending. No training or checkpoint evaluation was run.

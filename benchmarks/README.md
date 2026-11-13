@@ -225,3 +225,10 @@ This measures line-following on the annotated principal variations. It does
 not establish that every opponent reply is forced or exhaustively compare all
 defences. CI validates sequence legality and the evaluator; it does not run
 training or measure neural-network playing strength.
+
+
+The sequence corpus has since grown to five combinations and nineteen
+annotated plies. The two added removal-of-the-defender lines cover both
+colours: White removes a rook to win a knight, while Black removes a pawn
+defender to open a mating square. Both are still evaluated as annotated
+principal variations, not forced-line proofs.
