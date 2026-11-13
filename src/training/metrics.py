@@ -35,6 +35,7 @@ class IterationMetrics:
     evaluation_draws: int
     evaluation_score: float
     model_promoted: bool
+    evaluation_lower_confidence_bound: float = 0.0
 
 
 class MetricsLogger:
