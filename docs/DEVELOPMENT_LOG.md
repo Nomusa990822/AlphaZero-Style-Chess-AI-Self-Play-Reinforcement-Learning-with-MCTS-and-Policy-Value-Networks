@@ -969,3 +969,12 @@ Copy this section for each future engineering batch.
   - Black: `...Rxc4+ Rxc4 ...Nb5#`, sacrificing the rook to remove the c4-pawn defender and open a mating square.
 - Sequence corpus expanded from three to **five combinations and nineteen annotated plies**, with White 9 / Black 10 plies in the complete evaluator test path.
 - Updated evaluator tests and benchmark documentation. CPU and Stockfish sequence-review checks are pending. Sequence scoring remains principal-variation line-following; no training or checkpoint evaluation was run.
+
+
+### Five tactical combinations — White and Black defender-removal lines verified (2026-11-13)
+- Verified revision: `36ad6dd4ddcd06d7215b4abd99aa7d21d183201d`.
+- CPU workflow [43437925480](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437925480): **170 passed in 3.99 seconds**.
+- Stockfish audit [43437925723](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437925723): **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged**. Audit artifact `14043849570`.
+- Added White `Rxd4 exd4 Rxd3 Rc1+ Kh2` and Black `...Rxc4+ Rxc4 ...Nb5#` removal-of-the-defender combinations. Both lines passed semantic legality tests and finite-depth Stockfish review.
+- Initial workflow pair [43437915823](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437915823) (CPU) and [43437915817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437915817) (Stockfish) was cancelled; replacement runs above passed on the same revision. Cancellations are not failures.
+- Sequence corpus now has **five combinations and nineteen annotated plies**. This remains annotated principal-variation line-following, not proof of forcedness against all defences. No training or checkpoint evaluation was run.
