@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   matches:
-    if: \${{ github.ref == 'refs/heads/main' && inputs.confirm_match_evaluation == 'YES' }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_match_evaluation == 'YES' }}
     name: 72-game colour-balanced match evaluation
     runs-on: ubuntu-latest
     timeout-minutes: 240
@@ -51,7 +51,7 @@ jobs:
 
       - name: Download the immutable fresh-start pilot checkpoints
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p data/checkpoints/match_eval
           gh release download fresh-pilot-checkpoint-43497298757-1 \
@@ -82,7 +82,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: fixed-stockfish-match-evaluation-\${{ github.run_id }}
+          name: fixed-stockfish-match-evaluation-${{ github.run_id }}
           path: reports/fixed-stockfish-match-evaluation.json
           if-no-files-found: warn
           retention-days: 90
