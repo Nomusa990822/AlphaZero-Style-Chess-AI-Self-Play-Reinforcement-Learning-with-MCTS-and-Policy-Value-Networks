@@ -17,6 +17,7 @@ def position(position_id="fork-1", motif="fork", fen=None, moves=None):
         "fen": fen or chess.STARTING_FEN,
         "acceptable_moves": moves or ["e2e4"],
         "annotation": "The accepted move demonstrates the labelled motif.",
+        "phase": "middlegame",
     })
 
 
@@ -25,6 +26,7 @@ def test_tactical_position_validates_acceptable_moves():
     assert case.position_id == "fork-1"
     assert case.acceptable_moves == frozenset({"e2e4"})
     assert case.annotation
+    assert case.phase == "middlegame"
 
 
 def test_tactical_position_rejects_illegal_acceptable_move():
@@ -64,6 +66,8 @@ def test_benchmark_reports_overall_and_per_motif_accuracy():
     assert result.by_motif["pin"]["accuracy"] == 0.0
     assert result.by_color["white"]["total"] == 3
     assert result.by_color["white"]["accuracy"] == pytest.approx(2 / 3)
+    assert result.by_phase["middlegame"]["total"] == 3
+    assert result.by_phase["middlegame"]["accuracy"] == pytest.approx(2 / 3)
     assert result.failures == (
         {"id": "pin-1", "motif": "pin", "selected": "e2e4"},
     )
@@ -148,3 +152,28 @@ def test_benchmark_reports_white_and_black_separately():
 
     assert result.by_color["white"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
     assert result.by_color["black"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
+
+
+def test_tactical_position_rejects_unknown_phase():
+    data = {
+        "id": "unknown-phase",
+        "motif": "fork",
+        "fen": chess.STARTING_FEN,
+        "acceptable_moves": ["e2e4"],
+        "annotation": "The accepted move demonstrates the labelled motif.",
+        "phase": "late-opening-middle-endgame",
+    }
+    with pytest.raises(ValueError, match="unknown phase"):
+        TacticalPosition.from_dict(data)
+
+
+def test_tactical_position_requires_phase_field():
+    data = {
+        "id": "missing-phase",
+        "motif": "fork",
+        "fen": chess.STARTING_FEN,
+        "acceptable_moves": ["e2e4"],
+        "annotation": "The accepted move demonstrates the labelled motif.",
+    }
+    with pytest.raises(ValueError, match="Missing tactical-position fields"):
+        TacticalPosition.from_dict(data)
