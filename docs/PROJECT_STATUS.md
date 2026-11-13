@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `c9c19ccaa8554ec34045d2ed436f01ec769f3685` (145 CPU tests passed in 3.35 seconds; CPU run 43417951501; Stockfish audit run 43417951289 passed).
+**Latest verified code revision:** `9aaaa34764e52d9133862227e646db8f24d5fde5` (145 CPU tests passed; documentation-only update after verified code revision `c9c19ccaa8554ec34045d2ed436f01ec769f3685`).
 **Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, and the bounded forced-mate-in-two root safeguard are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
@@ -131,3 +131,14 @@ For every meaningful development batch:
 - This is a search-overhead reduction only. It does not change tactical coverage or establish a playing-strength improvement.
 - CPU workflow [43417951501](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43417951501): **passed; 145 tests passed in 3.35 seconds** on Python 3.11.
 - Stockfish audit [43417951289](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43417951289): **passed**; 13/13 corpus positions supported, 0 flagged for human review; artifact ID 14032288263.
+
+
+## Current batch — static exchange evaluation (verification pending)
+
+- Added a bounded legal-recapture exchange evaluator in src/mcts/tactics.py.
+- It evaluates captures, en-passant and promotions on the move's destination square, allowing either side to stop the exchange.
+- Legal recaptures are enumerated through python-chess, excluding pinned pieces and illegal king captures.
+- A finite capture-node budget returns None when the result is incomplete; unknown is not silently treated as a favourable exchange.
+- Added tests for an undefended queen capture, a poisoned rook capture, en-passant, promotion, invalid moves and invalid budgets.
+- This is a tactical evaluation primitive; it is not yet used to prune or bias MCTS moves. No playing-strength gain is claimed.
+- CPU tests and Stockfish audit: pending.

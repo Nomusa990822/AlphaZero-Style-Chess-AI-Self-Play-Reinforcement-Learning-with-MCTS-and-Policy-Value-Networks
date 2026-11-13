@@ -6,7 +6,11 @@ import numpy as np
 from src.engine.move_encoding import MoveEncoding
 from src.mcts.node import MCTSNode
 from src.mcts.search import MCTS, MCTSConfig
-from src.mcts.tactics import find_mate_in_one, find_moves_avoiding_mate_in_one
+from src.mcts.tactics import (
+    find_mate_in_one,
+    find_moves_avoiding_mate_in_one,
+    static_exchange_evaluation,
+)
 
 
 FORCED_MATE_FEN = "k6r/8/8/4n3/2b4q/8/8/6K1 w - - 0 1"
@@ -99,3 +103,45 @@ def test_forced_mate_in_two_discards_incomplete_candidate(monkeypatch):
         lambda position: [next(iter(position.legal_moves))],
     )
     assert tactics.find_forced_mate_in_two(board, max_reply_checks=1) == []
+
+
+
+def test_static_exchange_values_undefended_queen_capture_and_restores_board():
+    board = chess.Board("4k3/8/8/3q4/8/8/3R4/4K3 w - - 0 1")
+    move = chess.Move.from_uci("d2d5")
+    original_fen = board.fen()
+    original_stack = list(board.move_stack)
+
+    assert static_exchange_evaluation(board, move) == 900
+    assert board.fen() == original_fen
+    assert board.move_stack == original_stack
+
+
+def test_static_exchange_rejects_poisoned_rook_capture():
+    board = chess.Board("3qk3/8/8/3p4/8/8/3R4/4K3 w - - 0 1")
+    move = chess.Move.from_uci("d2d5")
+
+    # White wins a pawn but loses the rook to the black queen.
+    assert static_exchange_evaluation(board, move) == -400
+
+
+def test_static_exchange_handles_en_passant_and_promotion_gain():
+    en_passant = chess.Board("4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 1")
+    assert static_exchange_evaluation(
+        en_passant, chess.Move.from_uci("e5d6")
+    ) == 100
+
+    promotion = chess.Board("4k3/P7/8/8/8/8/8/4K3 w - - 0 1")
+    assert static_exchange_evaluation(
+        promotion, chess.Move.from_uci("a7a8q")
+    ) == 800
+
+
+def test_static_exchange_rejects_illegal_moves_and_invalid_budget():
+    board = chess.Board()
+    with np.testing.assert_raises(ValueError):
+        static_exchange_evaluation(board, chess.Move.from_uci("e2e5"))
+    with np.testing.assert_raises(ValueError):
+        static_exchange_evaluation(
+            board, chess.Move.from_uci("e2e4"), max_capture_nodes=0
+        )

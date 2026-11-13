@@ -532,3 +532,21 @@ Copy this section for each future engineering batch.
 - Stockfish audit [43417951289](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43417951289): **passed**; all 13 corpus positions supported within the configured tolerance, 0 flagged for human review; audit artifact ID 14032288263.
 - The new detector-call-count regression test passed as part of the 145-test suite.
 - No checkpoint experiment, training run, measured runtime comparison, playing-strength gain or Elo result is claimed.
+
+
+## 2026-11-13 — Add bounded static exchange evaluation
+
+### Goal and design
+- Introduce a reliable material-exchange calculation as the foundation for hanging-piece and poisoned-capture awareness.
+- Follow only legal captures onto the moved piece's destination square. Each side may stop exchanging; promotions and en-passant are accounted for.
+- Bound the total recapture nodes. If the budget is exhausted, return None rather than an incomplete numerical score.
+
+### Changes
+- Added static_exchange_evaluation to src/mcts/tactics.py.
+- Added regression tests for a free queen capture (+900), a poisoned rook capture (-400), en-passant (+100), queen promotion (+800), illegal moves and invalid budgets.
+- The helper is not yet wired into MCTS move pruning or prior adjustment. This isolates and validates the exchange calculation before allowing it to influence search.
+
+### Verification
+- Implementation/test revision: pending.
+- CPU test workflow and Stockfish tactical audit: pending.
+- No checkpoint experiment, training run, playing-strength gain or Elo result is claimed.
