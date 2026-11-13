@@ -927,3 +927,10 @@ Copy this section for each future engineering batch.
 - The preceding 21-position audit on `de948a5` flagged the White `Re8+` deflection proposal (about 452 cp below the engine's best move); that candidate and its test were removed. The Black decoy remains supported.
 - Current corpus: **21 positions (White 11 / Black 10)**. Seven of the planned eight balanced motif additions are now verified: two deflection? No — only the Black deflection is verified; the White deflection candidate was rejected. The verified additions are Black deflection, White and Black decoys, White and Black removal-of-defender, and White and Black interference: seven positions. A sound White deflection example remains outstanding.
 - No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
+
+
+### White deflection counterpart — candidate added to complete balanced batch (2026-11-13)
+- Added a White-to-move deflection from ChessFlame/Lichess puzzle 08lqs: `31.Nd7+ Nxd7 32.Qxe4`. The checking knight offer draws Black's f6-knight away from defending the queen on e4. Source: https://www.chessflame.com/puzzles/lichess_08lqs.
+- Added semantic tests for the checking offer, knight capture and queen win. Candidate corpus: **22 positions (White 12 / Black 10)**.
+- This is the eighth planned addition across deflection, decoy, removal-of-defender and interference (two examples per motif, both colours). CPU and Stockfish checks are pending. The last verified baseline remains 21 positions on `c780bd7`.
+- The earlier unsound `Re8+` deflection candidate remains excluded. No training or checkpoint evaluation was run.

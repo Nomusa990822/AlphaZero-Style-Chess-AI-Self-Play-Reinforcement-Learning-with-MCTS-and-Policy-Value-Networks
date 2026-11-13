@@ -378,3 +378,29 @@ def test_white_rooks_remove_the_defending_rook_before_capturing_knight():
     assert king_escape in board.legal_moves
     board.push(king_escape)
     assert not board.is_check()
+
+
+
+def test_white_knight_deflection_wins_the_black_queen():
+    case = cases_by_id()["white-knight-deflection-draws-defending-knight-from-queen-001"]
+    board = chess.Board(case.fen)
+    deflection = chess.Move.from_uci("e5d7")
+
+    assert case.motif == "deflection"
+    assert board.turn == chess.WHITE
+    assert board.piece_at(chess.E4) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.F6) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert chess.E4 in board.attacks(chess.F6)
+    assert deflection in board.legal_moves
+    board.push(deflection)
+    assert board.is_check()
+
+    knight_capture = chess.Move.from_uci("f6d7")
+    assert knight_capture in board.legal_moves
+    board.push(knight_capture)
+    assert board.piece_at(chess.D7) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    queen_capture = chess.Move.from_uci("d3e4")
+    assert queen_capture in board.legal_moves
+    board.push(queen_capture)
+    assert board.piece_at(chess.E4) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert board.piece_at(chess.D7) == chess.Piece(chess.KNIGHT, chess.BLACK)

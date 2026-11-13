@@ -406,3 +406,9 @@ For every meaningful development batch:
 - Corpus balance: **White 11 / Black 10**. The White removal-of-the-defender candidate and Black decoy are verified. The proposed White `Re8+` deflection was rejected and removed after engine review; a sound White deflection counterpart remains to be found.
 - Seven additions toward the planned eight-position balanced motif batch are verified; no position is counted merely because its move is legal.
 - No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.
+
+
+### Final planned balanced-motif candidate — verification pending (2026-11-13)
+- Added the White deflection line `Nd7+ Nxd7 Qxe4`, where the checking knight offer draws Black's f6-knight away from defending its queen on e4. Source: ChessFlame/Lichess puzzle 08lqs.
+- Candidate corpus: **22 positions (White 12 / Black 10)**. This completes the planned eight-position batch in source coverage; both CPU semantic tests and Stockfish audit are pending.
+- The last verified baseline is 21 positions on `c780bd7`. The previously proposed `Re8+` candidate was rejected and is not included.
