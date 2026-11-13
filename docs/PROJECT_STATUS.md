@@ -267,3 +267,8 @@ For every meaningful development batch:
 - Important limitation: the initial sequence metric replays an annotated principal variation. It does not establish that every opponent defence is forced or that the engine has general tactical understanding.
 - Individual motif expansion beyond the original 13-position corpus remains outstanding. The new sequence evaluator and CLI are awaiting CI verification.
 - No compatible checkpoint is currently available; do not run training or infer playing strength from these benchmark tests.
+
+
+### Multi-ply sequence benchmark — first verification attempt
+- Implementation commit `cda8fb2e4a2b0a37e4a31d7e0f68460b42fff622` CPU run [43426943254](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943254): **2 failed, 158 passed**. Both failures were test-fixture expectation mistakes in the newly added sequence tests; the fixtures were corrected in `b10ce6b6faefc2a5ae6351817dc9afc639b81755`. The failed run remains recorded.
+- Stockfish audit [43426943127](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943127): original single-position corpus **13/13 supported, 0 flagged**, artifact `14038596188`.
