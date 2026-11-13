@@ -8,12 +8,14 @@
 - Added regressions proving restricted PUCT selection and that a mate-in-one root spends its simulations on mating moves only. Deeper tree selection remains unrestricted.
 
 ### Verification
-- Automated tests and both CI workflows for this implementation revision: **pending**.
-- No Stockfish benchmark, real-checkpoint tactical benchmark, training run, or playing-strength measurement was produced by this search change.
-- This is a search-budget allocation improvement; strength improvement must be measured separately.
+- Verified implementation revision: `7f39e43b0b0174b730f3facf194d68577c6d3a10`.
+- CPU test workflow [43406066354](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066354): **passed**; all **113 tests passed** in 3.78 seconds on Python 3.11.
+- Stockfish tactical audit workflow [43406066235](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066235): **passed**; the finite-depth review completed and uploaded the `tactical-engine-audit` artifact (artifact ID `14026509085`).
+- Both workflows tested the same implementation revision. The root tactical candidate-set regression tests are included in the 113-test suite.
+- No real-checkpoint tactical benchmark, training run, or playing-strength measurement was produced by this search change. This is a search-budget allocation improvement; strength improvement must be measured separately.
 
 ### Follow-up
-- Inspect CPU CI and tactical audit results. Record every failure and repair, then record the first successful run without deleting failed-run history.
+- Continue with measurable search-quality work and a reproducible fixed-opponent evaluation protocol. Preserve every future failed and successful CI result in this log.
 
 ## 2026-11-13 — Semantic regression repair verified by CI
 
