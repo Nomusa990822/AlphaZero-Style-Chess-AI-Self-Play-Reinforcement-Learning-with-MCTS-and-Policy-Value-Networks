@@ -1042,3 +1042,13 @@ Copy this section for each future engineering batch.
   workflow status from training status.
 - No training workflow was dispatched. No checkpoint or replay artifact was
   generated, and no playing-strength or Elo result is claimed.
+
+
+
+## 2026-11-13 — Fresh-start CPU pilot executed successfully
+
+- User explicitly confirmed dispatch. Workflow run [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) ran on chess-strength-training-upgrade at revision dbba702569372370a3488a02a4d84024f63e2aac; conclusion SUCCESS.
+- All steps completed: runner/Python setup, CPU PyTorch and dependencies, bounded pilot, manifest generation, artifact upload and prerelease checkpoint backup.
+- Pilot produced 4 self-play games / 274 positions, one training epoch and two candidate-evaluation draws. Candidate was NOT promoted (0 wins, 0 losses, 2 draws; score 0.50; 90% lower confidence bound 0.50).
+- Baseline and candidate checkpoints were preserved with SHA-256 hashes in the manifest. Actions artifact 14071428532 contains checkpoints, replay buffer and logs; prerelease [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1) contains both checkpoint files and manifest.
+- Detailed metrics and limitations are recorded in docs/EXPERIMENT_LOG.md. This successful smoke test does not establish playing strength or Elo.

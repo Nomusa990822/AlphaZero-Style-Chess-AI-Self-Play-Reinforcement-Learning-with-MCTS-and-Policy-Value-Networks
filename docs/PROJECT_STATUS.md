@@ -498,3 +498,14 @@ For every meaningful development batch:
 - The fresh-start pilot has not been launched. No new checkpoint or training
   output exists. The pilot is a bounded pipeline smoke test, not an Elo or
   playing-strength evaluation.
+
+
+
+## Fresh-start pilot — executed and backed up (2026-11-13)
+
+- Workflow [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) completed with SUCCESS on feature revision dbba702569372370a3488a02a4d84024f63e2aac.
+- One iteration completed: 4 self-play games, 274 positions, one training epoch, final total loss 8.0742 (policy 7.8813; value 0.1929).
+- Two colour-swapped candidate evaluation games both drew. Candidate score 0.50; candidate NOT promoted. Baseline best_model.pt remains selected; latest_candidate.pt is separately preserved.
+- Durable backup prerelease: [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1). It contains baseline and candidate checkpoints plus SHA-256 manifest. Actions artifact [14071428532](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) contains the replay buffer and detailed logs as well.
+- This is a successful pipeline smoke test, not evidence of playing strength or an Elo rating. The two-game evaluation is too small to support a strength conclusion.
+- Full experiment details and hashes are in docs/EXPERIMENT_LOG.md.

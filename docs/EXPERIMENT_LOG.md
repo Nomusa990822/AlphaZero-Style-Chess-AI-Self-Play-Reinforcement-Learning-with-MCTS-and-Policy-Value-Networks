@@ -65,3 +65,20 @@ The CI workflow tests the benchmark code and corpus loading. It does not execute
 - **Artifacts:** raw JSON/JSONL/PGN/report paths.
 - **Interpretation:**
 - **Limitations and next experiment:**
+
+
+
+### 2026-11-13 — Fresh-start CPU pipeline pilot (run 43497298757)
+
+- Purpose: validate fresh random initialisation, one bounded self-play/training iteration, candidate evaluation, checkpoint persistence and backup. This is a pipeline smoke test, not a playing-strength experiment.
+- Code revision: dbba702569372370a3488a02a4d84024f63e2aac on chess-strength-training-upgrade. [Workflow run](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) completed successfully.
+- Device: GitHub-hosted Ubuntu runner, CPU PyTorch.
+- Configuration: 1 iteration; 4 self-play games; 80-move cap; 8 MCTS simulations; 1 training epoch; batch size 32; 2 colour-swapped candidate evaluation games.
+- Self-play: 274 positions; average game length 68.5 moves; results were 1 White win and 3 draws (one move-cap draw, three other games ended by chess rules).
+- Training: final total loss 8.0741975; policy loss 7.8813077; value loss 0.1928899. One epoch only.
+- Candidate evaluation: 0 wins, 0 losses, 2 draws; score 0.50; 90% lower confidence bound 0.50. Candidate NOT promoted. Two games are far too few to establish strength or Elo.
+- Baseline checkpoint best_model.pt: 3,404,943 bytes; SHA-256 7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471.
+- Candidate checkpoint latest_candidate.pt: 10,193,391 bytes; SHA-256 3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7.
+- Artifacts: Actions artifact [14071428532](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) (12,562,511 bytes; contains checkpoints, replay buffer, logs and manifest). Durable prerelease [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1) contains both checkpoints and manifest.
+- Interpretation: fresh-start pipeline, training, evaluation, manifest, artifact upload and prerelease backup all completed. Baseline was retained because the candidate did not pass the promotion gate. This run is not evidence of competent chess play.
+- Next: preserve the backup; inspect checkpoint metadata and replay data, then design longer staged training with fixed opponents and substantially larger paired-game evaluation. Do not infer Elo from this pilot.
