@@ -344,3 +344,10 @@ For every meaningful development batch:
 - Candidate corpus total: **18 positions (White 10 / Black 8)**. CPU and Stockfish checks are pending. The last verified baseline remains 17/17 positions on `1698c10c550c3c28672d1f57cc55031306267b5f`.
 - The semantic test checks that the queen's line is blocked and White's rook still attacks the target. The Stockfish audit must independently support the move before it is counted.
 - No training, checkpoint evaluation, or Elo claim was made.
+
+
+### Interference motif — replacement candidate awaiting verification (2026-11-13)
+- Rejected the earlier `Nd6-c8` example after its CPU semantic test exposed a turn-order mistake and deeper analysis showed the advertised forcing win was not sound against all captures. The initial pair [43434069458](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434069458) / [43434069451](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434069451) was cancelled; duplicate CPU [43434076143](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434076143) failed (1 failed, 165 passed), while duplicate Stockfish [43434076184](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434076184) passed its finite-depth review (17/17 supported). Cancellations and failure remain distinct in the development log.
+- Replaced the position with a published example: `1.Rd8+!`; after `...Nxd8`, `2.Qc8#`, while `...Qxd8` permits `Bxd8`. Source: Ilya Korzhenevich, *Illinois Chess Bulletin*, Sep–Oct 2005, p.22.
+- New candidate corpus remains 18 positions (White 10 / Black 8). Both CPU semantics and Stockfish audit are pending; it is not counted as verified.
+- No training, checkpoint evaluation, or Elo claim was made.

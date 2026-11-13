@@ -227,22 +227,44 @@ def test_black_rook_removes_c4_pawn_defender_before_knight_mate():
 
 
 
-def test_white_knight_interference_blocks_queen_from_defending_rook():
-    case = cases_by_id()["white-knight-interferes-with-queen-rook-defence-001"]
+def test_white_rook_interference_blocks_queen_and_creates_back_rank_mate():
+    case = cases_by_id()["white-rook-interference-diverts-knight-from-queen-defence-001"]
     board = chess.Board(case.fen)
-    move = chess.Move.from_uci("d6c8")
+    move = chess.Move.from_uci("d1d8")
 
     assert case.motif == "interference"
     assert board.turn == chess.WHITE
     assert move in board.legal_moves
-    assert board.piece_at(chess.F8) == chess.Piece(chess.QUEEN, chess.BLACK)
-    assert board.piece_at(chess.A8) == chess.Piece(chess.ROOK, chess.BLACK)
-    assert board.piece_at(chess.A1) == chess.Piece(chess.ROOK, chess.WHITE)
+    assert board.piece_at(chess.A8) == chess.Piece(chess.KING, chess.BLACK)
+    assert board.piece_at(chess.E8) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.H8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert board.piece_at(chess.E6) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert board.piece_at(chess.G5) == chess.Piece(chess.BISHOP, chess.WHITE)
 
+    # Rd8+ places the rook on the queen's eighth-rank line and checks the king.
     board.push(move)
-    assert board.piece_at(chess.C8) == chess.Piece(chess.KNIGHT, chess.WHITE)
-    # The knight now interrupts the queen's horizontal defence of a8.
-    assert not board.attackers(chess.BLACK, chess.A8)
-    # White's a1-rook still attacks the black rook on a8.
-    assert board.attackers(chess.WHITE, chess.A8) == {chess.A1}
-    assert chess.Move.from_uci("a1a8") in board.legal_moves
+    assert board.is_check()
+    assert board.piece_at(chess.D8) == chess.Piece(chess.ROOK, chess.WHITE)
+
+    # The knight can interpose by capturing the rook. It then blocks its own
+    # queen's route to c8, allowing the white queen's mating move.
+    knight_capture = chess.Move.from_uci("e6d8")
+    assert knight_capture in board.legal_moves
+    board.push(knight_capture)
+    assert board.piece_at(chess.D8) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert chess.Move.from_uci("c2c8") in board.legal_moves
+    board.push(chess.Move.from_uci("c2c8"))
+    assert board.is_checkmate()
+
+    # The queen's alternative capture of the checking rook is tactically
+    # refuted by the bishop on g5, which protects d8.
+    alternative = chess.Board(case.fen)
+    alternative.push(move)
+    queen_capture = chess.Move.from_uci("e8d8")
+    assert queen_capture in alternative.legal_moves
+    alternative.push(queen_capture)
+    bishop_recapture = chess.Move.from_uci("g5d8")
+    assert bishop_recapture in alternative.legal_moves
+    alternative.push(bishop_recapture)
+    assert alternative.piece_at(chess.D8) == chess.Piece(chess.BISHOP, chess.WHITE)
+    assert alternative.piece_at(chess.D8).color == chess.WHITE
