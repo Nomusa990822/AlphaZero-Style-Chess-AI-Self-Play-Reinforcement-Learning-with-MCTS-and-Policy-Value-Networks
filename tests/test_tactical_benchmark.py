@@ -24,6 +24,7 @@ def test_tactical_position_validates_acceptable_moves():
     case = position()
     assert case.position_id == "fork-1"
     assert case.acceptable_moves == frozenset({"e2e4"})
+    assert case.annotation
 
 
 def test_tactical_position_rejects_illegal_acceptable_move():
@@ -61,6 +62,8 @@ def test_benchmark_reports_overall_and_per_motif_accuracy():
     assert result.by_motif["fork"]["total"] == 2
     assert result.by_motif["fork"]["accuracy"] == 1.0
     assert result.by_motif["pin"]["accuracy"] == 0.0
+    assert result.by_color["white"]["total"] == 3
+    assert result.by_color["white"]["accuracy"] == pytest.approx(2 / 3)
     assert result.failures == (
         {"id": "pin-1", "motif": "pin", "selected": "e2e4"},
     )
@@ -124,3 +127,10 @@ def test_tactical_position_requires_annotation_field():
     }
     with pytest.raises(ValueError, match="Missing tactical-position fields"):
         TacticalPosition.from_dict(data)
+
+
+def test_benchmark_accepts_any_move_in_curated_set():
+    case = position(moves=["e2e4", "d2d4"])
+    result = evaluate_tactical_selector([case], lambda board: "d2d4")
+    assert result.correct == 1
+    assert result.accuracy == 1.0
