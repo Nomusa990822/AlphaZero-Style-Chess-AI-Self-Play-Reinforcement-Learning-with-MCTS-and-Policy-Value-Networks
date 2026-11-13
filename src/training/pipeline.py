@@ -230,8 +230,13 @@ class AlphaZeroPipeline:
         ) -> None:
             nonlocal elapsed_self_play_seconds
             elapsed_self_play_seconds += elapsed_seconds
+            self.replay_buffer.save_game(
+                game_result.samples,
+                self.config.replay_buffer_path,
+                iteration,
+                game_number,
+            )
             self.replay_buffer.add_game(game_result.samples)
-            self.replay_buffer.save(self.config.replay_buffer_path)
             self.metrics_logger.append_self_play_game(
                 iteration=iteration,
                 game_number=game_number,
@@ -267,6 +272,9 @@ class AlphaZeroPipeline:
             self.config.self_play_games_per_iteration,
             on_game_complete=record_completed_game,
         )
+
+        # Fold the per-game journal into one atomic snapshot before training.
+        self.replay_buffer.save(self.config.replay_buffer_path)
 
         total_positions = 0
         total_game_length = 0
