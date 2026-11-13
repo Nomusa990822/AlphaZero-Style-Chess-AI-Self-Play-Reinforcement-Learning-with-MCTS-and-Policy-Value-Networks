@@ -93,6 +93,7 @@ def test_benchmark_loader_validates_jsonl_and_duplicate_ids(tmp_path):
         "fen": chess.STARTING_FEN,
         "acceptable_moves": ["e2e4"],
         "annotation": "The accepted move demonstrates the labelled motif.",
+        "phase": "middlegame",
     }
     path.write_text(
         json.dumps(record) + "\n" + json.dumps(record) + "\n",
@@ -119,6 +120,7 @@ def test_tactical_position_requires_non_empty_annotation():
         "fen": chess.STARTING_FEN,
         "acceptable_moves": ["e2e4"],
         "annotation": "   ",
+        "phase": "middlegame",
     }
     with pytest.raises(ValueError, match="non-empty tactical annotation"):
         TacticalPosition.from_dict(data)
@@ -152,6 +154,8 @@ def test_benchmark_reports_white_and_black_separately():
 
     assert result.by_color["white"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
     assert result.by_color["black"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
+    assert result.by_phase["middlegame"]["total"] == 2
+    assert result.by_phase["middlegame"]["accuracy"] == 1.0
 
 
 def test_tactical_position_rejects_unknown_phase():
