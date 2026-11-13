@@ -29,6 +29,7 @@ class MCTSConfig:
     dirichlet_epsilon: float = 0.25
     add_dirichlet_noise: bool = True
     temperature: float = 1.0
+    use_tactical_root_filter: bool = True
 
 
 class MCTS:
@@ -148,7 +149,11 @@ class MCTS:
         # Apply exact one-ply safety (and mate-in-one priority) once at the
         # root. Reusing this candidate set prevents simulations being spent
         # on root moves that the final action/policy would later discard.
-        root_search_children = self._root_children_for_action(root)
+        root_search_children = (
+            self._root_children_for_action(root)
+            if self.config.use_tactical_root_filter
+            else list(root.children.values())
+        )
 
         for _ in range(self.config.num_simulations):
             node = root
@@ -183,6 +188,8 @@ class MCTS:
         the least-bad continuation.
         """
         children = list(root.children.values())
+        if not self.config.use_tactical_root_filter:
+            return children
         mating_moves = find_mate_in_one(root.board.copy(stack=True))
         if mating_moves:
             mating_uci = {move.uci() for move in mating_moves}
@@ -216,9 +223,10 @@ class MCTS:
         if not root.children:
             raise ValueError("Root has no children; cannot select action.")
 
-        mating_moves = find_mate_in_one(root.board.copy(stack=True))
-        if mating_moves:
-            return mating_moves[0]
+        if self.config.use_tactical_root_filter:
+            mating_moves = find_mate_in_one(root.board.copy(stack=True))
+            if mating_moves:
+                return mating_moves[0]
 
         children = self._root_children_for_action(root)
         temperature = self.config.temperature if temperature is None else temperature
@@ -261,7 +269,11 @@ class MCTS:
         if not root.children:
             return full_probs, {}
 
-        mating_moves = find_mate_in_one(root.board.copy(stack=True))
+        mating_moves = (
+            find_mate_in_one(root.board.copy(stack=True))
+            if self.config.use_tactical_root_filter
+            else []
+        )
         if mating_moves:
             probability = 1.0 / len(mating_moves)
             move_probs: dict[str, float] = {}
