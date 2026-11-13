@@ -115,3 +115,25 @@ report is retained as the `tactical-engine-audit` artifact from workflow run
 This is a first-pass consistency check, not a proof that every motif label is
 correct, that every move is uniquely best, or that the corpus is comprehensive.
 The audit tolerance is a review aid, not a chess-theoretic correctness rule.
+
+
+## Tactical-root-filter ablation
+
+The checkpoint evaluator exposes an explicit ablation switch so the tactical
+root safeguard can be compared against ordinary visit-based MCTS selection.
+Run both configurations against the same checkpoint, corpus, device and
+simulation budget:
+
+```bash
+python evaluate_tactics.py --checkpoint data/checkpoints/best_model.pt \
+  --simulations 100 --device cpu --output reports/tactics-filter-on.json
+
+python evaluate_tactics.py --checkpoint data/checkpoints/best_model.pt \
+  --simulations 100 --device cpu --disable-tactical-root-filter \
+  --output reports/tactics-filter-off.json
+```
+
+The JSON report records `tactical_root_filter` so the configuration is
+explicit. Keep every other setting fixed when comparing results. This is an
+ablation facility, not a strength claim; run it on a real checkpoint and
+review the full per-position failures before drawing conclusions.
