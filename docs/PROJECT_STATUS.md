@@ -4,12 +4,15 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified implementation revision:** `f49d6b8f5c87d0e9e7a897c2754af07832a3f3f4` (CPU tests and Stockfish audit passed on follow-on workflow revision `55d0db1ba8d0e3331bb4d92542ab183f898a1335`)  
+**Latest verified baseline:** `f49d6b8f5c87d0e9e7a897c2754af07832a3f3f4` (CPU tests and Stockfish audit passed on workflow revision `55d0db1ba8d0e3331bb4d92542ab183f898a1335`)  
+**Current unverified semantic-test repair:** `62bbeff2df149e525715cf119474a0591e6069e8` (fork-test king square corrected; follow-up CI pending)  
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
 ## Current verified state
+
+- **Latest semantic-test CI failure:** run [43404336724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404336724) failed because the new fork semantics test expected the black king on e8, while that corpus FEN places it on f8. This was an incorrect test coordinate. The assertion was corrected in `62bbeff2df149e525715cf119474a0591e6069e8`; the repaired full suite is **pending** and this test batch is not yet verified. The failure and repair are recorded in `DEVELOPMENT_LOG.md`.
 
 - The annotation patch initially failed test collection because literal newline escapes were written into Python files (run [43397911821](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397911821)). The syntax issue was corrected in `b2dfa830d6100c900e5c944b4bb1c7b3e6361059`; GitHub Actions run [43398823052](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43398823052) completed successfully.
 - Pull request #1 remains a draft and is not merged.
@@ -63,7 +66,7 @@
 2. Run and record the tactical benchmark against an actual checkpoint when one is available.
 3. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 4. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.
-5. Keep this status file, development log and experiment log updated in the same change as each meaningful implementation batch.
+5. Keep this status file, development log and experiment log updated in the same change as each meaningful implementation batch. Record every CI run (including failures), the exact failing test/reason, repair revision and the first successful verification run; do not overwrite failures with later passes.
 
 ## Update protocol
 
