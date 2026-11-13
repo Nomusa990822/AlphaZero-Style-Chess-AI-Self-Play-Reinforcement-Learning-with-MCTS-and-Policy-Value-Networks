@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 22
+    assert len(positions) >= 24
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
@@ -25,6 +25,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         "decoy",
         "removal_of_defender",
         "interference",
+        "trapped_piece",
     }
     sides_to_move = set()
     for case in positions:
@@ -35,8 +36,8 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         sides_to_move.add(board.turn)
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
-    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 12
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 10
+    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 13
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 11
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
@@ -82,5 +83,22 @@ def test_discovered_attack_defensive_resource_and_endgame_examples():
         assert case.motif == motif
         assert board.turn == turn
         assert case.phase == phase
+        assert move in case.acceptable_moves
+        assert chess.Move.from_uci(move) in board.legal_moves
+
+
+def test_trapped_corner_bishops_are_annotated_for_both_colours():
+    path = Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl"
+    positions = {case.position_id: case for case in load_tactical_positions(path)}
+
+    expected = {
+        "white-knight-wins-trapped-corner-bishop-001": (chess.WHITE, "f7h8"),
+        "black-knight-wins-trapped-corner-bishop-001": (chess.BLACK, "f2h1"),
+    }
+    for position_id, (turn, move) in expected.items():
+        case = positions[position_id]
+        board = chess.Board(case.fen)
+        assert case.motif == "trapped_piece"
+        assert board.turn == turn
         assert move in case.acceptable_moves
         assert chess.Move.from_uci(move) in board.legal_moves
