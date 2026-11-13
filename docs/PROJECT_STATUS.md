@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code and tracking revision:** `e100f226b9df853e0bb36873989eb2eb5996dcff` (120 CPU tests passed; documentation commit CI run 43410650186 passed; current benchmark revision awaits CI).
-**Current state:** checkpoint recovery and manifest tooling are CI-verified. A resource-bounded MCTS configuration sweep has been added in the current revision and awaits CI. No real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
+**Latest verified code revision:** `040877a1ab822e7023a68b8f025eb17535eac073` (135 CPU tests passed in 3.58 seconds; CPU run 43411211787; Stockfish audit run 43411211867 passed).
+**Current state:** checkpoint recovery/manifest tooling and the resource-bounded MCTS configuration benchmark are CI-verified. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -68,7 +68,7 @@
 - The checkpoint evaluation CLI requires an actual compatible checkpoint file. Do not report a checkpoint benchmark score until it has been run against a real checkpoint and its output saved.
 - The repository has not yet established a large, independently reviewed tactical suite or a standard external-engine match protocol.
 
-- Resource-bounded search sweep: `benchmark_search_configs.py` compares simulation budgets, PUCT constants and filter modes under a preflight total-simulation cap. Current revision awaits CI; no actual checkpoint benchmark has run.
+- Resource-bounded search sweep: `benchmark_search_configs.py` compares simulation budgets, PUCT constants and filter modes under a preflight total-simulation cap. **CI-verified** on `040877a1ab822e7023a68b8f025eb17535eac073`: CPU workflow [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787) passed **135 tests in 3.58 seconds**; Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed and uploaded artifact `14029253397`. The actual sweep remains **not run** because no compatible checkpoint is available.
 
 ## Prioritised next work
 

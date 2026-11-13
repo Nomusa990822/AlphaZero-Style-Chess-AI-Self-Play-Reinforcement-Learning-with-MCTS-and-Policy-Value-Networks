@@ -427,3 +427,16 @@ Copy this section for each future engineering batch.
 - **Verification:** pending CI on this revision. No real-checkpoint benchmark was executed because no compatible checkpoint is available; no playing-strength result is claimed.
 - **Prior verification:** documentation commit `e100f226b9df853e0bb36873989eb2eb5996dcff` passed CPU workflow [43410650186](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43410650186): **120 passed in 3.68 seconds**.
 - **Follow-up:** run this sweep only after a compatible checkpoint is generated and independently backed up; record actual measurements in `EXPERIMENT_LOG.md`.
+
+
+## 2026-11-13 — Verify resource-bounded MCTS configuration benchmark
+
+### Verification
+- Tested branch revision: `040877a1ab822e7023a68b8f025eb17535eac073`.
+- CPU test workflow [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787): **passed; 135 tests passed in 3.58 seconds** on Python 3.11.
+- Stockfish tactical audit workflow [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867): **passed**; finite-depth review completed and the `tactical-engine-audit` JSON artifact uploaded successfully (artifact ID `14029253397`).
+- Both workflows completed successfully on the same benchmark revision. The new budget/parser regression tests are included in the 135-test CPU suite.
+- The search-configuration benchmark itself has **not** been executed: no compatible trained checkpoint is currently available. No training run, real-checkpoint experiment, playing-strength gain or Elo claim is made.
+
+### Follow-up
+- Preserve a compatible checkpoint independently before running the resource-bounded search sweep. Use the same checkpoint, corpus, device and controlled budgets; save actual output and checkpoint hash in `EXPERIMENT_LOG.md`.
