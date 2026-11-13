@@ -688,3 +688,17 @@ Copy this section for each future engineering batch.
 - The quiet-position fast path is covered by a regression test that asserts the SEE evaluator is not called and the original normalized prior dictionary is returned unchanged.
 - The concurrent benchmark runs reported differing absolute baselines (including SEE-disabled starting-position medians of 0.410099 ms and 0.263501 ms) and nominal starting-position overhead of 7.54% and 9.15%. Other position overheads remained substantial. Because the paired workflows ran concurrently on shared GitHub-hosted runner capacity, these measurements are not a controlled before/after comparison and do not establish a reliable speedup. Keep the SEE default unchanged; isolate benchmark runs before making performance decisions.
 - No checkpoint experiment, training, playing-strength gain or Elo result is claimed.
+
+
+## 2026-11-13 — Deduplicate push and pull-request CI runs
+
+### Motivation and change
+- The feature branch was triggering both push and pull-request workflows. Their concurrency groups used `github.ref`, which differs between a branch push and its pull-request ref, so duplicate jobs could run simultaneously.
+- This duplicated CPU/Stockfish work and introduced contention into the batched microbenchmark, making timing comparisons unreliable.
+- Updated both CPU-test and tactical-audit concurrency keys to `github.head_ref || github.ref_name`. Pushes and pull-request events for the same source branch now share a concurrency group; newer commits cancel stale in-progress runs for that branch.
+- This is a CI scheduling change only; no chess search, SEE scoring, or engine defaults changed.
+
+### Verification
+- Workflow configuration change: pending GitHub Actions.
+- Previous verified code revision `8124b000aef61645b57fd3f686ef81a13174530d`: 154 CPU tests passed on both CPU runs; both Stockfish audit runs passed.
+- Previous benchmark artifacts `14034344758` and `14034629057` were produced by concurrent jobs and are recorded as noisy, not as proof of a performance improvement.

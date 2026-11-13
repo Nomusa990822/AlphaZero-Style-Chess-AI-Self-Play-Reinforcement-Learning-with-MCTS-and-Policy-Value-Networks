@@ -215,3 +215,8 @@ For every meaningful development batch:
 - Stockfish audit passed on runs `43423379514` and `43423373448`.
 - Quiet positions with no captures/promotions now bypass SEE scoring, prior dictionary copying and renormalization. The tactical-candidate path is unchanged.
 - Benchmark timing was affected by concurrent runner activity; the new measurements do not establish a reliable performance gain. Keep SEE enabled/disabled defaults unchanged pending isolated profiling.
+
+
+### In progress — CI concurrency deduplication
+- CPU-test and Stockfish-audit workflows now share concurrency groups between push and pull-request events for the same source branch, preventing duplicate simultaneous runs and reducing runner contention.
+- This should make the benchmark environment less noisy and avoid unnecessary CI usage. The workflow configuration awaits Actions verification.
