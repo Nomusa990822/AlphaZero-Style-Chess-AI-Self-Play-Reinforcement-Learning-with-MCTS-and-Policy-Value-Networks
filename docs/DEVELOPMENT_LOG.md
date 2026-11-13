@@ -396,3 +396,22 @@ Copy this section for each future engineering batch.
 - **Commit:**
 - **Known limitations/regressions:**
 - **Follow-up:**
+
+
+## 2026-11-13 — Protect trained checkpoints from ephemeral workspace loss
+
+**Implementation revision:** pending CI verification.
+
+### Changes
+- Added a manual-only GitHub Actions training workflow requiring explicit `YES`; ordinary pushes and pull requests never start training.
+- The workflow uploads generated `.pt` files as a 90-day Actions artifact, including when training fails after producing a checkpoint.
+- Successful training publishes checkpoint files and a SHA-256 manifest as a durable GitHub prerelease asset.
+- Added a manifest generator and regression tests for hashing, empty directories and symlink exclusion.
+- Documented the recovery procedure while keeping model binaries out of Git history.
+
+### Verification
+- CI for this revision is pending. No training run was started and no new model weights are claimed.
+- Release backup occurs only after successful training; artifact upload is attempted regardless of training success.
+
+### Follow-up
+- After CI passes, run the workflow only when ready to spend Actions compute. Download the release assets to a second storage location after each run.

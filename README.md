@@ -1043,3 +1043,8 @@ Built by [**Nomusa Shongwe**](https://github.com/Nomusa990822)
 <sub>[Back to top](#alphazero-style-chess-ai)</sub>
 
 </div>
+
+
+## Model checkpoint preservation
+
+Model weights remain excluded from Git commits. To protect them from temporary Codespace deletion, use the manual **Train and preserve model checkpoints** GitHub Actions workflow on the development branch. It requires explicitly selecting `YES` before consuming Actions time. The workflow uploads generated checkpoints as a 90-day Actions artifact, including when training fails after producing a checkpoint. Successful training also publishes the checkpoint files and SHA-256 manifest as a durable, non-latest GitHub prerelease asset. Download release assets to keep an independent local copy.
