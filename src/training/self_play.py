@@ -10,7 +10,8 @@ Each game produces training samples of the form:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
+from time import perf_counter
+from typing import Callable, List, Optional
 
 import chess
 import numpy as np
@@ -43,6 +44,7 @@ class SelfPlayGameResult:
     num_positions: int
     ended_by_resignation: bool = False
     ended_by_adjudication: bool = False
+    ended_by_move_limit: bool = False
 
 
 class SelfPlayGenerator:
@@ -79,6 +81,7 @@ class SelfPlayGenerator:
         self.min_moves_before_resign = min_moves_before_resign
 
         self.adjudicate_on_max_moves = adjudicate_on_max_moves
+        # Deprecated compatibility setting: move-cap outcomes are neutral draws.
         self.adjudication_threshold = adjudication_threshold
 
     def _result_to_white_value(self, result: str) -> float:
@@ -87,6 +90,11 @@ class SelfPlayGenerator:
         if result == "0-1":
             return -1.0
         return 0.0
+
+    @staticmethod
+    def _value_for_player(white_value: float, player_to_move: bool) -> float:
+        """Return the undiscounted final outcome from the mover's perspective."""
+        return white_value if player_to_move == chess.WHITE else -white_value
 
     def _temperature_for_move(self, move_number: int) -> float:
         if move_number < self.opening_temperature_moves:
@@ -99,62 +107,13 @@ class SelfPlayGenerator:
         """
         return "0-1" if board.turn == chess.WHITE else "1-0"
 
-    def _material_score_white(self, board: chess.Board) -> int:
-        """
-        Simple material score from White perspective.
-        Positive means White is ahead, negative means Black is ahead.
-        """
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-
-        score = 0
-        for piece_type, value in piece_values.items():
-            score += len(board.pieces(piece_type, chess.WHITE)) * value
-            score -= len(board.pieces(piece_type, chess.BLACK)) * value
-        return score
-
     def _adjudicate_result(self, board: chess.Board) -> str:
+        """Treat a training move-cap as a draw rather than inventing a result.
+
+        Material-only or pseudo-mobility adjudication can label a strategically
+        lost position as won and inject biased value targets into self-play.
         """
-        Stronger adjudication using material + mobility + king safety proxy
-        """
-        
-        piece_values = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0,
-        }
-        
-        material = 0
-        for piece_type, value in piece_values.items():
-            material += len(board.pieces(piece_type, chess.WHITE)) * value
-            material -= len(board.pieces(piece_type, chess.BLACK)) * value
-            
-        # Mobility (VERY IMPORTANT)
-        white_moves = len(list(board.legal_moves))
-        board.turn = not board.turn
-        black_moves = len(list(board.legal_moves))
-        board.turn = not board.turn
-
-        mobility_score = (white_moves - black_moves) * 0.1
-
-        total_score = material + mobility_score
-
-        # Stronger thresholds
-        if total_score >= 3:
-            return "1-0"
-        elif total_score <= -3:
-            return "0-1"
-        else:
-            return "1/2-1/2"
+        return "1/2-1/2"
 
     def play_game(self) -> SelfPlayGameResult:
         board = chess.Board()
@@ -171,10 +130,11 @@ class SelfPlayGenerator:
 
         ended_by_resignation = False
         ended_by_adjudication = False
+        ended_by_move_limit = False
         forced_result: Optional[str] = None
 
         move_number = 0
-        while not board.is_game_over() and move_number < self.max_moves:
+        while not board.is_game_over(claim_draw=True) and move_number < self.max_moves:
             encoded_state = self.encoder.encode(board)
             root = mcts.run(board)
 
@@ -204,9 +164,10 @@ class SelfPlayGenerator:
 
         if forced_result is not None:
             result = forced_result
-        elif board.is_game_over():
+        elif board.is_game_over(claim_draw=True):
             result = board.result(claim_draw=True)
         else:
+            ended_by_move_limit = True
             if self.adjudicate_on_max_moves:
                 result = self._adjudicate_result(board)
                 ended_by_adjudication = True
@@ -216,18 +177,12 @@ class SelfPlayGenerator:
         white_value = self._result_to_white_value(result)
 
         samples: List[SelfPlaySample] = []
-        total_moves = len(history_states)
-        
-        for move_index, (state, policy_target, player_to_move) in enumerate(
-            zip(history_states, history_policy_targets, history_players)
+        for state, policy_target, player_to_move in zip(
+            history_states, history_policy_targets, history_players
         ):
-            base_value = white_value if player_to_move == chess.WHITE else -white_value
-            
-            distance_from_end = total_moves - move_index - 1
-            decay = 0.997 ** distance_from_end
-            
-            value_target = base_value * decay
-            value_target = max(min(value_target, 1.0), -1.0)
+            # AlphaZero value targets use the final game outcome without
+            # distance discounting; the side-to-move perspective is flipped.
+            value_target = self._value_for_player(white_value, player_to_move)
             
             samples.append(
                 SelfPlaySample(
@@ -245,18 +200,25 @@ class SelfPlayGenerator:
             num_positions=len(samples),
             ended_by_resignation=ended_by_resignation,
             ended_by_adjudication=ended_by_adjudication,
+            ended_by_move_limit=ended_by_move_limit,
         )
 
-    def generate_games(self, num_games: int) -> List[SelfPlayGameResult]:
+    def generate_games(
+        self,
+        num_games: int,
+        on_game_complete: Callable[[int, SelfPlayGameResult, float], None] | None = None,
+    ) -> List[SelfPlayGameResult]:
         games = []
         
         for i in range(num_games):
             
+            game_started = perf_counter()
             result = self.play_game()
+            elapsed_seconds = perf_counter() - game_started
             
             suffix = ""
-            if result.ended_by_adjudication:
-                suffix = " (adjudicated)"
+            if result.ended_by_move_limit:
+                suffix = " (move-cap draw)"
             elif result.ended_by_resignation:
                 suffix = " (resigned)"
                 
@@ -267,6 +229,8 @@ class SelfPlayGenerator:
                 f"{suffix}"
             )
             
+            if on_game_complete is not None:
+                on_game_complete(i + 1, result, elapsed_seconds)
             games.append(result)
         
         return games

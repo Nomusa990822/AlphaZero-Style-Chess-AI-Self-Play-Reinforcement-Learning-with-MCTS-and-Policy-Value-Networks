@@ -15,7 +15,7 @@ def main() -> None:
     encoder = BoardEncoder()
 
     network_config = NetworkConfig(
-        input_channels=19,
+        input_channels=20,
         board_size=8,
         num_filters=64,
         num_res_blocks=3,
@@ -23,7 +23,7 @@ def main() -> None:
     )
 
     pipeline_config = PipelineConfig(
-        device="cpu",
+        device="auto",
         replay_buffer_capacity=20000,
 
         iterations=2,
@@ -53,10 +53,10 @@ def main() -> None:
         train_dirichlet_alpha=0.5,
         train_dirichlet_epsilon=0.30,
 
-        eval_add_dirichlet_noise=True,
+        eval_add_dirichlet_noise=False,
         eval_dirichlet_alpha=0.3,
         eval_dirichlet_epsilon=0.25,
-        eval_temperature=0.5,
+        eval_temperature=0.0,
 
         gating_games=24,
         required_promotion_score=0.55,

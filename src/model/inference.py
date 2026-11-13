@@ -47,7 +47,7 @@ class ModelInference:
             board: python-chess board
 
         Returns:
-            Tensor of shape (1, 19, 8, 8)
+            Tensor of shape (1, 20, 8, 8)
         """
         encoded = self.encoder.encode(board)
         tensor = torch.from_numpy(encoded).float().unsqueeze(0).to(self.device)

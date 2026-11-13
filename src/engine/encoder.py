@@ -2,7 +2,7 @@
 Encodes a chess.Board into a tensor suitable for neural networks.
 
 Stage 1 encoder output shape:
-(19, 8, 8)
+(20, 8, 8)
 
 Planes:
 0  - White pawns
@@ -24,6 +24,7 @@ Planes:
 16 - Black queenside castling rights
 17 - Halfmove clock normalized
 18 - Fullmove number normalized
+19 - En-passant target square (one-hot)
 
 This is a simplified AlphaZero-style starting point.
 """
@@ -57,7 +58,7 @@ class BoardEncoder:
     Converts python-chess boards into neural network tensor inputs.
     """
 
-    NUM_PLANES = 19
+    NUM_PLANES = 20
     BOARD_SIZE = 8
 
     @staticmethod
@@ -85,13 +86,13 @@ class BoardEncoder:
 
     def encode(self, board: chess.Board) -> np.ndarray:
         """
-        Encode a board into a float32 tensor of shape (19, 8, 8).
+        Encode a board into a float32 tensor of shape (20, 8, 8).
 
         Args:
             board: python-chess Board object
 
         Returns:
-            NumPy array of shape (19, 8, 8), dtype float32
+            NumPy array of shape (20, 8, 8), dtype float32
         """
         planes = np.zeros(
             (self.NUM_PLANES, self.BOARD_SIZE, self.BOARD_SIZE),
@@ -123,6 +124,10 @@ class BoardEncoder:
         planes[17, :, :] = min(board.halfmove_clock / 100.0, 1.0)
         planes[18, :, :] = min(board.fullmove_number / 200.0, 1.0)
 
+        if board.ep_square is not None:
+            ep_row, ep_col = self.square_to_coords(board.ep_square)
+            planes[19, ep_row, ep_col] = 1.0
+
         return planes
 
     def encode_batch(self, boards: list[chess.Board]) -> np.ndarray:
@@ -133,6 +138,6 @@ class BoardEncoder:
             boards: List of python-chess Board objects
 
         Returns:
-            NumPy array of shape (batch_size, 19, 8, 8)
+            NumPy array of shape (batch_size, 20, 8, 8)
         """
         return np.stack([self.encode(board) for board in boards], axis=0)

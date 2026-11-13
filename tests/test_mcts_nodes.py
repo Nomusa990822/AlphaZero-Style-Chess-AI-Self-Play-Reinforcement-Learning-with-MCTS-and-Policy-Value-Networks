@@ -72,3 +72,15 @@ def test_visit_distribution():
 
     assert abs(sum(dist.values()) - 1.0) < 1e-9
     assert dist["e2e4"] > dist["d2d4"]
+
+
+def test_claimable_threefold_repetition_is_terminal_draw():
+    board = chess.Board()
+    for move in ("g1f3", "g8f6", "f3g1", "f6g8",
+                 "g1f3", "g8f6", "f3g1", "f6g8"):
+        board.push_uci(move)
+
+    node = MCTSNode(board=board)
+
+    assert node.is_terminal()
+    assert node.terminal_value() == 0.0

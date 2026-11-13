@@ -5,8 +5,11 @@ Stage 5 orchestration for iterative AlphaZero-style training.
 from __future__ import annotations
 
 import copy
+from pathlib import Path
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Callable
+
+import torch
 
 from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
@@ -23,7 +26,7 @@ from src.training.trainer import AlphaZeroTrainer, TrainerConfig
 
 @dataclass
 class PipelineConfig:
-    device: str = "cpu"
+    device: str = "auto"
     replay_buffer_capacity: int = 20000
 
     iterations: int = 15
@@ -38,6 +41,7 @@ class PipelineConfig:
     self_play_min_moves_before_resign: int = 30
 
     self_play_adjudicate_on_max_moves: bool = True
+    # Deprecated compatibility field; capped games are always neutral draws.
     self_play_adjudication_threshold: float = 0.10
 
     training_batch_size: int = 32
@@ -52,10 +56,10 @@ class PipelineConfig:
     train_dirichlet_alpha: float = 0.5
     train_dirichlet_epsilon: float = 0.30
 
-    eval_add_dirichlet_noise: bool = True
+    eval_add_dirichlet_noise: bool = False
     eval_dirichlet_alpha: float = 0.3
     eval_dirichlet_epsilon: float = 0.25
-    eval_temperature: float = 0.5
+    eval_temperature: float = 0.0
 
     gating_games: int = 10
     required_promotion_score: float = 0.52
@@ -85,19 +89,35 @@ class AlphaZeroPipeline:
         self.encoder = encoder
         self.network_config = network_config
         self.config = pipeline_config or PipelineConfig()
+        self.device = self._resolve_device(self.config.device)
+        print(f"Using training device: {self.device}")
+
+        if self.config.resume_best_model and not checkpoint_exists(self.config.best_model_checkpoint):
+            raise FileNotFoundError(
+                "resume_best_model=True, but the best-model checkpoint is missing: "
+                f"{self.config.best_model_checkpoint}. Refusing to initialise random "
+                "weights silently. Restore a compatible checkpoint or explicitly set "
+                "resume_best_model=False to authorise fresh training."
+            )
 
         self.metrics_logger = MetricsLogger(self.config.log_dir)
         self.replay_buffer = ReplayBuffer(capacity=self.config.replay_buffer_capacity)
+        replay_path = Path(self.config.replay_buffer_path)
+        # Load even when the snapshot is absent: a first-run crash may leave
+        # only per-game journal chunks to recover.
+        self.replay_buffer.load(replay_path)
+        if len(self.replay_buffer):
+            print(f"Loaded {len(self.replay_buffer)} replay samples from {replay_path}")
 
         self.best_model = AlphaZeroNet(
             action_size=self.move_encoding.action_size,
             config=self.network_config,
         )
-        self.best_model.to(self.config.device)
+        self.best_model.to(self.device)
 
         self.best_trainer = AlphaZeroTrainer(
             model=self.best_model,
-            device=self.config.device,
+            device=self.device,
             config=TrainerConfig(
                 batch_size=self.config.training_batch_size,
                 learning_rate=self.config.learning_rate,
@@ -112,16 +132,34 @@ class AlphaZeroPipeline:
                 self.config.best_model_checkpoint,
                 self.best_model,
                 optimizer=self.best_trainer.optimizer,
-                map_location=self.config.device,
+                map_location=self.device,
             )
             print(f"Loaded best model from {self.config.best_model_checkpoint}")
+
+    @staticmethod
+    def _resolve_device(requested: str) -> torch.device:
+        """Resolve auto to the best supported local accelerator."""
+        if requested != "auto":
+            device = torch.device(requested)
+            if device.type == "cuda" and not torch.cuda.is_available():
+                raise RuntimeError("CUDA was requested but is not available.")
+            if device.type == "mps" and not (
+                hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+            ):
+                raise RuntimeError("MPS was requested but is not available.")
+            return device
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
 
     def _make_inference(self, model: AlphaZeroNet) -> ModelInference:
         return ModelInference(
             model=model,
             move_encoding=self.move_encoding,
             encoder=self.encoder,
-            device=self.config.device,
+            device=self.device,
         )
 
     def _build_self_play_generator(self, inference: ModelInference) -> SelfPlayGenerator:
@@ -158,8 +196,9 @@ class AlphaZeroPipeline:
         self,
         generator: SelfPlayGenerator,
         num_games: int,
+        on_game_complete: Callable[[int, SelfPlayGameResult, float], None] | None = None,
     ) -> list[SelfPlayGameResult]:
-        return generator.generate_games(num_games)
+        return generator.generate_games(num_games, on_game_complete=on_game_complete)
 
     def _build_candidate_model(self) -> tuple[AlphaZeroNet, AlphaZeroTrainer]:
         candidate_model = AlphaZeroNet(
@@ -167,11 +206,11 @@ class AlphaZeroPipeline:
             config=self.network_config,
         )
         candidate_model.load_state_dict(copy.deepcopy(self.best_model.state_dict()))
-        candidate_model.to(self.config.device)
+        candidate_model.to(self.device)
 
         candidate_trainer = AlphaZeroTrainer(
             model=candidate_model,
-            device=self.config.device,
+            device=self.device,
             config=TrainerConfig(
                 batch_size=self.config.training_batch_size,
                 learning_rate=self.config.candidate_learning_rate,
@@ -191,33 +230,70 @@ class AlphaZeroPipeline:
         self_play_generator = self._build_self_play_generator(best_inference)
 
         print("Generating self-play games...")
+        completed_record = {"white_wins": 0, "black_wins": 0, "draws": 0}
+        elapsed_self_play_seconds = 0.0
+
+        def record_completed_game(
+            game_number: int,
+            game_result: SelfPlayGameResult,
+            elapsed_seconds: float,
+        ) -> None:
+            nonlocal elapsed_self_play_seconds
+            elapsed_self_play_seconds += elapsed_seconds
+            self.replay_buffer.save_game(
+                game_result.samples,
+                self.config.replay_buffer_path,
+                iteration,
+                game_number,
+            )
+            self.replay_buffer.add_game(game_result.samples)
+            self.metrics_logger.append_self_play_game(
+                iteration=iteration,
+                game_number=game_number,
+                result=game_result.result,
+                moves=game_result.moves,
+                samples=game_result.num_positions,
+                elapsed_seconds=elapsed_seconds,
+                ended_by_resignation=game_result.ended_by_resignation,
+                ended_by_adjudication=game_result.ended_by_adjudication,
+                ended_by_move_limit=game_result.ended_by_move_limit,
+            )
+            if game_result.result == "1-0":
+                completed_record["white_wins"] += 1
+            elif game_result.result == "0-1":
+                completed_record["black_wins"] += 1
+            else:
+                completed_record["draws"] += 1
+            average_game_seconds = elapsed_self_play_seconds / game_number
+            remaining_games = self.config.self_play_games_per_iteration - game_number
+            eta_seconds = average_game_seconds * remaining_games
+            print(
+                f"  Progress: {game_number}/{self.config.self_play_games_per_iteration} games | "
+                f"W={completed_record['white_wins']} "
+                f"L={completed_record['black_wins']} "
+                f"D={completed_record['draws']} | "
+                f"replay={len(self.replay_buffer)} | "
+                f"game_time={elapsed_seconds:.1f}s | "
+                f"ETA~{eta_seconds / 60:.1f} min"
+            )
+
         game_results = self._collect_self_play_games(
             self_play_generator,
             self.config.self_play_games_per_iteration,
+            on_game_complete=record_completed_game,
         )
+
+        # Fold the per-game journal into one atomic snapshot before training.
+        self.replay_buffer.save(self.config.replay_buffer_path)
 
         total_positions = 0
         total_game_length = 0
         total_white_score = 0.0
 
         for idx, game_result in enumerate(game_results, start=1):
-            self.replay_buffer.add_game(game_result.samples)
             total_positions += game_result.num_positions
             total_game_length += len(game_result.moves)
             total_white_score += self._result_to_white_score(game_result.result)
-
-            ending_notes = []
-            if game_result.ended_by_resignation:
-                ending_notes.append("resign")
-            if game_result.ended_by_adjudication:
-                ending_notes.append("adjudicated")
-            note_text = f" ({', '.join(ending_notes)})" if ending_notes else ""
-
-            print(
-                f"  Game {idx}: result={game_result.result}, "
-                f"moves={len(game_result.moves)}, "
-                f"samples={game_result.num_positions}{note_text}"
-            )
 
         avg_game_length = total_game_length / max(1, len(game_results))
         avg_white_score = total_white_score / max(1, len(game_results))
@@ -270,12 +346,14 @@ class AlphaZeroPipeline:
         print(
             f"Evaluation result: W={eval_result.wins}, "
             f"L={eval_result.losses}, D={eval_result.draws}, "
-            f"Score={eval_result.score:.3f}"
+            f"Score={eval_result.score:.3f}, "
+            f"90% LCB={eval_result.lower_confidence_bound:.3f}"
         )
 
         if should_promote:
             print("Candidate promoted to BEST model.")
             self.best_model.load_state_dict(candidate_model.state_dict())
+            self.best_trainer.optimizer.load_state_dict(candidate_trainer.optimizer.state_dict())
             save_checkpoint(
                 self.config.best_model_checkpoint,
                 self.best_model,
@@ -304,6 +382,7 @@ class AlphaZeroPipeline:
             evaluation_draws=eval_result.draws,
             evaluation_score=eval_result.score,
             model_promoted=should_promote,
+            evaluation_lower_confidence_bound=eval_result.lower_confidence_bound,
         )
 
         self.metrics_logger.append_iteration_metrics(metrics)
@@ -317,6 +396,7 @@ class AlphaZeroPipeline:
                     "draws": eval_result.draws,
                     "games_played": eval_result.games_played,
                     "score": eval_result.score,
+                    "lower_confidence_bound_90": eval_result.lower_confidence_bound,
                 },
             },
             filename=f"iteration_{iteration:03d}_summary.json",

@@ -69,12 +69,12 @@ The objective is to develop a chess-playing agent whose decision-making improves
 
 | | |
 |---|---|
-| **Input representation** | 19 planes of 8 × 8 (piece placement, side to move, castling rights, move counters) |
+| **Input representation** | 20 planes of 8 × 8 (piece placement, side to move, castling rights, move counters) |
 | **Action space** | 4,672 moves (8 × 8 × 73) |
 | **Network** | Convolutional trunk with 3 residual blocks (64 filters), policy head and value head |
 | **Search** | PUCT-based Monte Carlo Tree Search with optional Dirichlet root noise |
 | **Learning** | Self-play, bounded replay buffer (20,000 samples), policy and value loss |
-| **Model gating** | Candidate must score at least 0.55 against the current best model to be promoted |
+| **Model gating** | Candidate must meet the score threshold and a confidence-bound improvement gate |
 | **Engine** | `python-chess` for rules and legal moves |
 | **Status** | Ongoing development; two experimental training iterations completed |
 
@@ -95,7 +95,7 @@ flowchart TB
     end
 
     subgraph REPRESENTATION["STATE AND ACTION REPRESENTATION"]
-        ENCODER["Board Encoder<br/>19 × 8 × 8"]
+        ENCODER["Board Encoder<br/>20 × 8 × 8"]
         ACTION["Move Encoder<br/>8 × 8 × 73"]
     end
 
@@ -200,12 +200,12 @@ The diagram describes the conceptual information flow. Individual components are
 A chess position must be converted into a numerical representation before it can be processed by the neural network. The current `BoardEncoder` produces a tensor with the shape:
 
 ```text
-(19, 8, 8)
+(20, 8, 8)
 ```
 
 Each plane represents a particular aspect of the chess position.
 
-### The 19-plane representation
+### The 20-plane representation
 
 | Plane | Representation |
 |:---:|---|
@@ -228,8 +228,9 @@ Each plane represents a particular aspect of the chess position.
 | 16 | Black queenside castling rights |
 | 17 | Normalised halfmove clock |
 | 18 | Normalised fullmove number |
+| 19 | En-passant target square (one-hot) |
 
-The encoder preserves piece placement and selected game-state information in a spatial tensor suitable for convolutional processing.
+The encoder preserves both colours' piece placement, side to move, castling rights, move counters and the en-passant target. A dedicated en-passant plane allows the policy-value network to distinguish positions where an en-passant capture is available. Existing 19-plane checkpoints and replay buffers are migrated without discarding their learned weights or historical samples.
 
 ### State encoding flow
 
@@ -237,17 +238,18 @@ The encoder preserves piece placement and selected game-state information in a s
 flowchart LR
     A["python-chess Board"] --> B["Piece Map"]
     A --> C["Turn and Castling State"]
-    A --> D["Move Counters"]
+    A --> D["Halfmove Clock and En-Passant State"]
 
     B --> E["12 Piece Planes"]
-    C --> F["5 State Planes"]
-    D --> F
+    C --> F["5 Turn and Castling Planes"]
+    D --> G["3 Rule-State Planes"]
 
-    E --> G["Stack Planes"]
-    F --> G
-    G --> H["Float32 Tensor"]
-    H --> I["Shape: 19 × 8 × 8"]
-    I --> J["Policy-Value Network"]
+    E --> H["Stack Planes"]
+    F --> H
+    G --> H
+    H --> I["Float32 Tensor"]
+    I --> J["Shape: 20 × 8 × 8"]
+    J --> K["Policy-Value Network"]
 
     classDef source  fill:#172033,stroke:#64748b,color:#f8fafc
     classDef process fill:#172554,stroke:#60a5fa,color:#eff6ff
@@ -326,7 +328,7 @@ The implementation uses a shared convolutional feature extractor followed by res
 
 ```mermaid
 flowchart TB
-    A["Input Tensor<br/>Batch × 19 × 8 × 8"]
+    A["Input Tensor<br/>Batch × 20 × 8 × 8"]
     B["Initial Convolution<br/>3 × 3"]
     C["Batch Normalization"]
     D["ReLU"]
@@ -366,7 +368,7 @@ The configuration supplied to the training entry point uses:
 
 | Parameter | Current value |
 |---|---:|
-| Input channels | 19 |
+| Input channels | 20 |
 | Board dimensions | 8 × 8 |
 | Convolution filters | 64 |
 | Residual blocks | 3 |
@@ -457,7 +459,7 @@ $$
 
 Where:
 
-- $Q(s,a)$ is the child node's mean value.
+- $Q(s,a)$ is the child value converted to the parent player's perspective (the negative of the child's side-to-move value).
 - $P(s,a)$ is the policy prior.
 - $N(s)$ is the parent visit count.
 - $N(s,a)$ is the child visit count.
@@ -542,7 +544,7 @@ Each self-play sample contains:
 | `value_target` | Outcome-derived value for the player to move |
 | `player_to_move` | Side whose decision produced the sample |
 
-The current implementation also applies a small distance-from-game-end decay to value targets.
+Every value target uses the final game outcome from the perspective of the player to move at that position, without temporal discounting.
 
 ### Game termination
 
@@ -610,7 +612,7 @@ $$
 L = L_{\mathrm{policy}} + L_{\mathrm{value}}
 $$
 
-The training loop records total loss, policy loss, value loss and batch count for each epoch.
+The training loop records total loss, policy loss, value loss and batch count for each epoch. Completed self-play games are written immediately to `self_play_games.jsonl`. Their training samples are written as atomic per-game journal chunks; the complete replay buffer is snapshotted once per iteration, avoiding repeated full-buffer writes.
 
 ---
 
@@ -690,7 +692,7 @@ flowchart TB
 ```
 
 > [!WARNING]
-> The current evaluator uses a limited head-to-head game set and a material-based adjudication rule when its evaluation games reach the move limit. Evaluation scores should therefore be interpreted as experimental signals, not definitive estimates of playing strength.
+> Evaluation is now deterministic and colour-balanced, and move-limit games are scored as draws instead of material-only wins. The configured match is still relatively small, so scores should be treated as experimental signals rather than definitive estimates of playing strength.
 
 ---
 
@@ -925,7 +927,7 @@ This initialises a chess board, constructs the model and inference pipeline, and
 python train_pipeline.py
 ```
 
-The training entry point constructs the board encoder, move encoder, network configuration and iterative training pipeline. It currently uses CPU execution and the two-iteration experimental configuration documented in [section 10](#10--experimental-training-results).
+The training entry point constructs the board encoder, move encoder, network configuration and iterative training pipeline. It automatically selects CUDA when available, then Apple MPS, and otherwise CPU. It retains the two-iteration experimental configuration documented in [section 10](#10--experimental-training-results).
 
 ### Play against the AI
 
@@ -1013,7 +1015,7 @@ The implementation adapts the broad combination of self-play, policy-value learn
 
 This repository represents an evolving implementation of an AlphaZero-inspired chess learning system. The project already includes:
 
-- [x] A 19-plane chess board representation
+- [x] A 20-plane chess board representation
 - [x] A 4,672-action move encoding
 - [x] A residual policy-value neural network
 - [x] PUCT-based Monte Carlo Tree Search
@@ -1041,3 +1043,8 @@ Built by [**Nomusa Shongwe**](https://github.com/Nomusa990822)
 <sub>[Back to top](#alphazero-style-chess-ai)</sub>
 
 </div>
+
+
+## Model checkpoint preservation
+
+Model weights remain excluded from Git commits. To protect them from temporary Codespace deletion, use the manual **Train and preserve model checkpoints** GitHub Actions workflow on the development branch. It requires explicitly selecting `YES` before consuming Actions time. The workflow uploads generated checkpoints as a 90-day Actions artifact, including when training fails after producing a checkpoint. Successful training also publishes the checkpoint files and SHA-256 manifest as a durable, non-latest GitHub prerelease asset. Download release assets to keep an independent local copy.
