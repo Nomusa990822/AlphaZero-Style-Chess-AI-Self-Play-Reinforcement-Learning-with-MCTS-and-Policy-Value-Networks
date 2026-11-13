@@ -1,5 +1,6 @@
 import chess
 import numpy as np
+import pytest
 
 from checkpoint_diagnostics import legal_policy_ranking
 from src.engine.move_encoding import MoveEncoding
@@ -25,8 +26,6 @@ def test_legal_policy_ranking_masks_illegal_actions_and_normalizes():
 
 
 def test_legal_policy_ranking_is_deterministic_on_ties():
-    import pytest
-
     board = chess.Board()
     encoding = MoveEncoding()
     probabilities = np.zeros(encoding.action_size, dtype=np.float32)
