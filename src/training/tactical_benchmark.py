@@ -15,6 +15,9 @@ from typing import Callable, Iterable
 import chess
 
 
+TACTICAL_PHASES = frozenset({"opening", "middlegame", "endgame"})
+
+
 TACTICAL_MOTIFS = frozenset({
     "mating_net",
     "fork",
@@ -41,10 +44,11 @@ class TacticalPosition:
     fen: str
     acceptable_moves: frozenset[str]
     annotation: str
+    phase: str
 
     @classmethod
     def from_dict(cls, data: dict) -> "TacticalPosition":
-        required = {"id", "motif", "fen", "acceptable_moves", "annotation"}
+        required = {"id", "motif", "fen", "acceptable_moves", "annotation", "phase"}
         missing = required.difference(data)
         if missing:
             raise ValueError(f"Missing tactical-position fields: {sorted(missing)}")
@@ -54,10 +58,16 @@ class TacticalPosition:
         fen = str(data["fen"]).strip()
         moves = frozenset(str(move).strip() for move in data["acceptable_moves"])
         annotation = str(data["annotation"]).strip()
+        phase = str(data["phase"]).strip().lower()
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
         if not annotation:
             raise ValueError(f"Position {position_id!r} must include a non-empty tactical annotation.")
+        if phase not in TACTICAL_PHASES:
+            raise ValueError(
+                f"Position {position_id!r} has unknown phase {phase!r}; "
+                f"expected one of {sorted(TACTICAL_PHASES)}."
+            )
         if motif not in TACTICAL_MOTIFS:
             raise ValueError(
                 f"Position {position_id!r} has unknown motif {motif!r}; "
@@ -82,7 +92,7 @@ class TacticalPosition:
             raise ValueError(
                 f"Position {position_id!r} has illegal acceptable moves: {sorted(illegal)}"
             )
-        return cls(position_id, motif, fen, moves, annotation)
+        return cls(position_id, motif, fen, moves, annotation, phase)
 
 
 @dataclass(frozen=True)
@@ -93,6 +103,7 @@ class TacticalBenchmarkResult:
     accuracy: float
     by_motif: dict[str, dict[str, int | float]]
     by_color: dict[str, dict[str, int | float]]
+    by_phase: dict[str, dict[str, int | float]]
     failures: tuple[dict[str, str], ...]
 
 
@@ -136,14 +147,19 @@ def evaluate_tactical_selector(
     color_groups: dict[str, dict[str, int]] = defaultdict(
         lambda: {"total": 0, "correct": 0, "illegal": 0}
     )
+    phase_groups: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"total": 0, "correct": 0, "illegal": 0}
+    )
 
     for case in cases:
         board = chess.Board(case.fen)
         group = grouped[case.motif]
         color = "white" if board.turn == chess.WHITE else "black"
         color_group = color_groups[color]
+        phase_group = phase_groups[case.phase]
         group["total"] += 1
         color_group["total"] += 1
+        phase_group["total"] += 1
         try:
             selected = select_move(board.copy(stack=True))
             move = selected if isinstance(selected, chess.Move) else chess.Move.from_uci(str(selected))
@@ -154,6 +170,7 @@ def evaluate_tactical_selector(
             illegal += 1
             group["illegal"] += 1
             color_group["illegal"] += 1
+            phase_group["illegal"] += 1
             failures.append({"id": case.position_id, "motif": case.motif, "selected": "ILLEGAL"})
             continue
 
@@ -161,6 +178,7 @@ def evaluate_tactical_selector(
             correct += 1
             group["correct"] += 1
             color_group["correct"] += 1
+            phase_group["correct"] += 1
         else:
             failures.append({
                 "id": case.position_id,
@@ -183,6 +201,13 @@ def evaluate_tactical_selector(
         }
         for color, counts in sorted(color_groups.items())
     }
+    by_phase = {
+        phase: {
+            **counts,
+            "accuracy": counts["correct"] / counts["total"],
+        }
+        for phase, counts in sorted(phase_groups.items())
+    }
     return TacticalBenchmarkResult(
         total=total,
         correct=correct,
@@ -190,5 +215,6 @@ def evaluate_tactical_selector(
         accuracy=correct / total,
         by_motif=by_motif,
         by_color=by_color,
+        by_phase=by_phase,
         failures=tuple(failures),
     )
