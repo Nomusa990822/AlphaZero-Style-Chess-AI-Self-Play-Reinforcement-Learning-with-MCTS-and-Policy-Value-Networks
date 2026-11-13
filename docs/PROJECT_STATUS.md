@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest implementation/test revision:** `97612a11740521b821f017e27126488259af429a`  
+**Latest implementation/test revision:** `9bd35d90a8c8a6728fa79b6058290576de5c6e06` (tactical corpus expansion is awaiting CI)  
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -14,7 +14,7 @@
 - The annotation patch initially failed test collection because literal newline escapes were written into Python files (run [43397911821](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397911821)). The syntax issue was corrected in `b2dfa830d6100c900e5c944b4bb1c7b3e6361059`; GitHub Actions run [43398823052](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43398823052) completed successfully.
 - Pull request #1 remains a draft and is not merged.
 - The documented base `main` revision is `42fecbd6767d53c1950d6bc484dd23bcf4914976`; branch work is isolated from main until the PR is reviewed and merged.
-- Tactical benchmark runner and a five-position starter corpus are present, including positions with both White and Black to move. Corpus loading rejects structurally invalid chess positions, terminal positions and illegal acceptable moves. The CLI now has mocked tests for device handling, checkpoint errors, deterministic search configuration and JSON reporting. The corpus remains explicitly too small to establish general tactical strength.
+- Tactical benchmark runner and a nine-position starter corpus are present, including positions with both White and Black to move. Corpus loading rejects structurally invalid chess positions, terminal positions and illegal acceptable moves. The CLI now has mocked tests for device handling, checkpoint errors, deterministic search configuration and JSON reporting. The corpus remains explicitly too small to establish general tactical strength.
 - Existing historical training summaries cover five iterations of a six-game configuration each, plus three earlier three-game runs. See the experiment log and raw files under `data/logs/`.
 
 ## Implemented capabilities
@@ -50,7 +50,7 @@
 
 ## Current limitations and evidence boundaries
 
-- The tactical corpus currently has only five starter positions: mating net, knight forks for both colours, hanging-piece capture, and a pinned-rook capture. Each record now requires a human-written tactical rationale and an explicit opening/middlegame/endgame label; these are review metadata, not automatic tactical verification. It does not represent broad tactical coverage. Motif labels are restricted to a documented taxonomy to keep per-motif reports consistent.
+- The tactical corpus currently has nine starter positions covering mating nets, forks, hanging-piece captures, pins, and skewers, with five White-to-move and four Black-to-move cases. Each record now requires a human-written tactical rationale and an explicit opening/middlegame/endgame label; these are review metadata, not automatic tactical verification. It does not represent broad tactical coverage. Motif labels are restricted to a documented taxonomy to keep per-motif reports consistent.
 - A passing CI run verifies the automated tests, not playing strength.
 - Historical iteration summaries show four evaluation draws per iteration and no model promotions. They do not demonstrate an improvement in playing strength.
 - No Elo/FIDE rating or engine-strength claim is established by the recorded data.
@@ -59,8 +59,8 @@
 
 ## Prioritised next work
 
-1. Expand the tactical corpus with independently checked positions across the validated motif taxonomy, phase and side-to-move groups.
-3. Run and record the tactical benchmark against an actual checkpoint when one is available.
+1. Expand the tactical corpus with independently checked positions across defensive resources, discovered attacks, and endgame tactics.
+2. Run and record the tactical benchmark against an actual checkpoint when one is available.
 4. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 5. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.
 6. Keep this status file, development log and experiment log updated in the same change as each meaningful implementation batch.
