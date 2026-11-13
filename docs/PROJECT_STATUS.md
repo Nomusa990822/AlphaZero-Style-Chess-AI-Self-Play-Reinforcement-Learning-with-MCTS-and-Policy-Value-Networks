@@ -377,3 +377,10 @@ For every meaningful development batch:
 - Current corpus balance: **White 10 / Black 9**. The Black interference example is verified; the broader eight-position motif batch remains incomplete.
 - SEE aggregate synthetic root-expansion median overhead: **+67.69%** (0.162983 ms disabled / 0.273301 ms enabled; artifact `14043771602`). This is not an end-to-end speed or playing-strength measurement.
 - No compatible trained checkpoint is available in the repository. No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.
+
+
+### Additional balanced tactical candidates — verification pending (2026-11-13)
+- Added one White deflection (`Re8+ Rxe8 Qxd7`) and one Black decoy (`Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+`) with motif-specific semantic tests.
+- Candidate corpus: **21 positions (White 11 / Black 10)**. CPU tests and Stockfish finite-depth review are pending; the last verified baseline remains 19 positions on `87ed473`.
+- These additions bring the planned eight-position batch to seven examples; one further White removal-of-the-defender example remains to be sourced and verified.
+- No training, checkpoint evaluation, or Elo claim was made.

@@ -310,3 +310,57 @@ def test_black_rook_interference_wins_queen_or_delivers_mate():
     assert queen_mate in mate_line.legal_moves
     mate_line.push(queen_mate)
     assert mate_line.is_checkmate()
+
+
+
+def test_white_rook_deflection_removes_the_knights_only_defender():
+    case = cases_by_id()["white-rook-deflects-defending-rook-from-knight-001"]
+    board = chess.Board(case.fen)
+    sacrifice = chess.Move.from_uci("e1e8")
+
+    assert case.motif == "deflection"
+    assert board.turn == chess.WHITE
+    assert board.piece_at(chess.D8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert board.piece_at(chess.D7) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert sacrifice in board.legal_moves
+    board.push(sacrifice)
+    assert board.is_check()
+
+    forced_capture = chess.Move.from_uci("d8e8")
+    assert forced_capture in board.legal_moves
+    board.push(forced_capture)
+    assert board.piece_at(chess.E8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert chess.Move.from_uci("d4d7") in board.legal_moves
+    board.push(chess.Move.from_uci("d4d7"))
+    assert board.piece_at(chess.D7) == chess.Piece(chess.QUEEN, chess.WHITE)
+
+
+def test_black_queen_decoy_attracts_white_queen_and_exposes_bishop():
+    case = cases_by_id()["black-queen-decoy-attracts-white-queen-before-knight-check-001"]
+    board = chess.Board(case.fen)
+    decoy_check = chess.Move.from_uci("e7h7")
+
+    assert case.motif == "decoy"
+    assert board.turn == chess.BLACK
+    assert board.piece_at(chess.G5) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert board.piece_at(chess.G4) == chess.Piece(chess.BISHOP, chess.WHITE)
+    assert decoy_check in board.legal_moves
+    board.push(decoy_check)
+    assert board.is_check()
+
+    queen_block = chess.Move.from_uci("g5h6")
+    assert queen_block in board.legal_moves
+    board.push(queen_block)
+    assert not board.is_check()
+    queen_capture = chess.Move.from_uci("h7h6")
+    assert queen_capture in board.legal_moves
+    board.push(queen_capture)
+    assert board.is_check()
+    king_recapture = chess.Move.from_uci("h5h6")
+    assert king_recapture in board.legal_moves
+    board.push(king_recapture)
+    knight_check = chess.Move.from_uci("f2g4")
+    assert knight_check in board.legal_moves
+    board.push(knight_check)
+    assert board.piece_at(chess.G4) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert board.is_check()

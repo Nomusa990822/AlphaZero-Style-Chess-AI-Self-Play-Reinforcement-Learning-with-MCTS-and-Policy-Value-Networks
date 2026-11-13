@@ -892,3 +892,10 @@ Copy this section for each future engineering batch.
 - CPU SEE benchmark artifact `14043771602`: aggregate median root-expansion overhead **+67.69%** (0.162983 ms disabled / 0.273301 ms enabled). This is a synthetic microbenchmark only, not end-to-end search speed or playing strength.
 - The verified tactical corpus now contains **19 positions (White 10 / Black 9)**. The planned eight-position expansion batch is not yet complete. Stockfish finite-depth support is a review signal, not proof of forcedness against every defence or perfect motif labels.
 - No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
+
+
+### Balanced motif batch — White deflection and Black decoy candidates (2026-11-13)
+- Added a White-to-move deflection example from Control The Center: `1.Re8+ Rxe8 2.Qxd7`, forcing the only defender of the d7-knight away before taking it. Source: https://openings.controlthecenter.com/tactics/deflection/practice/.
+- Added a Black-to-move decoy example from ChessFlame/Lichess puzzle 06a9D: `43...Qh7+ 44.Qh6 Qxh6+ 45.Kxh6 Nxg4+`, attracting the White queen onto h6 before the knight captures the bishop with check. Source: https://www.chessflame.com/puzzles/lichess_06a9D.
+- Added semantic tests for the forcing lines and updated corpus colour-count expectations. Candidate corpus: **21 positions (White 11 / Black 10)**.
+- These additions are awaiting CPU and Stockfish verification. The last verified baseline remains 19 positions on `87ed473`. No training or checkpoint evaluation was run.
