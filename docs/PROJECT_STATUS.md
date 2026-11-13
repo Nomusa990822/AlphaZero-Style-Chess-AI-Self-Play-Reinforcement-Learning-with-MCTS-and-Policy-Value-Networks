@@ -4,14 +4,14 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest implementation/test revision:** `353384b24a5ba332607ff729fc2d58e26478d02d`  
+**Latest implementation/test revision:** `69749f5f1d2d99ffb6a806ca71cc0dc2dca833a9`  
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
 ## Current verified state
 
-- GitHub Actions passed for the controlled motif taxonomy at revision `85eecf6dcb0a707d2ca72f6e5acaf7c3aedc6ac2` (run [43397248955](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397248955)). CI for the new required annotations and five-position corpus is pending.
+- GitHub Actions passed for the controlled motif taxonomy at revision `85eecf6dcb0a707d2ca72f6e5acaf7c3aedc6ac2` (run [43397248955](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397248955)). CI for the required annotations and five-position corpus is pending at the latest test revision.
 - Pull request #1 remains a draft and is not merged.
 - The documented base `main` revision is `42fecbd6767d53c1950d6bc484dd23bcf4914976`; branch work is isolated from main until the PR is reviewed and merged.
 - Tactical benchmark runner and a five-position starter corpus are present, including positions with both White and Black to move. Corpus loading rejects structurally invalid chess positions, terminal positions and illegal acceptable moves. The CLI now has mocked tests for device handling, checkpoint errors, deterministic search configuration and JSON reporting. The corpus remains explicitly too small to establish general tactical strength.
