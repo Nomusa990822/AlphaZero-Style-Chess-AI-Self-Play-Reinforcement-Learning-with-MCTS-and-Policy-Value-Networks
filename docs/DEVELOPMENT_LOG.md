@@ -495,3 +495,11 @@ Copy this section for each future engineering batch.
 ### Repair follow-up — 2026-11-13
 - The first repair commit 96a1d06e6cec6f93b2d1997cde0d5ff4b995b0d6 did not fully replace the literal escape sequences; the import remained syntactically invalid. This was caught by inspecting the committed source before relying on a new CI result.
 - Replaced the literal backslash-n characters with actual source newlines in the tactics import. A fresh CI run is required; both earlier failed runs remain recorded above.
+
+
+## 2026-11-13 — Forced mate-in-two CI failure and source repair follow-up
+
+- Repaired revision `fff08dcc147e5275914816244b7d09d8ac15b7ae` CPU workflow [43415963144](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963144): **failed during pytest collection**. Python reported a SyntaxError at line 205 of `src/mcts/search.py`: the forced-mate integration block contained literal `\\n` sequences. Twelve test modules could not be collected; no test assertions ran.
+- Stockfish tactical audit [43415963147](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963147): **passed** on the same revision and uploaded artifact `14031965643`. This does not compensate for the failed CPU suite.
+- Corrected the malformed forced-mate block to use actual source line breaks in commit `ba247182a03ce116e0e038679f62d15deabb5cab`. This is a source-format repair, not yet CI-verified. Fresh CPU tests and the Stockfish audit are required before marking the feature verified.
+- Preserve both outcomes above as separate workflow results; do not describe the feature as passed until the repaired revision completes both workflows successfully.
