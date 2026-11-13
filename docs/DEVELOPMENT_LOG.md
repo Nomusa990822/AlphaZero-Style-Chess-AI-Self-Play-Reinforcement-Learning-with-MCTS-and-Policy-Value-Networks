@@ -400,7 +400,7 @@ Copy this section for each future engineering batch.
 
 ## 2026-11-13 — Protect trained checkpoints from ephemeral workspace loss
 
-**Implementation revision:** pending CI verification.
+**Implementation revision:** `822b2213d5931499853c1c67391e8d8243140ab5` — CI verified.
 
 ### Changes
 - Added a manual-only GitHub Actions training workflow requiring explicit `YES`; ordinary pushes and pull requests never start training.
@@ -410,8 +410,10 @@ Copy this section for each future engineering batch.
 - Documented the recovery procedure while keeping model binaries out of Git history.
 
 ### Verification
-- CI for this revision is pending. No training run was started and no new model weights are claimed.
+- CPU workflow [43409861234](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43409861234): **passed; 120 tests passed in 3.65 seconds** on Python 3.11, including the three new checkpoint-manifest tests.
+- Stockfish tactical audit [43409861252](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43409861252): **passed**; finite-depth tactical review and report upload completed successfully.
+- Both workflows tested commit `822b2213d5931499853c1c67391e8d8243140ab5`. No training run was started and no new model weights are claimed.
 - Release backup occurs only after successful training; artifact upload is attempted regardless of training success.
 
 ### Follow-up
-- After CI passes, run the workflow only when ready to spend Actions compute. Download the release assets to a second storage location after each run.
+- When training is intentionally authorised, use the manual workflow and explicitly confirm `YES`. After successful training, download the prerelease checkpoint and manifest to independent storage. The 90-day Actions artifact is temporary, not a permanent archive.
