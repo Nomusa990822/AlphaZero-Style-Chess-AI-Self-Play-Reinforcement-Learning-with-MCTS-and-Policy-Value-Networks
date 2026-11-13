@@ -101,3 +101,8 @@ For every meaningful development batch:
 - The new safeguard is wired into root candidate selection after immediate mate-in-one detection. Existing MCTS/PUCT and neural evaluation remain intact.
 - CPU CI and Stockfish audit are pending for this branch update. Until they pass, this is unverified and must not be described as a demonstrated strength improvement.
 - The bound can miss forced mates in high-branching positions; actual runtime overhead has not yet been measured.
+
+
+### Verification failure and repair — bounded mate-in-two batch
+- CPU runs 43414004807 and 43414014065 failed during collection due to literal newline escape sequences in the tactics import in src/mcts/search.py. Twelve test modules failed to import; no assertions ran.
+- The import formatting has been corrected in the current unverified repair. Awaiting fresh CPU tests and tactical audit; the previous failures remain part of the history.

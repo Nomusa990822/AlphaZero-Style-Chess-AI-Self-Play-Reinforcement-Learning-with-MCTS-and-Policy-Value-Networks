@@ -483,3 +483,10 @@ Copy this section for each future engineering batch.
 
 ### Follow-up
 - Review runtime and test results. If the safeguard is too costly or causes regressions, narrow or disable it rather than weakening its correctness conditions.
+
+
+### Failure and repair — 2026-11-13
+- CPU workflow [43414004807](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43414004807): **failed during pytest collection**. Python reported a SyntaxError on line 17 of src/mcts/search.py because the multiline tactics import contained literal backslash-n sequences.
+- Repeated CPU workflow [43414014065](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43414014065): **same failure**, not an independent test regression. Twelve modules could not be collected; no test assertions ran.
+- Root cause: the generated import string encoded newline escapes literally. Corrected the import to use real source line breaks.
+- These failed attempts remain recorded as failures. A new successful CI run is required before this code revision is considered verified.
