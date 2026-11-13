@@ -9,10 +9,14 @@ import argparse
 import json
 from pathlib import Path
 import shutil
+import sys
 from typing import Any
 
 import chess
 import chess.engine
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from src.training.tactical_benchmark import load_tactical_positions
 
