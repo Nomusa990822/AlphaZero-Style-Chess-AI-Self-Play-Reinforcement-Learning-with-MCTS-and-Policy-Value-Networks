@@ -587,3 +587,26 @@ Copy this section for each future engineering batch.
 - Stockfish tactical audit [43419439546](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419439546): **passed**; all 13 corpus positions supported within the configured tolerance, 0 flagged for human review; artifact `tactical-engine-audit` ID `14033895065`.
 - The CI suite includes the new White/Black favourable-capture, poisoned-capture, legal-move preservation, prior normalisation and unknown-SEE fallback tests.
 - These are correctness/compatibility checks, not a real-checkpoint playing-strength experiment. No training, runtime benchmark, Elo result or strength gain is claimed.
+
+
+## 2026-11-13 — Add controlled SEE root-expansion overhead benchmark
+
+### Goal and design
+- Quantify the incremental CPU cost of SEE-guided root expansion before increasing its influence or extending it deeper into the tree.
+- Compare otherwise identical root expansions with SEE ordering disabled/enabled. Use deterministic uniform synthetic inference to isolate root policy conversion, SEE adjustment and child creation from neural model inference.
+- Exercise a starting position, a simple capture, a defended/poisoned queen capture and promotion choices. Alternate measurement order, include warmups, and report per-position and aggregate median/p95 latency.
+- Keep all legal moves, check prior normalisation, preserve input board state, and fail loudly if those invariants break.
+
+### Changes
+- Added `scripts/benchmark_see_overhead.py`.
+- Added a lightweight test that validates benchmark output structure and scope.
+- Updated `.github/workflows/tests.yml` to run the bounded microbenchmark after pytest and upload `see-root-overhead-benchmark` (30-day retention).
+- The report records runner/Python details and the tested code revision.
+- This excludes trained inference, MCTS simulations and tactical root filtering. It is a microbenchmark, not end-to-end engine speed or playing-strength evidence.
+
+### Verification
+- Implementation revision: pending commit and GitHub Actions.
+- CPU pytest and benchmark execution: pending.
+- Benchmark artifact: pending.
+- Prior verified implementation remains `4fabc4562de186955f909059997ac23b15a0493e` (152 CPU tests passed; Stockfish audit passed). This new batch is not yet verified.
+- No training, checkpoint experiment, playing-strength gain or Elo result is claimed.
