@@ -7,6 +7,7 @@ from src.mcts.dirichlet_noise import apply_dirichlet_noise
 from src.mcts.node import MCTSNode
 from src.mcts.puct import compute_puct_score, select_best_child
 from src.mcts.search import MCTS, MCTSConfig
+from src.mcts.tactics import find_mate_in_one
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
 
@@ -211,3 +212,43 @@ def test_mcts_root_preserves_threefold_repetition_history():
 
     assert root.is_terminal()
     assert root.terminal_value() == 0.0
+
+
+def test_exact_tactical_detector_finds_mate_in_one_for_white():
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+
+    mating_moves = find_mate_in_one(board)
+
+    assert chess.Move.from_uci("f7g7") in mating_moves
+    assert board.turn == chess.WHITE
+    assert board.fen() == "7k/5Q2/5K2/8/8/8/8/8 w - - 0 1"
+
+
+def test_exact_tactical_detector_finds_mate_in_one_for_black():
+    board = chess.Board("8/8/8/8/8/5k2/5q2/7K b - - 0 1")
+
+    mating_moves = find_mate_in_one(board)
+
+    assert chess.Move.from_uci("f2g2") in mating_moves
+    assert board.turn == chess.BLACK
+
+
+def test_mcts_action_selection_prioritizes_forced_mate_and_policy_target():
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+    encoding = MoveEncoding()
+    root = MCTSNode(board=board)
+    root.expand({move.uci(): 1.0 / board.legal_moves.count() for move in board.legal_moves})
+
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(num_simulations=1, add_dirichlet_noise=False),
+    )
+
+    selected = search.select_action(root, temperature=1.0)
+    full_probs, move_probs = search.get_action_probs(root, temperature=1.0)
+
+    assert selected.uci() == "f7g7"
+    assert move_probs == {"f7g7": 1.0}
+    assert np.isclose(float(full_probs.sum()), 1.0)
+    assert np.count_nonzero(full_probs) == 1
