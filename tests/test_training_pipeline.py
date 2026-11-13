@@ -13,6 +13,7 @@ from src.training.checkpoint import load_checkpoint
 from src.training.dataset import AlphaZeroDataset
 from src.training.loss import alphazero_loss
 from src.training.metrics import MetricsLogger
+from src.training.pipeline import AlphaZeroPipeline
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGenerator, SelfPlaySample
 from src.training.trainer import AlphaZeroTrainer, TrainerConfig
@@ -231,3 +232,10 @@ def test_value_targets_use_full_game_outcome_for_both_colours():
     assert generator._value_for_player(-1.0, chess.BLACK) == 1.0
     assert generator._value_for_player(0.0, chess.WHITE) == 0.0
     assert generator._value_for_player(0.0, chess.BLACK) == 0.0
+
+
+def test_automatic_device_resolution_returns_supported_torch_device():
+    device = AlphaZeroPipeline._resolve_device("auto")
+
+    assert isinstance(device, torch.device)
+    assert device.type in {"cuda", "mps", "cpu"}
