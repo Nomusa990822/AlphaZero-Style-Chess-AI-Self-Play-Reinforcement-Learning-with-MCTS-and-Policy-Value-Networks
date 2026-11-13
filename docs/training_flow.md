@@ -89,3 +89,16 @@ for 90 days and publishes a checkpoint prerelease with SHA-256 manifest on
 success. Do not dispatch it until the user explicitly authorises the compute
 run. The pilot validates the training pipeline and backup path; its small game
 sample is not a meaningful playing-strength or Elo evaluation.
+
+
+### CI status and manual-dispatch limitation
+
+The fresh-start pilot code and configuration test passed in CPU CI (172 tests),
+and the Stockfish corpus audit passed for all 22 positions, five sequences and
+19 annotated plies with no flags. The training pilot itself has not run.
+
+GitHub's manual `workflow_dispatch` event requires the workflow definition to
+exist on the repository's default branch. This new workflow is currently only
+on the feature branch. Keeping `main` unchanged means it is not dispatchable
+yet; do not merge the PR merely to enable training. Any future decision to make
+the workflow available on the default branch must be explicit.

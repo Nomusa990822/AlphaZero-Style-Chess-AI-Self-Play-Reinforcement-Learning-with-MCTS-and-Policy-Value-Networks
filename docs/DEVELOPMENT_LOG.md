@@ -1009,3 +1009,12 @@ Copy this section for each future engineering batch.
 ### Verification
 - Implementation revision: pending CPU CI and Stockfish audit.
 - The pilot is a bounded pipeline smoke test only. Its tiny self-play/evaluation sample is not a statistically meaningful strength estimate and must not be presented as Elo or proof of tactical competence.
+
+
+### Fresh-start pilot preparation — CI verification (2026-11-13)
+- Prepared revision: `b3d4839939176e6e9cd9dbe2710eecb760060278`.
+- CPU workflow [43490761455](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761455): **passed; 172 tests passed in 4.01 seconds**. The run includes the new pilot configuration test.
+- Stockfish audit [43490761420](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761420): **passed; 22/22 positions and 5/5 sequences supported, 0 positions or sequences flagged; all 19 annotated plies supported, 0 plies flagged**.
+- Duplicate push-triggered runs [43490750907](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750907) (CPU) and [43490750811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750811) (Stockfish) were **cancelled** when the pull-request-triggered runs superseded them. They are cancellations, not failures; the replacement runs above passed.
+- No training workflow was dispatched. No checkpoint was created, no replay data was generated, and no playing-strength result was measured.
+- Dispatch limitation: GitHub requires a `workflow_dispatch` workflow file to exist on the repository's default branch. This pilot workflow currently exists only on the feature branch, so it is prepared and CI-verified but cannot be manually dispatched until the PR is merged or the workflow is otherwise made available on the default branch. The PR remains unmerged and `main` remains unchanged.
