@@ -4,13 +4,15 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `187ad05954a70f28c7c3576f4d70139f4c1dbdc5` (115 CPU tests passed; Stockfish tactical audit workflow passed; runs `43406633328` and `43406633323`; final CI head included tracking-doc update `c1720e7b70ee4d48f78e7c79af565f7576444dcb`).
-**Current tracking-branch head:** `cd754b19bb2bd2f18e778369dc870c2a6725c284` (verification record updated; latest tested code revision `187ad05954a70f28c7c3576f4d70139f4c1dbdc5`).
+**Latest verified code revision:** `187ad05954a70f28c7c3576f4d70139f4c1dbdc5` (115 CPU tests passed; Stockfish audit passed; runs `43406633328` and `43406633323`).
+**Current tracking-branch head:** `d6e0c03ace50cf9b1ed83cb2e3e95f8a1adc8b28` (tactical-filter ablation implementation and pending-verification record).
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
 ## Current verified state
+
+- Tactical-root-filter ablation is implemented but **pending CI**. `MCTSConfig.use_tactical_root_filter` defaults to `True`; the evaluator's `--disable-tactical-root-filter` switch disables root mate priority and one-ply safety filtering for controlled on/off comparisons. The JSON report records the setting. Do not treat this as verified until CI passes, and do not claim strength improvement without a real-checkpoint paired benchmark.
 
 - New test-only revision `187ad05954a70f28c7c3576f4d70139f4c1dbdc5` adds Black mate-in-one simulation coverage and verifies that forced-loss positions retain every legal root move. Both workflows passed on the final CI branch head: CPU tests [43406633328](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406633328) reported **115 passed in 3.52 seconds**; Stockfish tactical audit [43406633323](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406633323) completed review and artifact upload successfully.
 
