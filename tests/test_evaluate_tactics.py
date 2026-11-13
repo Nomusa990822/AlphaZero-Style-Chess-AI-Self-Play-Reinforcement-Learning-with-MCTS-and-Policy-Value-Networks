@@ -116,6 +116,7 @@ def test_main_runs_deterministic_search_and_writes_json_report(
     assert report["checkpoint_epoch"] == 7
     assert report["device"] == "cpu"
     assert report["simulations"] == 17
+    assert report["tactical_root_filter"] is True
     assert report["accuracy"] == 1.0
     assert report["by_color"]["white"]["accuracy"] == 1.0
     assert report["by_phase"]["middlegame"]["accuracy"] == 1.0
@@ -124,6 +125,7 @@ def test_main_runs_deterministic_search_and_writes_json_report(
         "num_simulations": 17,
         "add_dirichlet_noise": False,
         "temperature": 0.0,
+        "use_tactical_root_filter": True,
     }
     assert "Saved benchmark report:" in capsys.readouterr().out
 
