@@ -15,6 +15,23 @@ from typing import Callable, Iterable
 import chess
 
 
+TACTICAL_MOTIFS = frozenset({
+    "mating_net",
+    "fork",
+    "hanging_piece",
+    "pin",
+    "skewer",
+    "discovered_attack",
+    "double_attack",
+    "deflection",
+    "decoy",
+    "overloaded_defender",
+    "trapped_piece",
+    "defensive_resource",
+    "endgame_tactic",
+})
+
+
 @dataclass(frozen=True)
 class TacticalPosition:
     """One benchmark position and its curated acceptable first moves."""
@@ -37,6 +54,11 @@ class TacticalPosition:
         moves = frozenset(str(move).strip() for move in data["acceptable_moves"])
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
+        if motif not in TACTICAL_MOTIFS:
+            raise ValueError(
+                f"Position {position_id!r} has unknown motif {motif!r}; "
+                f"expected one of {sorted(TACTICAL_MOTIFS)}."
+            )
 
         try:
             board = chess.Board(fen)
