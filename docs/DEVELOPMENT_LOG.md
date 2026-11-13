@@ -1018,3 +1018,13 @@ Copy this section for each future engineering batch.
 - Duplicate push-triggered runs [43490750907](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750907) (CPU) and [43490750811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750811) (Stockfish) were **cancelled** when the pull-request-triggered runs superseded them. They are cancellations, not failures; the replacement runs above passed.
 - No training workflow was dispatched. No checkpoint was created, no replay data was generated, and no playing-strength result was measured.
 - Dispatch limitation: GitHub requires a `workflow_dispatch` workflow file to exist on the repository's default branch. This pilot workflow currently exists only on the feature branch, so it is prepared and CI-verified but cannot be manually dispatched until the PR is merged or the workflow is otherwise made available on the default branch. The PR remains unmerged and `main` remains unchanged.
+
+
+## 2026-11-13 — Expand tactical corpus: overloaded defenders and trapped pieces
+
+- Added four new human-annotated positions to `benchmarks/tactical_positions.jsonl`: two overloaded-defender examples and two trapped-piece examples, with White and Black represented in each motif family.
+- New examples cite their instructional sources in the annotations. The overload examples use published tactical lines; the trapped-piece examples are simple composed interpositions, explicitly labelled as such where appropriate.
+- Expanded the corpus from 22 to 26 positions. Side-to-move balance is now 14 White / 12 Black.
+- Added semantic tests for the overload continuations (including the back-rank mating sequence and the queen overload) and both colour versions of the trapped-piece interposition. Updated the corpus coverage test and benchmark README.
+- **Validation pending:** Python CPU tests and the Stockfish depth-16 audit will run through the pull request. Legal move syntax alone is not treated as tactical validation. Do not use the new positions in checkpoint scoring until CI and engine review complete.
+- No checkpoint evaluation, training, or promotion was started.
