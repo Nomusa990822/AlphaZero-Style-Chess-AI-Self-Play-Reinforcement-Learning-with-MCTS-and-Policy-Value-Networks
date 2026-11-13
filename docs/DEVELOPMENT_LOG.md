@@ -1,3 +1,24 @@
+## 2026-11-13 — Require tactical rationales and add a reviewed pin example
+
+**Corpus revision:** `580d95901d8670eb5387fc77ede0874a218b9d01`  
+**Validation implementation:** `1c38195b9e90ca21e713bad89f59835cf22d9197`  
+**Regression tests:** `353384b24a5ba332607ff729fc2d58e26478d02d`  
+**Benchmark documentation:** `abefc8d86345a90212712b5d1bfc2beaa75303fb`
+
+### Changes
+- Added a required, non-empty human annotation to each tactical benchmark record. The annotation explains the intended motif and why the accepted move demonstrates it; it improves auditability but does not automatically prove tactical soundness.
+- Extended the starter corpus to five positions with a rook capture of an absolutely pinned rook, in addition to the existing mating net, two-colour knight forks and hanging-queen capture.
+- Added tests for missing and blank annotations and documented the updated JSONL schema and corpus limitations.
+- Kept the corpus intentionally small rather than adding unverified positions.
+
+### Verification
+- The preceding branch revision passed GitHub Actions run [43397248955](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397248955).
+- CI for the annotation/pin update is pending.
+- No real-checkpoint tactical benchmark or playing-strength improvement is claimed.
+
+### Follow-up
+- Check CI, then add further positions only after checking legality and the tactical idea for both sides to move.
+
 ## 2026-11-13 — Enforce a controlled tactical motif taxonomy
 
 **Implementation revision:** `55bcd72f494f575f9171cf35bc569eb341371b77`  
