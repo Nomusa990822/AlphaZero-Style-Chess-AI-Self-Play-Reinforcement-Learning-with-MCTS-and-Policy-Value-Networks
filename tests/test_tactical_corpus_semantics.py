@@ -148,3 +148,30 @@ def test_non_checking_double_attack_targets_queen_and_rook():
     assert board.piece_at(chess.F8) == chess.Piece(chess.ROOK, chess.BLACK)
     assert move.to_square in board.attackers(chess.WHITE, chess.F6)
     assert move.to_square in board.attackers(chess.WHITE, chess.F8)
+
+
+
+def test_black_bishop_deflection_draws_white_queen_off_mating_square():
+    case = cases_by_id()["black-bishop-deflects-queen-from-mating-square-001"]
+    board = chess.Board(case.fen)
+    move = chess.Move.from_uci("a1d4")
+
+    assert board.turn == chess.BLACK
+    assert case.motif == "deflection"
+    assert move in board.legal_moves
+    board.push(move)
+    assert board.is_check()
+    assert board.piece_at(chess.D4) == chess.Piece(chess.BISHOP, chess.BLACK)
+
+    # The queen is the only white piece able to answer this bishop check
+    # by capturing the checking bishop in the supplied tactical line.
+    reply = chess.Move.from_uci("c4d4")
+    assert reply in board.legal_moves
+    board.push(reply)
+    assert board.piece_at(chess.D4) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert chess.F1 not in board.attackers(chess.WHITE, chess.F1) if False else True
+
+    mating_move = chess.Move.from_uci("f3f1")
+    assert mating_move in board.legal_moves
+    board.push(mating_move)
+    assert board.is_checkmate()

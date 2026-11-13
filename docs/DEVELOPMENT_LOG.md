@@ -793,3 +793,10 @@ Copy this section for each future engineering batch.
 - Stockfish audit [43427628961](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427628961): **13/13** single positions supported, **0** flagged; **2/2** tactical sequences supported, **0** flagged; **6/6** sequence plies supported. Audit artifact `14037203389`.
 - Duplicate push runs [43427623653](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427623653) and [43427623672](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427623672) were cancelled in favour of the matching PR runs; expected concurrency behaviour, not failures.
 - The two combinations are illustrative annotated lines. Stockfish support at finite depth does not prove every defence is forced or validate every human motif label. No checkpoint was evaluated and no training, Elo or playing-strength claim was made.
+
+### In progress — first verified-source deflection corpus addition (2026-11-13)
+- Added one Black-to-move deflection candidate from the Chess Tempo tactical-motifs example: the bishop check on d4 draws the white queen away from f1, allowing a mating finish.
+- Added a semantic test for the checking bishop sacrifice, queen capture and mating continuation; expanded corpus motif and colour-count assertions from 14 positions (White 8 / Black 6) to 15 (White 8 / Black 7).
+- This is a one-position controlled addition, not the previously planned eight-position batch. Further positions will be added only when their FEN, legal continuation and tactical idea can be validated.
+- CPU tests and Stockfish audit are pending. No training or checkpoint evaluation was run.
+

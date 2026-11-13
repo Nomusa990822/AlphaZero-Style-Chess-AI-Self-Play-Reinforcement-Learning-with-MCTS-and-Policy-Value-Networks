@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 14
+    assert len(positions) >= 15
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
@@ -21,6 +21,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         "defensive_resource",
         "endgame_tactic",
         "double_attack",
+        "deflection",
     }
     sides_to_move = set()
     for case in positions:
@@ -32,7 +33,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
     assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 8
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 6
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 7
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():

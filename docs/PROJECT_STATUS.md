@@ -287,3 +287,9 @@ For every meaningful development batch:
 - CPU workflow [43427628807](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427628807): **161 passed in 3.99 seconds**; SEE benchmark completed. Synthetic root-expansion SEE overhead: +67.25%, not a full-search or strength result.
 - Stockfish audit [43427628961](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427628961): original corpus **13/13 supported, 0 flagged**; combination corpus **2/2 sequences and 6/6 plies supported, 0 flagged**; artifact `14037203389`.
 - The sequence audit follows the annotated principal variation and is not a proof of forcedness against all defences. Individual motif corpus expansion and direct search improvements remain outstanding. No training or checkpoint strength evaluation was run.
+
+### Tactical corpus expansion — verification pending (2026-11-13)
+- Corpus now contains one additional Black-to-move deflection candidate (15 positions total; expected colour split White 8 / Black 7).
+- The semantic regression checks the bishop check on d4, queen capture on d4, and ...Qf1# continuation.
+- CPU CI and Stockfish audit have not yet confirmed this addition. Until both complete, the last verified corpus remains 14/14 supported.
+- Planned broader motif expansion remains in progress; do not count this single candidate as completion of the eight-position batch.
