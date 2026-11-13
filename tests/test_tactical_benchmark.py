@@ -15,7 +15,8 @@ def position(position_id="fork-1", motif="fork", fen=None, moves=None):
         "id": position_id,
         "motif": motif,
         "fen": fen or chess.STARTING_FEN,
-        "acceptable_moves": moves or ["e2e4"],\n        "annotation": "The accepted move demonstrates the labelled motif.",
+        "acceptable_moves": moves or ["e2e4"],
+        "annotation": "The accepted move demonstrates the labelled motif.",
     })
 
 
