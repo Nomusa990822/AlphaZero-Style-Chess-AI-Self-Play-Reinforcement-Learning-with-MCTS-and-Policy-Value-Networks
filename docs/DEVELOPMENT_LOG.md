@@ -527,6 +527,8 @@ Copy this section for each future engineering batch.
 - Added a detector-call-count regression test covering all three MCTS consumers.
 
 ### Verification
-- Implementation and test commit: pending.
-- CPU test workflow and Stockfish tactical audit: pending.
+- Implementation and test revision: c9c19ccaa8554ec34045d2ed436f01ec769f3685.
+- CPU workflow [43417951501](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43417951501): **passed; 145 tests passed in 3.35 seconds** on Python 3.11.
+- Stockfish audit [43417951289](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43417951289): **passed**; all 13 corpus positions supported within the configured tolerance, 0 flagged for human review; audit artifact ID 14032288263.
+- The new detector-call-count regression test passed as part of the 145-test suite.
 - No checkpoint experiment, training run, measured runtime comparison, playing-strength gain or Elo result is claimed.
