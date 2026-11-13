@@ -224,3 +224,25 @@ def test_black_rook_removes_c4_pawn_defender_before_knight_mate():
     assert mating_move in board.legal_moves
     board.push(mating_move)
     assert board.is_checkmate()
+
+
+
+def test_white_knight_interference_blocks_queen_from_defending_rook():
+    case = cases_by_id()["white-knight-interferes-with-queen-rook-defence-001"]
+    board = chess.Board(case.fen)
+    move = chess.Move.from_uci("d6c8")
+
+    assert case.motif == "interference"
+    assert board.turn == chess.WHITE
+    assert move in board.legal_moves
+    assert board.piece_at(chess.F8) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.A8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert board.piece_at(chess.A1) == chess.Piece(chess.ROOK, chess.WHITE)
+
+    board.push(move)
+    assert board.piece_at(chess.C8) == chess.Piece(chess.KNIGHT, chess.WHITE)
+    # The knight now interrupts the queen's horizontal defence of a8.
+    assert not board.attackers(chess.BLACK, chess.A8)
+    # White's a1-rook still attacks the black rook on a8.
+    assert board.attackers(chess.WHITE, chess.A8) == {chess.A1}
+    assert chess.Move.from_uci("a1a8") in board.legal_moves

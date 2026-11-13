@@ -331,3 +331,16 @@ For every meaningful development batch:
 - The first candidate revision `197efeac6c4fdf929568acb12e843862544eb418` failed both CPU [43431590559](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590559) and Stockfish [43431590481](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590481) workflows because `e5c4` was an illegal diagonal rook move.
 - Corrected both corpus and semantic test to use `c8c4`, the rook's legal capture along the c-file. Re-verification is pending; the candidate is not counted as verified.
 - Failures remain documented; no training or checkpoint evaluation was run.
+
+
+### Removal-of-the-defender motif — verified (2026-11-13)
+- Latest verified revision before the next motif addition: `1698c10c550c3c28672d1f57cc55031306267b5f`.
+- CPU [43432547200](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43432547200): **165 passed**. Stockfish [43432547005](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43432547005): **17/17 positions supported, 0 flagged; 2/2 sequences and 6/6 plies supported, 0 flagged**.
+- The Black removal-of-the-defender example is verified on that revision. Earlier failures and cancellations remain separately recorded.
+
+
+### Interference motif — candidate awaiting verification (2026-11-13)
+- Added one White-to-move interference example, `Nd6-c8`, to block the queen's defensive line to the rook on a8.
+- Candidate corpus total: **18 positions (White 10 / Black 8)**. CPU and Stockfish checks are pending. The last verified baseline remains 17/17 positions on `1698c10c550c3c28672d1f57cc55031306267b5f`.
+- The semantic test checks that the queen's line is blocked and White's rook still attacks the target. The Stockfish audit must independently support the move before it is counted.
+- No training, checkpoint evaluation, or Elo claim was made.

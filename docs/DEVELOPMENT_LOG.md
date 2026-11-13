@@ -841,3 +841,19 @@ Copy this section for each future engineering batch.
 - Initial candidate commit `197efeac6c4fdf929568acb12e843862544eb418` failed CPU run [43431590559](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590559) and Stockfish audit run [43431590481](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590481). Both failures had the same cause: the candidate listed `e5c4`, an illegal diagonal rook move.
 - Corrected the candidate and semantic test to use the c8 rook's legal file capture `c8c4`. The candidate remains unverified until both workflows pass on the corrected revision.
 - The failed runs are retained as failures; no training or checkpoint evaluation was run.
+
+
+### Removal-of-the-defender motif — verified on corrected revision (2026-11-13)
+- Verified revision: `1698c10c550c3c28672d1f57cc55031306267b5f`.
+- CPU run [43432547200](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43432547200): **165 passed in 3.03 seconds**.
+- Stockfish review [43432547005](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43432547005): **17/17 individual positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**.
+- The removal-of-the-defender example uses `...Rxc4+`, `Rxc4`, `...Nb5#`. The original illegal `e5c4` attempt and the missed-test correction are retained in the history; this is the first fully verified revision for this candidate.
+- The CPU workflow's SEE microbenchmark reported +67.44% aggregate median overhead in its synthetic root-expansion scope; it is not an end-to-end search or playing-strength measurement. No training or checkpoint evaluation was run.
+
+
+### Interference motif — first White-to-move candidate (verification pending)
+- Added a sourced back-rank interference example: `Nd6-c8` blocks the eighth-rank connection between Black's queen on f8 and rook on a8, while White's rook on a1 continues attacking the rook.
+- Added `interference` to the motif taxonomy and semantic checks for the blocked defensive ray and remaining rook attack.
+- Candidate corpus total: **18 positions (White 10 / Black 8)**. CPU and Stockfish checks are pending; do not count this addition as verified until both complete on the same revision.
+- Source: Control The Center, [Practice Interference Chess Puzzles](https://openings.controlthecenter.com/tactics/interference/practice/). The candidate's tactical acceptability still requires the project's Stockfish audit; source description alone is not treated as verification.
+- No training or checkpoint evaluation was run.
