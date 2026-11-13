@@ -11,7 +11,7 @@
 
 ## Current verified state
 
-- GitHub Actions passed for the controlled motif taxonomy at revision `85eecf6dcb0a707d2ca72f6e5acaf7c3aedc6ac2` (run [43397248955](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397248955)). CI for the required annotations and five-position corpus is pending at the latest test revision.
+- The annotation patch initially failed test collection because literal newline escapes were written into Python files (run [43397911821](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397911821)). The syntax issue has been corrected. CI for the corrected colour-balanced benchmark implementation is pending.
 - Pull request #1 remains a draft and is not merged.
 - The documented base `main` revision is `42fecbd6767d53c1950d6bc484dd23bcf4914976`; branch work is isolated from main until the PR is reviewed and merged.
 - Tactical benchmark runner and a five-position starter corpus are present, including positions with both White and Black to move. Corpus loading rejects structurally invalid chess positions, terminal positions and illegal acceptable moves. The CLI now has mocked tests for device handling, checkpoint errors, deterministic search configuration and JSON reporting. The corpus remains explicitly too small to establish general tactical strength.
@@ -46,7 +46,7 @@
 - CPU GitHub Actions test workflow.
 - Tactical benchmark loader/scorer with strict FEN validity checks, a controlled motif taxonomy and checkpoint evaluation CLI:
   `evaluate_tactics.py`.
-- JSON benchmark output includes checkpoint metadata, device, simulation count, overall and per-motif scores, and missed positions.
+- JSON benchmark output includes checkpoint metadata, device, simulation count, overall, per-motif and per-colour (White/Black to move) scores, and missed positions.
 
 ## Current limitations and evidence boundaries
 
@@ -60,7 +60,6 @@
 ## Prioritised next work
 
 1. Expand the tactical corpus with independently checked positions across the validated motif taxonomy.
-2. Expand the curated tactical corpus with independently reviewed positions across the validated motif taxonomy.
 3. Run and record the tactical benchmark against an actual checkpoint when one is available.
 4. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 5. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.
