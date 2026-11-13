@@ -423,3 +423,9 @@ For every meaningful development batch:
 - The eight planned additions are complete: two examples each of deflection, decoy, removal of defender and interference, with White and Black represented for every motif.
 - Corpus total: **22 positions (White 12 / Black 10)**. The unsound proposed `Re8+` candidate was removed after engine review and is not included.
 - No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.
+
+
+### Combined tactical sequences — third combination pending verification (2026-11-13)
+- Added a Black decoy sequence combining queen attraction/exchange with a follow-up knight capture of the bishop: `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+`.
+- Sequence corpus now has three annotated combinations and eleven plies. Tests cover complete-line accounting and both colours.
+- CPU and Stockfish verification are pending. Sequence scoring remains principal-variation line-following and does not prove forcedness against all replies. No training or checkpoint evaluation was run.

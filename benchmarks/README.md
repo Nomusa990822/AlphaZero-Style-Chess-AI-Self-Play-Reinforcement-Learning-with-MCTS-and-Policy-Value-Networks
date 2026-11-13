@@ -199,3 +199,29 @@ checkpoint hash/epoch metadata and JSON report persistence, and verifies that
 missing-checkpoint and over-budget failures happen before expensive setup.
 Non-finite PUCT values such as \`nan\` and \`inf\` are rejected. These tests do
 not run training or claim anything about playing strength.
+
+
+## Multi-motif tactical combinations
+
+The separate `tactical_sequences.jsonl` corpus records annotated principal
+variations that combine motifs across several plies. It currently contains
+three examples: a Black checking fork that wins a queen, a White discovered
+check that wins a queen, and a Black queen-decoy sequence that trades queens
+before `...Nxg4+` wins a bishop. The sequence evaluator reports complete-line
+success, per-ply accuracy, colour and phase breakdowns.
+
+Run the sequence evaluator with a compatible trained checkpoint:
+
+```bash
+python evaluate_tactical_sequences.py \
+  --checkpoint data/checkpoints/best_model.pt \
+  --positions benchmarks/tactical_sequences.jsonl \
+  --simulations 100 \
+  --device cpu \
+  --output reports/tactical-sequence-benchmark.json
+```
+
+This measures line-following on the annotated principal variations. It does
+not establish that every opponent reply is forced or exhaustively compare all
+defences. CI validates sequence legality and the evaluator; it does not run
+training or measure neural-network playing strength.

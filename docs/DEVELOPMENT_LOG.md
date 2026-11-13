@@ -945,3 +945,10 @@ Copy this section for each future engineering batch.
 - The planned eight-position motif expansion is now complete and balanced across both colours: deflection (White/Black), decoy (White/Black), removal of defender (White/Black), and interference (White/Black). The rejected `Re8+` candidate is excluded.
 - Corpus total: **22 positions (White 12 / Black 10)**. The Stockfish audit is finite-depth support, not proof of every possible defence or of neural-network strength.
 - No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
+
+
+### Expand combined tactical sequences — Black decoy combination added (2026-11-13)
+- Added a third annotated multi-motif sequence from the Black decoy example: `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+`, combining decoy/attraction with a hanging-piece capture.
+- Expanded sequence evaluator regression coverage from two to three combinations and from six to eleven annotated plies. The updated tests assert both colours are represented and account for five White and six Black plies.
+- Updated benchmark documentation with the current sequence corpus and checkpoint evaluation command.
+- CPU and Stockfish sequence-audit checks are pending. Existing sequence evaluation remains annotated principal-variation line-following, not proof of forcedness against every defence. No checkpoint training/evaluation was run.
