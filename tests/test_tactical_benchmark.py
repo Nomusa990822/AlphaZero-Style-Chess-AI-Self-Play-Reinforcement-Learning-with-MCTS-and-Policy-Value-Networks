@@ -106,7 +106,9 @@ def test_benchmark_loader_rejects_empty_corpus(tmp_path):
     with pytest.raises(ValueError, match="No tactical positions"):
         load_tactical_positions(path)
 
-\n\ndef test_tactical_position_requires_non_empty_annotation():
+
+
+def test_tactical_position_requires_non_empty_annotation():
     data = {
         "id": "unannotated",
         "motif": "fork",
