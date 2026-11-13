@@ -29,12 +29,15 @@ concurrency:
 
 jobs:
   evaluate:
-    if: github.ref == 'refs/heads/chess-strength-training-upgrade' && inputs.confirm_evaluation == 'YES'
+    # Dispatch from main; evaluate code from the feature branch.
+    if: github.ref == 'refs/heads/main' && inputs.confirm_evaluation == 'YES'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - name: Check out selected feature branch
+      - name: Check out chess-strength-training-upgrade
         uses: actions/checkout@v4
+        with:
+          ref: chess-strength-training-upgrade
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,11 +45,11 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Install CPU PyTorch and project dependencies
+      - name: Install project dependencies with CPU-only PyTorch
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
           python -m pip install -r requirements.txt
+          python -m pip install --force-reinstall --no-deps --index-url https://download.pytorch.org/whl/cpu torch
 
       - name: Download the immutable pilot checkpoint release
         env:
@@ -57,11 +60,11 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --pattern "best_model.pt" \
             --pattern "latest_candidate.pt" \
-            --pattern "checkpoint-manifest.json" \
+            --pattern "fresh-pilot-checkpoint-manifest.json" \
             --dir data/checkpoints/fresh_pilot
           test -s data/checkpoints/fresh_pilot/best_model.pt
           test -s data/checkpoints/fresh_pilot/latest_candidate.pt
-          test -s data/checkpoints/fresh_pilot/checkpoint-manifest.json
+          test -s data/checkpoints/fresh_pilot/fresh-pilot-checkpoint-manifest.json
 
       - name: Verify checkpoint SHA-256 hashes
         run: |
@@ -69,7 +72,7 @@ jobs:
           import hashlib, json
           from pathlib import Path
           root = Path("data/checkpoints/fresh_pilot")
-          manifest = json.loads((root / "checkpoint-manifest.json").read_text())
+          manifest = json.loads((root / "fresh-pilot-checkpoint-manifest.json").read_text())
           entries = {item["filename"]: item for item in manifest["checkpoints"]}
           for name in ("best_model.pt", "latest_candidate.pt"):
               if name not in entries:
@@ -120,6 +123,6 @@ jobs:
           name: checkpoint-tactical-evaluation-${{ github.run_id }}
           path: |
             reports/checkpoint_tactical_evaluation/*.json
-            data/checkpoints/fresh_pilot/checkpoint-manifest.json
+            data/checkpoints/fresh_pilot/fresh-pilot-checkpoint-manifest.json
           if-no-files-found: error
           retention-days: 90
