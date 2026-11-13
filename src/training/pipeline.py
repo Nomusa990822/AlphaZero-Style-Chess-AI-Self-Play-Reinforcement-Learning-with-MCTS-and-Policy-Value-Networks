@@ -95,8 +95,10 @@ class AlphaZeroPipeline:
         self.metrics_logger = MetricsLogger(self.config.log_dir)
         self.replay_buffer = ReplayBuffer(capacity=self.config.replay_buffer_capacity)
         replay_path = Path(self.config.replay_buffer_path)
-        if replay_path.is_file():
-            self.replay_buffer.load(replay_path)
+        # Load even when the snapshot is absent: a first-run crash may leave
+        # only per-game journal chunks to recover.
+        self.replay_buffer.load(replay_path)
+        if len(self.replay_buffer):
             print(f"Loaded {len(self.replay_buffer)} replay samples from {replay_path}")
 
         self.best_model = AlphaZeroNet(
