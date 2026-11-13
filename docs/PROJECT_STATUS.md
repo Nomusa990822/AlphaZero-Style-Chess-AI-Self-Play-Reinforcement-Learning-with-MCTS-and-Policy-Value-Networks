@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `0f12e052434a66f03499bd1f91abafa1afeeb2fa` (142 CPU tests passed in 3.20 seconds; CPU run 43412113192; Stockfish audit run 43412113210 passed).
+**Latest verified code revision:** `065d9165df3e0c40873ddd6e8c9f551f48d8182c` (144 CPU tests passed in 3.34 seconds; CPU run 43416399616; Stockfish audit run 43416399760 passed).
 **Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, and its mocked execution-path/report tests are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
@@ -113,7 +113,11 @@ For every meaningful development batch:
 - Corrected the import to actual line breaks in the current unverified revision. Await fresh CI.
 
 
-## Current unverified revision — 2026-11-13
+## Verification update — 2026-11-13 (supersedes the pending state below)
 - Latest source repair: `ba247182a03ce116e0e038679f62d15deabb5cab`; it replaces literal escaped newline sequences in the forced-mate root-filter block in `src/mcts/search.py` with real line breaks. **Verification pending.**
 - Previous revision `fff08dcc147e5275914816244b7d09d8ac15b7ae`: CPU run [43415963144](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963144) failed during collection at line 205 of `src/mcts/search.py`; twelve modules failed to import and no assertions ran. Stockfish audit [43415963147](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963147) passed and uploaded artifact `14031965643`.
 - The latest verified code revision remains `0f12e052434a66f03499bd1f91abafa1afeeb2fa` until both workflows pass on the repaired revision. No checkpoint training, benchmark or playing-strength experiment has been run.
+
+
+- **Bounded forced mate-in-two safeguard — CI-verified:** final branch revision `065d9165df3e0c40873ddd6e8c9f551f48d8182c`. CPU workflow [43416399616](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416399616) passed **144 tests in 3.34 seconds**. Stockfish audit [43416399760](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416399760) passed: **13/13** corpus positions supported, **0** flagged; artifact ID `14031444001` uploaded. Runs [43416353605](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416353605) and [43416353083](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416353083) were cancelled after a newer tracking commit superseded them; the final workflows on the updated branch head passed. The historical failures remain documented in the development log.
+- The bounded detector is an exact but budget-limited root tactic check, not a full tactical engine. It may miss a forced mate when its 512-reply inspection budget is exhausted. No real-checkpoint strength experiment or Elo result has been produced.
