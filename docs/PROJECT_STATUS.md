@@ -499,3 +499,13 @@ For every meaningful development batch:
 - Corpus: **26 positions (White 14 / Black 12)**. Both overloaded-defender and trapped-piece motifs now have White and Black examples, with semantic line-replay tests.
 - This finite-depth audit does not prove all possible defences or validate every human motif label. No training, checkpoint evaluation, checkpoint promotion, Elo estimate or playing-strength claim was made. The baseline remains selected.
 - Earlier superseded workflow attempts were cancelled, not failed; the final CPU and Stockfish runs above both succeeded on the same commit.
+
+
+## Fixed-opponent match evaluation — implementation CI-verified, not run (2026-11-13)
+
+- Added a CPU-only evaluator for the immutable pilot baseline and candidate against Stockfish UCI Elo settings **1320, 1600 and 1900**.
+- Planned sample: **72 games total** (two checkpoints × three opponent levels × 12 games), with six predefined opening positions played with each model colour for every checkpoint/opponent group.
+- Fixed model search: 16 MCTS simulations, no Dirichlet noise, temperature 0.0; Stockfish: one thread, 64 MB hash, 0.05 seconds per move; 120-ply cap. The report records checkpoint hashes, colour-separated W/D/L and each game's outcome.
+- Implementation CPU tests: **179 passed in 3.44 seconds** (run 43506781688); Stockfish tactical audit passed (run 43506781713).
+- Manual dispatch workflow is proposed separately for main and defaults to NO. It verifies the exact pilot checkpoint hashes before evaluation and uploads the report. It must be merged into the default branch before it can be dispatched.
+- **Not yet executed:** no match result, Elo estimate or playing-strength claim. This workflow does not train, write or promote checkpoints. Baseline remains selected.
