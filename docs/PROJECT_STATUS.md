@@ -351,3 +351,12 @@ For every meaningful development batch:
 - Replaced the position with a published example: `1.Rd8+!`; after `...Nxd8`, `2.Qc8#`, while `...Qxd8` permits `Bxd8`. Source: Ilya Korzhenevich, *Illinois Chess Bulletin*, Sep–Oct 2005, p.22.
 - New candidate corpus remains 18 positions (White 10 / Black 8). Both CPU semantics and Stockfish audit are pending; it is not counted as verified.
 - No training, checkpoint evaluation, or Elo claim was made.
+
+
+### Interference motif — verified replacement candidate (2026-11-13)
+- Verified revision: `932d10537780a9c57c1fc38f6a234d9f59b5baf3`.
+- CPU [43434909575](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434909575): **166 passed in 3.80 seconds**.
+- Stockfish [43434909567](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434909567): **18/18 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**; artifact `14042092553`.
+- Verified interference line: `1.Rd8+!`; after `...Nxd8`, `2.Qc8#`; if `...Qxd8`, `2.Bxd8`. The rejected first candidate is excluded.
+- The first workflow pair on this revision was cancelled and replaced by the successful pair above. The earlier duplicate CPU failure and Stockfish pass on the rejected candidate remain documented in the development log.
+- Corpus total: **18 positions (White 10 / Black 8)**. The broader balanced eight-position motif batch is still incomplete. Finite-depth Stockfish review is not exhaustive proof of all defences. No training, checkpoint evaluation or Elo claim was made.
