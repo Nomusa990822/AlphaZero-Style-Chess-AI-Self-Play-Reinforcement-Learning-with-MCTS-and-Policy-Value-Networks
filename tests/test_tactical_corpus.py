@@ -18,4 +18,6 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
     }
     for case in positions:
         board = chess.Board(case.fen)
+        assert board.is_valid(), f"{case.position_id} contains an invalid chess position"
+        assert not board.is_game_over(claim_draw=True)
         assert all(chess.Move.from_uci(move) in board.legal_moves for move in case.acceptable_moves)
