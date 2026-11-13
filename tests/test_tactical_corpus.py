@@ -25,6 +25,8 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         "decoy",
         "removal_of_defender",
         "interference",
+        "overloaded_defender",
+        "trapped_piece",
     }
     sides_to_move = set()
     for case in positions:
@@ -35,8 +37,8 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         sides_to_move.add(board.turn)
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
-    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 12
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 10
+    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 14
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 12
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
