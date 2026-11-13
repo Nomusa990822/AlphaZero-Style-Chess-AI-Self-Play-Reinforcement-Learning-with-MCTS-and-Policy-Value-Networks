@@ -260,3 +260,32 @@ def test_replay_journal_recovers_games_and_avoids_duplicate_replay(tmp_path):
     assert not (tmp_path / "latest_buffer_journal").exists() or not list(
         (tmp_path / "latest_buffer_journal").glob("*.pkl")
     )
+
+
+def test_self_play_emits_completed_game_callback_and_neutral_move_cap():
+    move_encoding, _, inference = build_stack()
+    generator = SelfPlayGenerator(
+        inference=inference,
+        move_encoding=move_encoding,
+        mcts_config=MCTSConfig(num_simulations=2, add_dirichlet_noise=False),
+        max_moves=4,
+        opening_temperature_moves=10,
+        opening_temperature=1.0,
+        late_temperature=0.3,
+        adjudicate_on_max_moves=True,
+    )
+    completed = []
+    games = generator.generate_games(
+        1,
+        on_game_complete=lambda number, result, elapsed: completed.append(
+            (number, result, elapsed)
+        ),
+    )
+
+    assert len(games) == 1
+    assert len(completed) == 1
+    assert completed[0][0] == 1
+    assert completed[0][2] >= 0.0
+    assert games[0].ended_by_move_limit
+    assert games[0].result == "1/2-1/2"
+    assert all(sample.value_target == 0.0 for sample in games[0].samples)
