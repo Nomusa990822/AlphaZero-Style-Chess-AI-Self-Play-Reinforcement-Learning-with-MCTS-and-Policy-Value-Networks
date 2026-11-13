@@ -1020,11 +1020,73 @@ Copy this section for each future engineering batch.
 - Dispatch limitation: GitHub requires a `workflow_dispatch` workflow file to exist on the repository's default branch. This pilot workflow currently exists only on the feature branch, so it is prepared and CI-verified but cannot be manually dispatched until the PR is merged or the workflow is otherwise made available on the default branch. The PR remains unmerged and `main` remains unchanged.
 
 
+## 2026-11-13 — Post-merge pilot workflow readiness review
+
+- PR #1 was squash-merged into `main`; merge commit:
+  `cb8ddd0ee3ae332dfeda500bbf961fc80451a07f`.
+- Confirmed `.github/workflows/fresh-start-pilot.yml` is present on the
+  default branch. The manual workflow can now be opened from Actions; select
+  `chess-strength-training-upgrade` in the branch selector. Its job condition
+  still requires that exact feature branch and the explicit `YES` input;
+  the default remains `NO`.
+- Reviewed the manifest helper: a missing pilot checkpoint directory produces
+  an empty manifest rather than aborting the always-run manifest step. The
+  workflow uploads available pilot outputs and publishes a checkpoint
+  prerelease only after a successful pilot with a generated `.pt` file.
+- Default-branch post-merge CPU workflow [43491543336](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43491543336)
+  completed successfully on the merge commit. The pre-merge PR-head
+  verification remains 172 passing CPU tests plus Stockfish support for
+  22/22 positions, 5/5 sequences and 19/19 annotated plies, with zero flags.
+- Corrected the stale manual-dispatch instructions in `docs/training_flow.md`
+  and updated `docs/PROJECT_STATUS.md` to distinguish merged/dispatchable
+  workflow status from training status.
+- No training workflow was dispatched. No checkpoint or replay artifact was
+  generated, and no playing-strength or Elo result is claimed.
+
+
+
+## 2026-11-13 — Fresh-start CPU pilot executed successfully
+
+- User explicitly confirmed dispatch. Workflow run [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) ran on chess-strength-training-upgrade at revision dbba702569372370a3488a02a4d84024f63e2aac; conclusion SUCCESS.
+- All steps completed: runner/Python setup, CPU PyTorch and dependencies, bounded pilot, manifest generation, artifact upload and prerelease checkpoint backup.
+- Pilot produced 4 self-play games / 274 positions, one training epoch and two candidate-evaluation draws. Candidate was NOT promoted (0 wins, 0 losses, 2 draws; score 0.50; 90% lower confidence bound 0.50).
+- Baseline and candidate checkpoints were preserved with SHA-256 hashes in the manifest. Actions artifact 14071428532 contains checkpoints, replay buffer and logs; prerelease [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1) contains both checkpoint files and manifest.
+- Detailed metrics and limitations are recorded in docs/EXPERIMENT_LOG.md. This successful smoke test does not establish playing strength or Elo.
+
+
+## 2026-11-13 — Repair checkpoint tactical-evaluation dispatch workflow
+
+- Corrected the dispatch model: the workflow is launched from `main`, where
+  GitHub exposes `workflow_dispatch` inputs, and the job explicitly checks
+  out `chess-strength-training-upgrade` for the evaluation code and corpora.
+- Restricted execution to a `main` dispatch with the explicit
+  `confirm_evaluation == YES` input. The default remains `NO`; no evaluation
+  was dispatched as part of this repair.
+- Corrected the prerelease manifest asset name to
+  `fresh-pilot-checkpoint-manifest.json`, matching the actual release asset.
+- Confirmed the two evaluator scripts and their CLI flags exist on the feature
+  branch. Reordered dependency installation so the CPU-only PyTorch wheel is
+  installed after project requirements.
+- This workflow/documentation repair is not yet CI-verified. No checkpoint
+  evaluation, training, checkpoint promotion, or Elo claim has occurred.
+
+
+## 2026-11-13 — Checkpoint tactical evaluation completed successfully
+
+- Workflow [43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826) completed with **SUCCESS** on workflow revision `43a68cebd39271c687adf068859f29ca69462882`. All eleven substantive steps completed successfully.
+- The workflow checked out `chess-strength-training-upgrade`, installed CPU-only dependencies, downloaded the immutable fresh-pilot release, verified both checkpoint SHA-256 hashes against the manifest, evaluated both checkpoints on both tactical corpora at 100 MCTS simulations, and uploaded the reports.
+- Individual positions: baseline **4/22 (18.2%)**; candidate **5/22 (22.7%)**. Both had zero illegal selected moves.
+- Combined sequences: both checkpoints matched **3/7 annotated plies (42.9%)**, completed **1/5 sequences (20%)**, and had zero illegal selected moves. Both completed the same removal-of-defender/mating-net sequence.
+- Candidate's one-position increase is a small result on a curated 22-position set, not evidence of overall playing-strength improvement. Sequence performance was unchanged. Sequence scoring follows the annotated principal variation and does not exhaustively test alternative defences.
+- Reports artifact: [checkpoint-tactical-evaluation-43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826) (artifact ID `14074627894`; expires 2027-02-11). It contains four JSON reports and the checkpoint manifest.
+- No training was run, no checkpoint was modified or promoted, and no Elo or general playing-strength claim is made. Full measured details are in `docs/EXPERIMENT_LOG.md`.
+
+
 ## 2026-11-13 — Expand tactical corpus: overloaded defenders and trapped pieces
 
 - Added four new human-annotated positions to `benchmarks/tactical_positions.jsonl`: two overloaded-defender examples and two trapped-piece examples, with White and Black represented in each motif family.
-- New examples cite their instructional sources in the annotations. The overload examples use published tactical lines; the trapped-piece examples are simple composed interpositions, explicitly labelled as such where appropriate.
-- Expanded the corpus from 22 to 26 positions. Side-to-move balance is now 14 White / 12 Black.
-- Added semantic tests for the overload continuations (including the back-rank mating sequence and the queen overload) and both colour versions of the trapped-piece interposition. Updated the corpus coverage test and benchmark README.
-- **Validation pending:** Python CPU tests and the Stockfish depth-16 audit will run through the pull request. Legal move syntax alone is not treated as tactical validation. Do not use the new positions in checkpoint scoring until CI and engine review complete.
+- New examples cite their instructional sources in the annotations. The overload examples use published tactical lines; the trapped-piece examples are composed interpositions.
+- Expanded the corpus from 22 to 26 positions. Side-to-move balance is 14 White / 12 Black.
+- Added semantic tests for the overload continuations and both colour versions of the trapped-piece interposition. Updated the corpus coverage test and benchmark README.
+- **Validation pending:** Python CPU tests and the Stockfish depth-16 audit must pass before these positions are considered validated or included in checkpoint scoring.
 - No checkpoint evaluation, training, or promotion was started.
