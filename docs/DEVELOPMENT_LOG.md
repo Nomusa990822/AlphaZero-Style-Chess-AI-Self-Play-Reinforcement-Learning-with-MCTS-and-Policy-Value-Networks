@@ -1,3 +1,17 @@
+## 2026-11-13 — Verify paired tactical-filter runner and final tracking revision
+
+### Verification
+- Final tracking/documentation revision tested: `b05fc8e82460864674dc682d2b0fa3b05639b8f7`.
+- CPU workflow [43407927386](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407927386): **passed; 117 tests passed in 3.64 seconds** on Python 3.11.
+- Stockfish tactical audit [43407927265](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407927265): **passed**; all 13 curated positions were reviewed, all 13 had at least one accepted move within the configured 150-centipawn tolerance, and 0 positions were flagged for human review. The `tactical-engine-audit` artifact uploaded successfully (artifact ID `14028002780`).
+- Duplicate workflow attempts on the same revision also completed successfully: CPU run [43407920821](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407920821) and audit run [43407920724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407920724). These are additional successful runs, not failures or cancellations.
+- Earlier implementation/test revision `861602a6f258266f3c39561b58cbb1aa3af74ce5` also passed 117 tests in CPU run [43407844131](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407844131).
+- The paired tactical-filter runner and its regression tests are CI-verified. The audit checks the curated corpus with finite-depth Stockfish; it does not establish neural-network playing strength or Elo.
+- No committed compatible checkpoint was found in the repository. The real checkpoint-on/off experiment remains **not run**; no experimental score or strength improvement is claimed.
+
+### Follow-up
+- Run the paired comparison only when a compatible trained checkpoint is available. Use identical checkpoint, corpus, device and simulation budget for both modes, then preserve the generated JSON and checkpoint hash in `EXPERIMENT_LOG.md`.
+
 ## 2026-11-13 — Add a single-process paired tactical-filter benchmark
 
 ### Goal and implementation

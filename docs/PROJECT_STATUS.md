@@ -4,13 +4,13 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `96303e4d5f4f0c39c4abd7252c97bb3e9c0c0d86` (116 CPU tests passed; Stockfish tactical audit passed; runs `43407430846` and `43407430853`).
-**Current tracking-branch head:** paired tactical-filter benchmark runner and tests added; final documentation commit awaiting CI.
+**Latest verified code and tracking revision:** `b05fc8e82460864674dc682d2b0fa3b05639b8f7` (117 CPU tests passed; Stockfish tactical audit passed; runs [43407927386](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407927386) and [43407927265](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407927265)).
+**Current state:** paired tactical-filter runner and regression tests are implemented and CI-verified; no real-checkpoint ablation experiment has been run.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
-- The repository does not contain a committed model checkpoint. Checkpoint files are generated locally by training and are not present in the tracked Git tree; do not report a random/untrained model score as learned playing strength.\n\n## Current verified state
+- The repository does not contain a committed model checkpoint. A compatible locally generated checkpoint is required for the paired ablation experiment; do not report a random/untrained model score as learned playing strength.
 
 - Tactical-root-filter ablation is **CI-verified** on `96303e4d5f4f0c39c4abd7252c97bb3e9c0c0d86`. CPU workflow [43407430846](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407430846) passed; Stockfish audit [43407430853](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407430853) passed and uploaded its report. The earlier paired ablation change also passed 116 CPU tests in run [43407151824](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43407151824). The paired comparison runner is now added but awaits CI; no real-checkpoint experiment or playing-strength claim has been made.
 
@@ -70,7 +70,7 @@
 
 ## Prioritised next work
 
-1. Verify `compare_tactical_filters.py` with CI, then run the paired benchmark against a real compatible checkpoint using identical corpus, device and simulation budget.
+1. Run `compare_tactical_filters.py` against a real compatible trained checkpoint using identical corpus, device and simulation budget; record the JSON report and checkpoint hash. The runner and tests have already passed CI.
 2. Add a reproducible, resource-bounded search-quality benchmark that compares tactical safeguards and candidate MCTS configurations on fixed positions, including nodes/simulation allocation and engine-supported outcomes.
 3. Expand the tactical corpus with independently checked positions across defensive resources, discovered attacks, and endgame tactics.
 4. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
