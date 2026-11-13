@@ -28,6 +28,7 @@ TACTICAL_MOTIFS = frozenset({
     "double_attack",
     "deflection",
     "decoy",
+    "removal_of_defender",
     "overloaded_defender",
     "trapped_piece",
     "defensive_resource",

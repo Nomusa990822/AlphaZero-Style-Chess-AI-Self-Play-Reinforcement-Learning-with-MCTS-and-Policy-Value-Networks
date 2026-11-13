@@ -199,3 +199,28 @@ def test_white_queen_decoy_lures_king_into_rook_mate():
     assert mating_rook_move in board.legal_moves
     board.push(mating_rook_move)
     assert board.is_checkmate()
+
+
+def test_black_rook_removes_c4_pawn_defender_before_knight_mate():
+    case = cases_by_id()["black-rook-removes-c4-pawn-defender-before-knight-mate-001"]
+    board = chess.Board(case.fen)
+    sacrifice = chess.Move.from_uci("e5c4")
+
+    assert case.motif == "removal_of_defender"
+    assert board.turn == chess.BLACK
+    assert board.piece_at(chess.C4) == chess.Piece(chess.PAWN, chess.WHITE)
+    assert chess.B5 in board.attacks(chess.C4)
+    assert sacrifice in board.legal_moves
+    board.push(sacrifice)
+    assert board.is_check()
+    assert board.piece_at(chess.C4) == chess.Piece(chess.ROOK, chess.BLACK)
+
+    recapture = chess.Move.from_uci("c2c4")
+    assert recapture in board.legal_moves
+    board.push(recapture)
+    assert board.piece_at(chess.C4) == chess.Piece(chess.ROOK, chess.WHITE)
+
+    mating_move = chess.Move.from_uci("d6b5")
+    assert mating_move in board.legal_moves
+    board.push(mating_move)
+    assert board.is_checkmate()

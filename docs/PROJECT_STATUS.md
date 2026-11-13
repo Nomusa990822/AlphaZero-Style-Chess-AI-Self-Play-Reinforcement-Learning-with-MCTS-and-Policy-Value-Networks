@@ -318,3 +318,10 @@ For every meaningful development batch:
 - The verified addition is one White-to-move queen decoy: `Qxh7+`, `...Kxh7`, `Rh5#`. Corpus total is 16 (White 9 / Black 7).
 - Matching push runs [43431088106](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088106) and [43431088153](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088153) were cancelled; matching PR runs above completed successfully on the exact same commit.
 - Broader eight-position expansion is still incomplete. Finite-depth Stockfish support is not proof of forcedness against every defence. No training or checkpoint evaluation was run, and no playing-strength/Elo claim is made.
+
+
+### Removal-of-the-defender motif — verification pending (2026-11-13)
+- Added one Black-to-move candidate: `...Rxc4+`, `Rxc4`, `...Nb5#`. The rook sacrifice removes the c4-pawn that guarded b5.
+- Added the new `removal_of_defender` motif to the loader taxonomy and a semantic regression for the complete annotated mate line.
+- Candidate corpus total: 17 positions (White 9 / Black 8). CPU and Stockfish checks are pending; the last verified corpus remains 16/16 on `6598cf5d6f393926f53b6cf4e8880bc52bf3199d`.
+- No training or checkpoint evaluation was run.

@@ -827,3 +827,11 @@ Copy this section for each future engineering batch.
 - Push-triggered runs [43431088106](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088106) and [43431088153](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088153) were cancelled in favour of the matching successful PR runs on the same SHA. These are cancelled, not failures.
 - Corpus total: **16 positions (White 9 / Black 7)**. The earlier deflection and new decoy are single-position additions; the planned eight-position motif batch remains incomplete.
 - Stockfish's finite-depth audit supports at least one acceptable move per position and checks the annotated sequence line; it does not prove every defence is forced or independently establish motif labels. No checkpoint evaluation or training was run; no Elo or playing-strength improvement is claimed.
+
+
+### Removal-of-the-defender motif — verification pending (2026-11-13)
+- Added one Black-to-move candidate from a published ChessTempo tactical-motif example: `...Rxc4+` removes the white c4-pawn that guards b5; after `Rxc4`, `...Nb5#` is the annotated mate.
+- Added `removal_of_defender` to the accepted motif taxonomy and added a semantic test for the defender removal and mating continuation.
+- Corpus candidate total is 17 positions (White 9 / Black 8). This addition remains pending until CPU tests and the Stockfish audit both pass on the same commit.
+- Source: ChessTempo tactical motifs, “Removing the Guard” example. The audit remains finite-depth support, not proof of every defence.
+- No training or checkpoint evaluation was run.
