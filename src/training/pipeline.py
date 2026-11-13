@@ -41,6 +41,7 @@ class PipelineConfig:
     self_play_min_moves_before_resign: int = 30
 
     self_play_adjudicate_on_max_moves: bool = True
+    # Deprecated compatibility field; capped games are always neutral draws.
     self_play_adjudication_threshold: float = 0.10
 
     training_batch_size: int = 32
@@ -363,6 +364,7 @@ class AlphaZeroPipeline:
             evaluation_draws=eval_result.draws,
             evaluation_score=eval_result.score,
             model_promoted=should_promote,
+            evaluation_lower_confidence_bound=eval_result.lower_confidence_bound,
         )
 
         self.metrics_logger.append_iteration_metrics(metrics)
