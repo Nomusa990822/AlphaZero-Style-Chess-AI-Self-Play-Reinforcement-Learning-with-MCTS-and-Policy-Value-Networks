@@ -202,7 +202,16 @@ class MCTS:
             ]
             return mating_children or children
 
-        forced_mates = find_forced_mate_in_two(root.board.copy(stack=True))\n        if forced_mates:\n            forced_uci = {move.uci() for move in forced_mates}\n            forced_children = [child for child in children if child.move.uci() in forced_uci]\n            if forced_children:\n                return forced_children\n\n        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
+        forced_mates = find_forced_mate_in_two(root.board.copy(stack=True))
+        if forced_mates:
+            forced_uci = {move.uci() for move in forced_mates}
+            forced_children = [
+                child for child in children if child.move.uci() in forced_uci
+            ]
+            if forced_children:
+                return forced_children
+
+        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
         if not safe_moves:
             return children
 
