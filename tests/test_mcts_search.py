@@ -452,3 +452,128 @@ def test_root_tactical_analysis_is_reused_for_action_and_policy(monkeypatch):
         "mate_in_two": 1,
         "mate_avoidance": 1,
     }
+
+
+
+def test_root_see_prior_bias_rewards_captures_for_white_and_black(monkeypatch):
+    import src.mcts.search as search_module
+
+    positions = [
+        (chess.Board("4k3/8/8/3p4/4P3/8/8/4K3 w - - 0 1"), "e4d5"),
+        (chess.Board("4k3/8/8/4p3/3P4/8/8/4K3 b - - 0 1"), "e5d4"),
+    ]
+
+    for board, capture_uci in positions:
+        original_fen = board.fen()
+
+        def favourable_exchange(position, move, max_capture_nodes=128):
+            return 300 if move.uci() == capture_uci else 0
+
+        monkeypatch.setattr(
+            search_module, "static_exchange_evaluation", favourable_exchange
+        )
+        encoding = MoveEncoding()
+
+        class UniformInference:
+            def predict(self, position):
+                return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+        root = MCTSNode(board=board)
+        search = MCTS(
+            inference=UniformInference(),
+            move_encoding=encoding,
+            config=MCTSConfig(
+                num_simulations=0,
+                add_dirichlet_noise=False,
+                use_tactical_root_filter=False,
+            ),
+        )
+        search._evaluate_and_expand(root, is_root=True)
+
+        capture_prior = root.children[capture_uci].prior
+        quiet_child = next(
+            child for move_uci, child in root.children.items()
+            if move_uci != capture_uci and not board.is_capture(child.move)
+        )
+        assert capture_prior > quiet_child.prior
+        assert len(root.children) == board.legal_moves.count()
+        assert np.isclose(sum(child.prior for child in root.children.values()), 1.0)
+        assert board.fen() == original_fen
+
+
+def test_root_see_prior_bias_deprioritizes_poisoned_capture_without_pruning(monkeypatch):
+    import src.mcts.search as search_module
+
+    board = chess.Board("4k3/8/8/3p4/4P3/8/8/4K3 w - - 0 1")
+    capture_uci = "e4d5"
+
+    def poisoned_exchange(position, move, max_capture_nodes=128):
+        return -300 if move.uci() == capture_uci else 0
+
+    monkeypatch.setattr(
+        search_module, "static_exchange_evaluation", poisoned_exchange
+    )
+    encoding = MoveEncoding()
+
+    class UniformInference:
+        def predict(self, position):
+            return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+    root = MCTSNode(board=board)
+    search = MCTS(
+        inference=UniformInference(),
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=0,
+            add_dirichlet_noise=False,
+            use_tactical_root_filter=False,
+        ),
+    )
+    search._evaluate_and_expand(root, is_root=True)
+
+    capture_prior = root.children[capture_uci].prior
+    quiet_child = next(
+        child for move_uci, child in root.children.items()
+        if move_uci != capture_uci and not board.is_capture(child.move)
+    )
+    assert capture_prior < quiet_child.prior
+    assert set(root.children) == {move.uci() for move in board.legal_moves}
+    assert np.isclose(sum(child.prior for child in root.children.values()), 1.0)
+
+
+def test_root_see_budget_exhaustion_preserves_neural_capture_prior(monkeypatch):
+    import src.mcts.search as search_module
+
+    board = chess.Board("4k3/8/8/3p4/4P3/8/8/4K3 w - - 0 1")
+    capture_uci = "e4d5"
+
+    monkeypatch.setattr(
+        search_module,
+        "static_exchange_evaluation",
+        lambda position, move, max_capture_nodes=128: None,
+    )
+    encoding = MoveEncoding()
+
+    class UniformInference:
+        def predict(self, position):
+            return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+    root = MCTSNode(board=board)
+    search = MCTS(
+        inference=UniformInference(),
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=0,
+            add_dirichlet_noise=False,
+            use_tactical_root_filter=False,
+        ),
+    )
+    search._evaluate_and_expand(root, is_root=True)
+
+    assert np.isclose(
+        root.children[capture_uci].prior,
+        next(
+            child.prior for move_uci, child in root.children.items()
+            if move_uci != capture_uci and not board.is_capture(child.move)
+        ),
+    )

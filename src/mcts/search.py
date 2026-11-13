@@ -5,6 +5,7 @@ AlphaZero-style Monte Carlo Tree Search.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Tuple
 
 import chess
@@ -18,6 +19,7 @@ from src.mcts.tactics import (
     find_forced_mate_in_two,
     find_mate_in_one,
     find_moves_avoiding_mate_in_one,
+    static_exchange_evaluation,
 )
 from src.model.inference import ModelInference
 
@@ -34,6 +36,7 @@ class MCTSConfig:
     add_dirichlet_noise: bool = True
     temperature: float = 1.0
     use_tactical_root_filter: bool = True
+    use_static_exchange_ordering: bool = True
 
 
 class MCTS:
@@ -108,6 +111,8 @@ class MCTS:
 
         policy_probs, value = self.inference.predict(node.board)
         priors = self._policy_dict_for_board(node.board, policy_probs)
+        if is_root and self.config.use_static_exchange_ordering:
+            priors = self._apply_static_exchange_prior_bias(node.board, priors)
 
         node.expand(priors)
 
@@ -120,6 +125,39 @@ class MCTS:
             node.add_noise_to_priors(noisy_priors)
 
         return float(value)
+
+
+    def _apply_static_exchange_prior_bias(
+        self,
+        board: chess.Board,
+        priors: dict[str, float],
+    ) -> dict[str, float]:
+        """
+        Modestly adjust root policy priors using bounded static exchange scores.
+
+        Every legal move remains available to MCTS. Only captures and
+        promotions are scored; an exhausted SEE budget (None) leaves that
+        move's neural prior unchanged. The bounded exponential multiplier
+        limits the maximum influence to exp(+/-0.5), preserving the policy
+        network as the primary source of move preference.
+        """
+        adjusted = dict(priors)
+        for move in board.legal_moves:
+            if not board.is_capture(move) and move.promotion is None:
+                continue
+            score = static_exchange_evaluation(board, move)
+            if score is None:
+                continue
+            exponent = max(-0.5, min(0.5, score / 600.0))
+            adjusted[move.uci()] = adjusted.get(move.uci(), 0.0) * math.exp(exponent)
+
+        total = sum(adjusted.values())
+        if total <= 0:
+            return self._policy_dict_for_board(
+                board,
+                np.ones(self.move_encoding.action_size, dtype=np.float32),
+            )
+        return {move_uci: prior / total for move_uci, prior in adjusted.items()}
 
     def _backpropagate(self, search_path: list[MCTSNode], leaf_value: float) -> None:
         """

@@ -553,3 +553,27 @@ Copy this section for each future engineering batch.
 - Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653867): **passed**; all 13 corpus positions supported, 0 flagged for human review; artifact ID 14032962642. Duplicate audit run [43418661598](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418661598) also passed.
 - The four new static-exchange regression tests are included in the 149-test suite.
 - No checkpoint experiment, training run, measured playing-strength gain or Elo result is claimed.
+
+
+## 2026-11-13 — Integrate static exchange evaluation into root move priors
+
+### Goal and design
+- Let the bounded SEE primitive inform root tactical exploration without hard-pruning legal moves or replacing neural policy priors.
+- Apply a conservative, bounded multiplier only to captures and promotions during root expansion. Keep the network prior as the base signal, renormalise the result, and leave any move with an unknown SEE score unchanged.
+- Restrict this first integration to the root to avoid imposing SEE recursion cost at every expanded node. Deeper-tree MCTS remains unchanged.
+
+### Changes
+- Added the opt-out configuration flag `use_static_exchange_ordering` (enabled by default).
+- Added `_apply_static_exchange_prior_bias` in `src/mcts/search.py`. Scores are scaled and clamped to an exponent range of -0.5 to +0.5, limiting the multiplier to approximately 0.61–1.65.
+- Applied the adjustment after neural policy conversion and before root expansion/Dirichlet noise.
+- Added tests for favourable captures for both White and Black, poisoned captures, preservation of all legal moves, normalised priors, and budget-exhaustion fallback.
+- No real checkpoint, training run, runtime comparison or playing-strength experiment was performed.
+
+### Verification
+- Implementation/test revision: pending commit and GitHub Actions.
+- CPU pytest workflow: pending.
+- Stockfish tactical audit: pending.
+- Previous verified baseline remains `274275f7f617cee4b5f55dc959661986426e34b7` (149 CPU tests passed; Stockfish audit passed). The new integration must not be described as verified until fresh workflows pass.
+
+### Follow-up
+- Inspect CI for this revision, preserve any failures in this log, and repair before updating the verified revision. If verified, next measure the added root expansion cost and use a real checkpoint before making any strength claim.
