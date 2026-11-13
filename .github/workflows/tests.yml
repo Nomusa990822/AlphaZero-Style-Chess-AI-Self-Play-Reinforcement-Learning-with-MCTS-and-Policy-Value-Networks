@@ -43,7 +43,7 @@ jobs:
         run: python -m pytest -q
 
       - name: Measure SEE root-expansion overhead
-        run: python -m scripts.benchmark_see_overhead --repeats 15 --warmups 3
+        run: python -m scripts.benchmark_see_overhead --repeats 25 --warmups 3 --batch-size 10
 
       - name: Upload SEE overhead benchmark
         uses: actions/upload-artifact@v4

@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `816c4593a7a8ab158dcbe246ed32a388c736b206` (153 CPU tests passed in 3.53 seconds; CPU run 43420960017; Stockfish audit run 43420959887 passed).
+**Latest verified code revision:** `816c4593a7a8ab158dcbe246ed32a388c736b206` (153 CPU tests passed; benchmark artifact uploaded; Stockfish audit passed). The subsequent documentation-only branch head `da7fc28f070cf1058b3082c734f1897bcce2765e` also passed both workflows (CPU run 43421210565; audit run 43421210590).
 **Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator, and its conservative root-prior integration are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
@@ -169,7 +169,7 @@ For every meaningful development batch:
 - Verified revision: `816c4593a7a8ab158dcbe246ed32a388c736b206`.
 - CPU workflow [43420960017](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420960017): 153 tests passed in 3.53 seconds; benchmark step and artifact upload succeeded.
 - Aggregate microbenchmark: SEE disabled median 0.150311 ms, enabled median 0.245393 ms, nominal +63.26%; pooled p95 0.268644 ms disabled and 0.365839 ms enabled. Artifact ID `14033642158`.
-- These sub-millisecond measurements are runner-specific and likely sensitive to timer/scheduler noise; the percentage is preliminary, not an end-to-end speed penalty. A batched timing pass is needed before drawing firm performance conclusions.
+- These sub-millisecond measurements are runner-specific and likely sensitive to timer/scheduler noise; the percentage is preliminary, not an end-to-end speed penalty. A batched timing pass is being added before drawing firm performance conclusions.
 - Stockfish audit [43420959887](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420959887) passed; 13/13 positions supported, 0 flagged for human review; artifact ID `14033706954`.
 
 
@@ -184,3 +184,9 @@ For every meaningful development batch:
 - The workflow repair uses module invocation. On `816c4593a7a8ab158dcbe246ed32a388c736b206`, CPU run `43420960017` passed (153 tests in 3.53 seconds) and uploaded the benchmark artifact; Stockfish audit `43420959887` passed. Duplicate runs `43420967360` and `43420967336` also passed.
 - Initial aggregate measurements: disabled median 0.150311 ms, enabled median 0.245393 ms (+63.26% nominal); p95 0.268644 ms disabled and 0.365839 ms enabled.
 - Because individual root expansions take only fractions of a millisecond, these measurements are sensitive to scheduling/timer noise. Treat the percentage as preliminary; batch multiple expansions per timed sample before using it to tune the default.
+
+
+### In progress — Batched SEE overhead benchmark
+- The individual-expansion benchmark's sub-millisecond timings were too noise-sensitive for tuning decisions. The new implementation times batches of ten independently prepared root expansions, with 25 paired batches per position/mode and three warmups.
+- The timed region excludes setup and normalizes batch elapsed time per expansion. It continues to check legal-move preservation, prior normalization and board immutability.
+- The benchmark, its test and the CPU workflow update are awaiting CI on the new revision. No default setting has been changed pending more reliable measurements.

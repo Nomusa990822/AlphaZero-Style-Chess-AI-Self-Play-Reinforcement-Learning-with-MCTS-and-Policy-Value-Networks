@@ -630,3 +630,26 @@ Copy this section for each future engineering batch.
 - Per-position nominal median overhead: starting position `26.83%` (0 capture/promotion candidates), simple capture `27.21%`, poisoned queen capture `46.91%`, promotion choices `69.71%`.
 - **Interpretation caution:** each root expansion is sub-millisecond and the starting-position comparison has no SEE candidates, demonstrating that runner noise materially affects these short timings. The result is a preliminary microbenchmark only. Before using the percentage to change defaults, time batches of multiple expansions per sample and repeat on another runner or controlled environment.
 - No checkpoint, neural inference, MCTS simulations, training, playing-strength result or Elo measurement was involved.
+
+
+## 2026-11-13 — Improve SEE overhead benchmark with batched timing
+
+### Motivation and design
+- The first benchmark timed individual sub-millisecond root expansions. Its nominal +63.26% aggregate overhead was too sensitive to timer/scheduler noise to guide a default-setting decision.
+- Replace single-expansion timing with batches of ten independent root expansions. Prepare boards, search objects and root nodes before starting the timer; time only the expansion calls, then validate every result.
+- Use 25 paired batches per position and mode, three warmup batches, and alternating measurement order. Report normalized milliseconds per expansion, batch size, total timed expansions and p95.
+- Keep the same four positions and synthetic uniform inference so the benchmark remains focused on the incremental root-expansion cost.
+
+### Changes
+- Reworked `scripts/benchmark_see_overhead.py` to time batches and expose a validated `--batch-size` option.
+- Strengthened `tests/test_see_overhead_benchmark.py` to verify batch accounting and normalized report fields.
+- Updated the CPU workflow to run 25 repeats × 10 expansions per position/mode and upload the JSON report.
+- No engine default was changed; this benchmark still excludes neural inference, simulations, tactical root filters and trained checkpoints.
+
+### Verification
+- Implementation revision: pending GitHub Actions.
+- CPU tests, batched benchmark and artifact upload: pending.
+- Stockfish tactical audit: pending.
+- Previous verified branch head: `da7fc28f070cf1058b3082c734f1897bcce2765e`; both CPU tests and Stockfish audit passed on that documentation revision (runs `43421210565`, `43421210590`, plus duplicate runs `43421202306`, `43421202305`).
+- The initial individual-expansion measurements remain recorded above as preliminary/noisy; they are not replaced or presented as end-to-end engine performance.
+- No checkpoint experiment, training run, playing-strength gain or Elo result is claimed.

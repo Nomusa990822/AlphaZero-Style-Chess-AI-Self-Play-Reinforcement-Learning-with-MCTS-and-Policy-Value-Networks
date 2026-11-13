@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure the CPU cost of SEE-guided MCTS root expansion without a checkpoint."""
+"""Measure SEE-guided MCTS root-expansion CPU cost using batched samples."""
 
 from __future__ import annotations
 
@@ -44,43 +44,54 @@ def percentile(values: list[float], fraction: float) -> float:
     return ordered[index]
 
 
-def measure_expansion(
+def measure_expansion_batch(
     fen: str,
     encoding: MoveEncoding,
     inference: UniformInference,
     use_see: bool,
+    batch_size: int,
 ) -> float:
-    board = chess.Board(fen)
-    original_fen = board.fen()
-    search = MCTS(
-        inference=inference,
-        move_encoding=encoding,
-        config=MCTSConfig(
-            num_simulations=0,
-            add_dirichlet_noise=False,
-            use_tactical_root_filter=False,
-            use_static_exchange_ordering=use_see,
-        ),
-    )
-    root = MCTSNode(board=board.copy(stack=True))
+    """Time a batch of independent root expansions; return ms per expansion."""
+    prepared = []
+    for _ in range(batch_size):
+        board = chess.Board(fen)
+        search = MCTS(
+            inference=inference,
+            move_encoding=encoding,
+            config=MCTSConfig(
+                num_simulations=0,
+                add_dirichlet_noise=False,
+                use_tactical_root_filter=False,
+                use_static_exchange_ordering=use_see,
+            ),
+        )
+        root = MCTSNode(board=board.copy(stack=True))
+        prepared.append((board, board.fen(), board.legal_moves.count(), search, root))
+
     started = time.perf_counter_ns()
-    search._evaluate_and_expand(root, is_root=True)
+    for _, _, _, search, root in prepared:
+        search._evaluate_and_expand(root, is_root=True)
     elapsed_ms = (time.perf_counter_ns() - started) / 1_000_000
 
-    if len(root.children) != board.legal_moves.count():
-        raise RuntimeError("Root expansion did not preserve every legal move")
-    if not math.isclose(sum(child.prior for child in root.children.values()), 1.0, abs_tol=1e-6):
-        raise RuntimeError("Root priors are not normalized")
-    if board.fen() != original_fen:
-        raise RuntimeError("Benchmark mutated its input board")
-    return elapsed_ms
+    for board, original_fen, legal_count, _, root in prepared:
+        if len(root.children) != legal_count:
+            raise RuntimeError("Root expansion did not preserve every legal move")
+        if not math.isclose(
+            sum(child.prior for child in root.children.values()), 1.0, abs_tol=1e-6
+        ):
+            raise RuntimeError("Root priors are not normalized")
+        if board.fen() != original_fen:
+            raise RuntimeError("Benchmark mutated its input board")
+    return elapsed_ms / batch_size
 
 
-def run_benchmark(repeats: int = 15, warmups: int = 3) -> dict:
+def run_benchmark(repeats: int = 25, warmups: int = 3, batch_size: int = 10) -> dict:
     if repeats < 3:
         raise ValueError("repeats must be at least 3 for a useful timing sample")
     if warmups < 0:
         raise ValueError("warmups cannot be negative")
+    if batch_size < 1:
+        raise ValueError("batch_size must be at least 1")
 
     encoding = MoveEncoding()
     inference = UniformInference(encoding.action_size)
@@ -98,18 +109,26 @@ def run_benchmark(repeats: int = 15, warmups: int = 3) -> dict:
         ]
 
         for _ in range(warmups):
-            measure_expansion(fen, encoding, inference, False)
-            measure_expansion(fen, encoding, inference, True)
+            measure_expansion_batch(fen, encoding, inference, False, batch_size)
+            measure_expansion_batch(fen, encoding, inference, True, batch_size)
 
         off_samples: list[float] = []
         on_samples: list[float] = []
         for index in range(repeats):
             if index % 2 == 0:
-                off_samples.append(measure_expansion(fen, encoding, inference, False))
-                on_samples.append(measure_expansion(fen, encoding, inference, True))
+                off_samples.append(
+                    measure_expansion_batch(fen, encoding, inference, False, batch_size)
+                )
+                on_samples.append(
+                    measure_expansion_batch(fen, encoding, inference, True, batch_size)
+                )
             else:
-                on_samples.append(measure_expansion(fen, encoding, inference, True))
-                off_samples.append(measure_expansion(fen, encoding, inference, False))
+                on_samples.append(
+                    measure_expansion_batch(fen, encoding, inference, True, batch_size)
+                )
+                off_samples.append(
+                    measure_expansion_batch(fen, encoding, inference, False, batch_size)
+                )
 
         off_median = statistics.median(off_samples)
         on_median = statistics.median(on_samples)
@@ -120,10 +139,12 @@ def run_benchmark(repeats: int = 15, warmups: int = 3) -> dict:
             "position": name,
             "legal_moves": board.legal_moves.count(),
             "capture_or_promotion_candidates": len(tactical_moves),
-            "see_disabled_median_ms": round(off_median, 6),
-            "see_enabled_median_ms": round(on_median, 6),
-            "see_disabled_p95_ms": round(percentile(off_samples, 0.95), 6),
-            "see_enabled_p95_ms": round(percentile(on_samples, 0.95), 6),
+            "batch_size_expansions": batch_size,
+            "timed_batches_per_mode": repeats,
+            "see_disabled_median_ms_per_expansion": round(off_median, 6),
+            "see_enabled_median_ms_per_expansion": round(on_median, 6),
+            "see_disabled_p95_ms_per_expansion": round(percentile(off_samples, 0.95), 6),
+            "see_enabled_p95_ms_per_expansion": round(percentile(on_samples, 0.95), 6),
             "median_overhead_percent": round(overhead_pct, 2) if overhead_pct is not None else None,
         })
 
@@ -132,38 +153,47 @@ def run_benchmark(repeats: int = 15, warmups: int = 3) -> dict:
     return {
         "benchmark": "SEE-guided MCTS root expansion CPU overhead",
         "measurement_scope": (
-            "Root policy conversion, optional SEE prior adjustment and child expansion; "
-            "neural inference, MCTS simulations, tactical root filters and trained checkpoints excluded."
+            "Batched root policy conversion, optional SEE prior adjustment and child expansion; "
+            "setup is outside timed regions. Neural inference, MCTS simulations, tactical root "
+            "filters and trained checkpoints are excluded."
         ),
         "code_revision": os.environ.get("GITHUB_SHA", "local-uncommitted"),
         "python_version": platform.python_version(),
         "platform": platform.platform(),
         "repeats_per_position": repeats,
         "warmups_per_mode_per_position": warmups,
+        "batch_size_expansions": batch_size,
+        "timed_expansions_per_mode_per_position": repeats * batch_size,
         "positions": results,
         "aggregate": {
-            "paired_samples": len(all_off),
-            "see_disabled_median_ms": round(off_median, 6),
-            "see_enabled_median_ms": round(on_median, 6),
+            "paired_batches_per_position": repeats,
+            "total_expansions_per_mode": repeats * batch_size * len(POSITIONS),
+            "see_disabled_median_ms_per_expansion": round(off_median, 6),
+            "see_enabled_median_ms_per_expansion": round(on_median, 6),
             "median_overhead_percent": round(((on_median / off_median) - 1.0) * 100.0, 2) if off_median else None,
-            "see_disabled_p95_ms": round(percentile(all_off, 0.95), 6),
-            "see_enabled_p95_ms": round(percentile(all_on, 0.95), 6),
+            "see_disabled_p95_ms_per_expansion": round(percentile(all_off, 0.95), 6),
+            "see_enabled_p95_ms_per_expansion": round(percentile(all_on, 0.95), 6),
         },
         "interpretation_limit": (
-            "Microbenchmark only. Results are specific to this runner and synthetic uniform inference; "
-            "they are not end-to-end search speed, playing-strength or Elo measurements."
+            "Batched microbenchmark only. Results are specific to this runner and synthetic uniform "
+            "inference; they are not end-to-end search speed, playing-strength or Elo measurements."
         ),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repeats", type=int, default=15)
+    parser.add_argument("--repeats", type=int, default=25)
     parser.add_argument("--warmups", type=int, default=3)
+    parser.add_argument("--batch-size", type=int, default=10)
     parser.add_argument("--output", type=Path, default=Path("reports/see-root-overhead-benchmark.json"))
     args = parser.parse_args()
 
-    report = run_benchmark(repeats=args.repeats, warmups=args.warmups)
+    report = run_benchmark(
+        repeats=args.repeats,
+        warmups=args.warmups,
+        batch_size=args.batch_size,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
