@@ -236,3 +236,13 @@ For every meaningful development batch:
 - Prioritise correctness/strength evaluation infrastructure and search improvements that can be validated without training or paid compute.
 - Preserve the existing experiment protocol. Do not run training or claim strength gains until a compatible checkpoint exists and paired evaluation has actually completed.
 - Avoid redundant CI-triggering documentation commits; bundle tracking updates with the next implementation batch.
+
+
+## Latest verified baseline and current unverified change — 2026-11-13
+
+- Documentation/CI baseline: `b06b5df954156620e9824c89cce3b152d8308a31`. CPU workflow [43423960670](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423960670): **154 passed in 2.74 seconds**; SEE benchmark artifact ID `14035481672`. Stockfish audit [43423960833](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423960833) passed.
+- The shared branch concurrency groups were verified again: push runs [43423953162](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423953162) and [43423953259](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423953259) were cancelled as duplicates, while the PR runs completed successfully.
+- Current unverified implementation: tactical-root cache key now includes `use_tactical_root_filter`, preventing stale eligible moves and stale mate-in-one overrides when the mutable setting changes on a reused MCTS object.
+- A regression test covers enabled → disabled → enabled transitions on the same root node.
+- **Verification pending** on the new code revision. The latest verified baseline remains `b06b5df954156620e9824c89cce3b152d8308a31` until its CPU and Stockfish workflows finish successfully.
+- No training, checkpoint evaluation, playing-strength result or Elo claim was produced.

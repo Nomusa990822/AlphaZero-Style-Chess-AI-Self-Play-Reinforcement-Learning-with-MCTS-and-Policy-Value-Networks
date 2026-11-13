@@ -721,3 +721,19 @@ Copy this section for each future engineering batch.
 
 ### Follow-up
 - Continue engine correctness and search-quality work; do not spend further CI cycles repeating the same benchmark unless a code change or a controlled profiling question justifies it.
+
+
+## 2026-11-13 — CI deduplication verification and tactical-cache configuration fix
+
+### CI verification for the preceding documentation revision
+- Documentation revision `b06b5df954156620e9824c89cce3b152d8308a31` passed CPU workflow [43423960670](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423960670): **154 tests passed in 2.74 seconds**; the batched SEE benchmark completed and artifact `see-root-overhead-benchmark` uploaded (ID `14035481672`).
+- Stockfish audit [43423960833](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423960833) passed. The prior revision's 13/13 tactical-corpus result remains the measured audit summary.
+- The matching push-event runs [43423953162](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423953162) and [43423953259](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423953259) were cancelled in favour of pull-request workflows, confirming shared concurrency groups work as intended.
+
+### New cache correctness change — verification pending
+- Found that `_root_children_for_action` cached candidates by root object, FEN and move history but omitted the mutable `use_tactical_root_filter` configuration flag.
+- If a caller toggled that flag on an existing MCTS instance, the old candidate set and cached mate-in-one list could be reused under the new setting. This could incorrectly keep tactical filtering active after it was disabled, or skip it after re-enabling.
+- Added the configuration flag to the cache key. The same root now triggers recomputation whenever the tactical-filter setting changes; repeated calls with unchanged position/history/config still reuse the cached result.
+- Added a regression test that enables, disables and re-enables the filter on the same root, checking both eligible-child sets and the mate-in-one cache.
+- This is a correctness/cache-invalidation fix only. No search-strength, speed, training or Elo improvement is claimed.
+- CPU tests and Stockfish audit are pending for the implementation revision. Preserve any failures and only mark it verified after completed successful workflows.

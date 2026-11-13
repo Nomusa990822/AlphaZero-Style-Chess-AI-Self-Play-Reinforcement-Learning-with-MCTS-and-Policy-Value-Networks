@@ -610,3 +610,53 @@ def test_root_see_bias_fast_path_skips_copy_and_scoring_without_tactics(monkeypa
     assert result is priors
     assert len(result) == board.legal_moves.count()
     assert np.isclose(sum(result.values()), 1.0)
+
+
+
+def test_root_tactical_cache_invalidates_when_filter_configuration_changes(monkeypatch):
+    import src.mcts.search as search_module
+
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+    encoding = MoveEncoding()
+    root = MCTSNode(board=board)
+    root.expand({
+        move.uci(): 1.0 / board.legal_moves.count()
+        for move in board.legal_moves
+    })
+    mate_move = chess.Move.from_uci("f7g7")
+    detector_calls = {"mate_in_one": 0}
+
+    def one_known_mate(position):
+        detector_calls["mate_in_one"] += 1
+        return [mate_move]
+
+    monkeypatch.setattr(search_module, "find_mate_in_one", one_known_mate)
+
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=0,
+            add_dirichlet_noise=False,
+            use_tactical_root_filter=True,
+        ),
+    )
+
+    filtered = search._root_children_for_action(root)
+    assert [child.move for child in filtered] == [mate_move]
+    assert search._cached_root_mating_moves == [mate_move]
+    assert detector_calls["mate_in_one"] == 1
+
+    # Disabling the filter must invalidate the cached tactical-only result.
+    search.config.use_tactical_root_filter = False
+    unfiltered = search._root_children_for_action(root)
+    assert len(unfiltered) == board.legal_moves.count()
+    assert search._cached_root_mating_moves == []
+    assert detector_calls["mate_in_one"] == 1
+
+    # Re-enabling it must recompute the tactical result for the same root.
+    search.config.use_tactical_root_filter = True
+    filtered_again = search._root_children_for_action(root)
+    assert [child.move for child in filtered_again] == [mate_move]
+    assert search._cached_root_mating_moves == [mate_move]
+    assert detector_calls["mate_in_one"] == 2

@@ -60,7 +60,7 @@ class MCTS:
         self.move_encoding = move_encoding
         self.config = config or MCTSConfig()
         self._cached_root: MCTSNode | None = None
-        self._cached_root_state: tuple[str, tuple[str, ...]] | None = None
+        self._cached_root_state: tuple[bool, str, tuple[str, ...]] | None = None
         self._cached_root_children: list[MCTSNode] = []
         self._cached_root_mating_moves: list[chess.Move] = []
 
@@ -240,6 +240,7 @@ class MCTS:
         do not repeat the same legal-move enumeration.
         """
         state = (
+            self.config.use_tactical_root_filter,
             root.board.fen(),
             tuple(move.uci() for move in root.board.move_stack),
         )
