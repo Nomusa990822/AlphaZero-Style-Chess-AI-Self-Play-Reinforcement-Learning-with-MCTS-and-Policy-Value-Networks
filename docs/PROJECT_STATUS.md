@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified baseline:** `f49d6b8f5c87d0e9e7a897c2754af07832a3f3f4` (CPU tests and Stockfish audit passed on workflow revision `55d0db1ba8d0e3331bb4d92542ab183f898a1335`)  
-**Current branch head:** `592671dc283ab86d0dc52a285c74da8204f0fc3b` (semantic-test repair verified by both workflows).  
+**Latest verified code revision:** `592671dc283ab86d0dc52a285c74da8204f0fc3b` (CPU tests and Stockfish tactical audit both passed; workflow runs `43404899202` and `43404899148`).
+**Current tracking-branch head:** `7ce648911749587f12cf3d52edce33a8fd16c4d1` (documentation records updated after successful verification).
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
