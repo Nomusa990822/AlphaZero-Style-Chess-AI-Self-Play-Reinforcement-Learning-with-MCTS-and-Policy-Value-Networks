@@ -56,6 +56,10 @@ class MCTS:
         self.inference = inference
         self.move_encoding = move_encoding
         self.config = config or MCTSConfig()
+        self._cached_root: MCTSNode | None = None
+        self._cached_root_state: tuple[str, tuple[str, ...]] | None = None
+        self._cached_root_children: list[MCTSNode] = []
+        self._cached_root_mating_moves: list[chess.Move] = []
 
     def _policy_dict_for_board(
         self,
@@ -153,11 +157,7 @@ class MCTS:
         # Apply exact one-ply safety (and mate-in-one priority) once at the
         # root. Reusing this candidate set prevents simulations being spent
         # on root moves that the final action/policy would later discard.
-        root_search_children = (
-            self._root_children_for_action(root)
-            if self.config.use_tactical_root_filter
-            else list(root.children.values())
-        )
+        root_search_children = self._root_children_for_action(root)
 
         for _ in range(self.config.num_simulations):
             node = root
@@ -185,39 +185,60 @@ class MCTS:
 
     def _root_children_for_action(self, root: MCTSNode) -> list[MCTSNode]:
         """
-        Apply a one-ply checkmate-safety filter to root actions.
+        Return cached, tactically eligible root children for this position.
 
-        If at least one move avoids immediate mate, unsafe moves are excluded.
-        If every move permits mate, retain all children so MCTS can still rank
-        the least-bad continuation.
+        Tactical checks are exact but can be expensive, especially the
+        bounded mate-in-two scan. Cache their result for the lifetime of this
+        root position so search, action selection and policy-target creation
+        do not repeat the same legal-move enumeration.
         """
+        state = (
+            root.board.fen(),
+            tuple(move.uci() for move in root.board.move_stack),
+        )
+        if self._cached_root is root and self._cached_root_state == state:
+            return self._cached_root_children
+
         children = list(root.children.values())
-        if not self.config.use_tactical_root_filter:
-            return children
-        mating_moves = find_mate_in_one(root.board.copy(stack=True))
-        if mating_moves:
-            mating_uci = {move.uci() for move in mating_moves}
-            mating_children = [
-                child for child in children if child.move.uci() in mating_uci
-            ]
-            return mating_children or children
+        mating_moves: list[chess.Move] = []
+        eligible = children
 
-        forced_mates = find_forced_mate_in_two(root.board.copy(stack=True))
-        if forced_mates:
-            forced_uci = {move.uci() for move in forced_mates}
-            forced_children = [
-                child for child in children if child.move.uci() in forced_uci
-            ]
-            if forced_children:
-                return forced_children
+        if self.config.use_tactical_root_filter:
+            mating_moves = find_mate_in_one(root.board.copy(stack=True))
+            if mating_moves:
+                mating_uci = {move.uci() for move in mating_moves}
+                mating_children = [
+                    child for child in children if child.move.uci() in mating_uci
+                ]
+                eligible = mating_children or children
+            else:
+                forced_mates = find_forced_mate_in_two(root.board.copy(stack=True))
+                if forced_mates:
+                    forced_uci = {move.uci() for move in forced_mates}
+                    forced_children = [
+                        child for child in children if child.move.uci() in forced_uci
+                    ]
+                else:
+                    forced_children = []
 
-        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
-        if not safe_moves:
-            return children
+                if forced_children:
+                    eligible = forced_children
+                else:
+                    safe_moves = find_moves_avoiding_mate_in_one(
+                        root.board.copy(stack=True)
+                    )
+                    if safe_moves:
+                        safe_uci = {move.uci() for move in safe_moves}
+                        filtered = [
+                            child for child in children if child.move.uci() in safe_uci
+                        ]
+                        eligible = filtered or children
 
-        safe_uci = {move.uci() for move in safe_moves}
-        filtered = [child for child in children if child.move.uci() in safe_uci]
-        return filtered or children
+        self._cached_root = root
+        self._cached_root_state = state
+        self._cached_root_children = eligible
+        self._cached_root_mating_moves = mating_moves
+        return eligible
 
     def select_action(self, root: MCTSNode, temperature: float | None = None) -> chess.Move:
         """
@@ -236,12 +257,9 @@ class MCTS:
         if not root.children:
             raise ValueError("Root has no children; cannot select action.")
 
-        if self.config.use_tactical_root_filter:
-            mating_moves = find_mate_in_one(root.board.copy(stack=True))
-            if mating_moves:
-                return mating_moves[0]
-
         children = self._root_children_for_action(root)
+        if self._cached_root_mating_moves:
+            return self._cached_root_mating_moves[0]
         temperature = self.config.temperature if temperature is None else temperature
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
 
@@ -282,11 +300,8 @@ class MCTS:
         if not root.children:
             return full_probs, {}
 
-        mating_moves = (
-            find_mate_in_one(root.board.copy(stack=True))
-            if self.config.use_tactical_root_filter
-            else []
-        )
+        children = self._root_children_for_action(root)
+        mating_moves = self._cached_root_mating_moves
         if mating_moves:
             probability = 1.0 / len(mating_moves)
             move_probs: dict[str, float] = {}
@@ -297,7 +312,6 @@ class MCTS:
                 full_probs[idx] = probability
             return full_probs, move_probs
 
-        children = self._root_children_for_action(root)
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
 
         if temperature <= 1e-8:

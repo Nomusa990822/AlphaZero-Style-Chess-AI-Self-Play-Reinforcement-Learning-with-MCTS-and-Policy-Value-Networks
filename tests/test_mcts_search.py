@@ -400,3 +400,55 @@ def test_disabling_tactical_root_filter_allows_normal_visit_based_selection():
     assert set(move_probs) == set(root.children)
     assert np.isclose(float(full_probs.sum()), 1.0)
     assert move_probs[selected.uci()] == 1.0
+
+
+
+def test_root_tactical_analysis_is_reused_for_action_and_policy(monkeypatch):
+    import src.mcts.search as search_module
+
+    calls = {"mate_in_one": 0, "mate_in_two": 0, "mate_avoidance": 0}
+
+    def no_mate(position):
+        calls["mate_in_one"] += 1
+        return []
+
+    def no_forced_mate(position):
+        calls["mate_in_two"] += 1
+        return []
+
+    def all_moves_safe(position):
+        calls["mate_avoidance"] += 1
+        return list(position.legal_moves)
+
+    monkeypatch.setattr(search_module, "find_mate_in_one", no_mate)
+    monkeypatch.setattr(search_module, "find_forced_mate_in_two", no_forced_mate)
+    monkeypatch.setattr(
+        search_module, "find_moves_avoiding_mate_in_one", all_moves_safe
+    )
+
+    board = chess.Board()
+    encoding = MoveEncoding()
+    root = MCTSNode(board=board)
+    root.expand({
+        move.uci(): 1.0 / board.legal_moves.count()
+        for move in board.legal_moves
+    })
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(num_simulations=1, add_dirichlet_noise=False),
+    )
+
+    first_candidates = search._root_children_for_action(root)
+    selected = search.select_action(root, temperature=0.0)
+    full_probs, move_probs = search.get_action_probs(root, temperature=1.0)
+
+    assert len(first_candidates) == board.legal_moves.count()
+    assert selected in board.legal_moves
+    assert np.isclose(float(full_probs.sum()), 1.0)
+    assert np.isclose(sum(move_probs.values()), 1.0)
+    assert calls == {
+        "mate_in_one": 1,
+        "mate_in_two": 1,
+        "mate_avoidance": 1,
+    }

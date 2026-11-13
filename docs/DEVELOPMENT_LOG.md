@@ -512,3 +512,21 @@ Copy this section for each future engineering batch.
 - Stockfish tactical audit [43416399760](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416399760): **passed**; Stockfish 17.1 reviewed all 13 corpus positions, 13 were supported within the configured tolerance, 0 were flagged for human review, and artifact `tactical-engine-audit` (ID `14031444001`) uploaded successfully.
 - The immediately preceding runs [43416353605](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416353605) and [43416353083](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43416353083) were cancelled when subsequent tracking-document commits superseded their source revision. They are recorded as cancellations, not failures or passes. The final successful workflows ran on the newer branch head containing the same repaired source.
 - The earlier syntax/collection failures and unsuccessful first repair remain preserved above. The bounded mate-in-two safeguard is now CI-verified. No trained checkpoint experiment, training run, playing-strength gain or Elo result is claimed.
+
+
+## 2026-11-13 — Cache root tactical analysis across MCTS consumers
+
+### Goal and design
+- Avoid repeating the same exact root tactical scans when the same MCTS root is used for simulation selection, final move selection and policy-target generation.
+- Cache is scoped to one root object and invalidated if its FEN or move history changes. It stores eligible root children and the immediate-mate result; deeper-tree selection is unchanged.
+
+### Changes
+- Added per-search root tactical cache fields in src/mcts/search.py.
+- Refactored root filtering so the bounded mate-in-two and one-ply mate-avoidance checks run once for a stable root state.
+- Reused cached immediate-mate results in both select_action and get_action_probs.
+- Added a detector-call-count regression test covering all three MCTS consumers.
+
+### Verification
+- Implementation and test commit: pending.
+- CPU test workflow and Stockfish tactical audit: pending.
+- No checkpoint experiment, training run, measured runtime comparison, playing-strength gain or Elo result is claimed.
