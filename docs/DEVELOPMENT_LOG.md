@@ -835,3 +835,9 @@ Copy this section for each future engineering batch.
 - Corpus candidate total is 17 positions (White 9 / Black 8). This addition remains pending until CPU tests and the Stockfish audit both pass on the same commit.
 - Source: ChessTempo tactical motifs, “Removing the Guard” example. The audit remains finite-depth support, not proof of every defence.
 - No training or checkpoint evaluation was run.
+
+
+### Removal-of-the-defender candidate — failed CI and correction (2026-11-13)
+- Initial candidate commit `197efeac6c4fdf929568acb12e843862544eb418` failed CPU run [43431590559](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590559) and Stockfish audit run [43431590481](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590481). Both failures had the same cause: the candidate listed `e5c4`, an illegal diagonal rook move.
+- Corrected the candidate and semantic test to use the c8 rook's legal file capture `c8c4`. The candidate remains unverified until both workflows pass on the corrected revision.
+- The failed runs are retained as failures; no training or checkpoint evaluation was run.

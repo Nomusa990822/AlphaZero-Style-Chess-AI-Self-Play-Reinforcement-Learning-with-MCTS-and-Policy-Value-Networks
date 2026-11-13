@@ -325,3 +325,9 @@ For every meaningful development batch:
 - Added the new `removal_of_defender` motif to the loader taxonomy and a semantic regression for the complete annotated mate line.
 - Candidate corpus total: 17 positions (White 9 / Black 8). CPU and Stockfish checks are pending; the last verified corpus remains 16/16 on `6598cf5d6f393926f53b6cf4e8880bc52bf3199d`.
 - No training or checkpoint evaluation was run.
+
+
+### Removal-of-the-defender candidate — CI failure recorded (2026-11-13)
+- The first candidate revision `197efeac6c4fdf929568acb12e843862544eb418` failed both CPU [43431590559](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590559) and Stockfish [43431590481](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431590481) workflows because `e5c4` was an illegal diagonal rook move.
+- Corrected both corpus and semantic test to use `c8c4`, the rook's legal capture along the c-file. Re-verification is pending; the candidate is not counted as verified.
+- Failures remain documented; no training or checkpoint evaluation was run.
