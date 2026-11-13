@@ -133,3 +133,18 @@ def test_both_promotion_tactics_promote_to_queen_with_check():
         board.push(move)
         assert board.piece_at(move.to_square) == chess.Piece(chess.QUEEN, promoting_color)
         assert board.is_check()
+
+
+def test_non_checking_double_attack_targets_queen_and_rook():
+    case = cases_by_id()["white-knight-double-attack-queen-rook-001"]
+    board = chess.Board(case.fen)
+    move = chess.Move.from_uci("c5d7")
+    assert case.motif == "double_attack"
+    assert board.turn == chess.WHITE
+    assert move in board.legal_moves
+    board.push(move)
+    assert not board.is_check()
+    assert board.piece_at(chess.F6) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.F8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert move.to_square in board.attackers(chess.WHITE, chess.F6)
+    assert move.to_square in board.attackers(chess.WHITE, chess.F8)
