@@ -757,3 +757,14 @@ Copy this section for each future engineering batch.
 - Added a regression test covering positive-temperature sampling and zero-temperature deterministic selection against the corresponding full action-space targets.
 - This is a self-play/search-policy consistency correction. It does not establish a playing-strength improvement.
 - CPU tests and Stockfish audit are pending for the new implementation revision.
+
+
+## 2026-11-13 — Multi-ply tactical-combination benchmark foundation (verification pending)
+
+- Added a separate JSONL schema for curated multi-ply tactical combinations, preserving the original 13 single-position cases unchanged.
+- Added validation for motif combinations, game phase, legal moves at every ply, annotations, unique IDs and non-terminal continuation.
+- Added a sequence evaluator that reports complete-line success, per-ply accuracy, colour/phase breakdowns and the first missed ply.
+- Added two illustrative three-ply combinations: a checking knight fork followed by a queen capture, and a discovered check followed by a queen capture.
+- Added `evaluate_tactical_sequences.py` to run the same deterministic MCTS/checkpoint evaluation path on the sequence corpus. Its report explicitly states that this is principal-variation line-following, not proof that the line is forced against every defence.
+- Added tests for legal line replay, full sequence success, first-missed-ply reporting and invalid sequence data.
+- No model training, checkpoint evaluation, Elo claim or strength improvement is asserted. CI verification is pending.

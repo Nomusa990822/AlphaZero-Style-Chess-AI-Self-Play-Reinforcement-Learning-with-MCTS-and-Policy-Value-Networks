@@ -257,3 +257,13 @@ For every meaningful development batch:
 - Current unverified change: align immediate-mate action sampling with its self-play policy target. Positive temperature samples uniformly among all mate-in-one moves; zero temperature chooses the first and emits a matching one-hot target.
 - Added regression coverage for both temperature modes. **Verification pending** on the new revision.
 - No training, checkpoint evaluation, playing-strength result or Elo claim was produced.
+
+
+## Tactical-combination evaluation — implementation pending CI
+
+- The original 13 single-position tactical cases remain unchanged.
+- Added a separate multi-ply combination corpus and evaluator. Initial coverage includes a checking fork followed by a queen capture and a discovered check followed by a queen capture.
+- Sequence reports distinguish complete-line success from per-ply accuracy and break results down by attacking/defending side and game phase.
+- Important limitation: the initial sequence metric replays an annotated principal variation. It does not establish that every opponent defence is forced or that the engine has general tactical understanding.
+- Individual motif expansion beyond the original 13-position corpus remains outstanding. The new sequence evaluator and CLI are awaiting CI verification.
+- No compatible checkpoint is currently available; do not run training or infer playing strength from these benchmark tests.
