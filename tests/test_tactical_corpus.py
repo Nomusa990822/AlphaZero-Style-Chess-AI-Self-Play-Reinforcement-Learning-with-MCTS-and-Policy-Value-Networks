@@ -31,7 +31,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
     assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 4
 
 
-def test_added_skewer_and_black_tactical_positions_have_curated_legal_moves():
+def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
     path = Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl"
     positions = {case.position_id: case for case in load_tactical_positions(path)}
 
@@ -39,7 +39,7 @@ def test_added_skewer_and_black_tactical_positions_have_curated_legal_moves():
         "white-rook-skewers-king-and-queen-001": ("skewer", chess.WHITE, "b1a1"),
         "black-rook-skewers-king-and-queen-001": ("skewer", chess.BLACK, "b8a8"),
         "black-knight-captures-hanging-rook-001": ("hanging_piece", chess.BLACK, "c6e5"),
-        "black-queen-checking-fork-rook-001": ("fork", chess.BLACK, "b8b4"),
+        "black-rook-captures-absolutely-pinned-rook-001": ("pin", chess.BLACK, "e8e2"),
     }
     for position_id, (motif, turn, move) in expected.items():
         case = positions[position_id]
