@@ -56,7 +56,7 @@ class TacticalPosition:
         annotation = str(data["annotation"]).strip()
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
-        if motif not in TACTICAL_MOTIFS:
+        if not annotation:\n            raise ValueError(f"Position {position_id!r} must include a non-empty tactical annotation.")\n        if motif not in TACTICAL_MOTIFS:
             raise ValueError(
                 f"Position {position_id!r} has unknown motif {motif!r}; "
                 f"expected one of {sorted(TACTICAL_MOTIFS)}."
