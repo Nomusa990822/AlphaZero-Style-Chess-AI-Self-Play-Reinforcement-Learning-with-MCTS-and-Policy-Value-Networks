@@ -45,6 +45,11 @@ def parse_args() -> argparse.Namespace:
         help="JSONL tactical corpus path.",
     )
     parser.add_argument("--simulations", type=int, default=100)
+    parser.add_argument(
+        "--disable-tactical-root-filter",
+        action="store_true",
+        help="Disable exact root mate-priority and one-ply mate-safety filtering for ablation comparisons.",
+    )
     parser.add_argument("--device", default="auto", help="cpu, cuda, mps, or auto.")
     parser.add_argument("--output", help="Optional path for a JSON results report.")
     args = parser.parse_args()
@@ -86,6 +91,7 @@ def main() -> None:
             num_simulations=args.simulations,
             add_dirichlet_noise=False,
             temperature=0.0,
+            use_tactical_root_filter=not args.disable_tactical_root_filter,
         ),
     )
 
@@ -98,6 +104,7 @@ def main() -> None:
         "checkpoint_epoch": payload.get("epoch"),
         "device": str(device),
         "simulations": args.simulations,
+        "tactical_root_filter": not args.disable_tactical_root_filter,
         "total": result.total,
         "correct": result.correct,
         "illegal": result.illegal,
