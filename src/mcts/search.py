@@ -14,6 +14,7 @@ from src.engine.move_encoding import MoveEncoding
 from src.mcts.dirichlet_noise import apply_dirichlet_noise
 from src.mcts.node import MCTSNode
 from src.mcts.puct import select_best_child
+from src.mcts.tactics import find_mate_in_one
 from src.model.inference import ModelInference
 
 
@@ -178,6 +179,10 @@ class MCTS:
         if not root.children:
             raise ValueError("Root has no children; cannot select action.")
 
+        mating_moves = find_mate_in_one(root.board.copy(stack=True))
+        if mating_moves:
+            return mating_moves[0]
+
         temperature = self.config.temperature if temperature is None else temperature
         children = list(root.children.values())
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
@@ -218,6 +223,17 @@ class MCTS:
 
         if not root.children:
             return full_probs, {}
+
+        mating_moves = find_mate_in_one(root.board.copy(stack=True))
+        if mating_moves:
+            probability = 1.0 / len(mating_moves)
+            move_probs: dict[str, float] = {}
+            for move in mating_moves:
+                move_uci = move.uci()
+                move_probs[move_uci] = probability
+                idx = self.move_encoding.uci_to_index(move_uci, root.board)
+                full_probs[idx] = probability
+            return full_probs, move_probs
 
         children = list(root.children.values())
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
