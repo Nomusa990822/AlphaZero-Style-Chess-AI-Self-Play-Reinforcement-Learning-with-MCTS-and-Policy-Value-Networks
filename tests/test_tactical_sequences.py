@@ -49,7 +49,7 @@ def test_sequence_evaluator_scores_complete_combinations():
 
 def test_sequence_evaluator_stops_and_records_first_missed_tactical_ply():
     sequence = load_tactical_sequences(CORPUS)[0]
-    selected = iter(["c6d4", "f3g4", "a8a7"])
+    selected = iter(["c6d4", "f3g4", "d4f5"])
     result = evaluate_tactical_sequences([sequence], lambda board: next(selected))
 
     assert result.completed_sequences == 0
@@ -60,7 +60,7 @@ def test_sequence_evaluator_stops_and_records_first_missed_tactical_ply():
         "id": sequence.sequence_id,
         "ply": 3,
         "side_to_move": "black",
-        "selected": "a8a7",
+        "selected": "d4f5",
         "acceptable_moves": ["d4e2"],
     },)
 
@@ -68,10 +68,10 @@ def test_sequence_evaluator_stops_and_records_first_missed_tactical_ply():
 def test_sequence_loader_rejects_illegal_move(tmp_path):
     path = tmp_path / "invalid.jsonl"
     path.write_text(
-        '{"id":"bad","motifs":["fork","pin"],"fen":"8/8/8/8/8/8/4k3/4K3 w - - 0 1",'
-        '"phase":"endgame","plies":[{"acceptable_moves":["e1e8"],"annotation":"bad"},'
+        '{"id":"bad","motifs":["fork","pin"],"fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",'
+        '"phase":"endgame","plies":[{"acceptable_moves":["e2e5"],"annotation":"bad"},'
         '{"acceptable_moves":["e2e3"],"annotation":"bad"}]}\n',
         encoding="utf-8",
     )
-    with pytest.raises(ValueError, match="invalid chess position|illegal moves"):
+    with pytest.raises(ValueError, match="illegal moves"):
         load_tactical_sequences(path)
