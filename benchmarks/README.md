@@ -33,7 +33,8 @@ reviewed; a legal move is not necessarily a tactically good move.
 
 The committed `tactical_positions.jsonl` is still a small starter corpus. It
 now includes a mating net, knight forks, hanging-piece captures, pins, and
-rook skewers, with examples for both sides to move. Its nine positions are
+rook skewers, discovered attacks, defensive resources and promotion tactics,
+with examples for both sides to move. Its thirteen positions are
 not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
