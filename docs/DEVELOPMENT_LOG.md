@@ -1027,3 +1027,13 @@ Copy this section for each future engineering batch.
 - Added semantic tests that replay the overloaded-defender continuations and both trapped-piece interpositions. Updated coverage assertions and benchmark documentation.
 - Python tests and Stockfish depth-16 audit are pending. Do not include the new positions in checkpoint scoring until both validations pass.
 - No model evaluation, training, or checkpoint promotion was started.
+
+
+## 2026-11-13 — Verify 26-position tactical corpus expansion
+
+- Final tested revision: `1808a23a2b94ac442b37b2f9ba5a70100604e99a`.
+- Python 3.11 CPU suite [43504822887](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43504822887): **passed; 174 tests passed in 3.15 seconds**. All job steps, including the SEE overhead benchmark and artifact upload, completed successfully.
+- Stockfish 17.1 audit [43504822942](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43504822942): **passed** at depth 16, MultiPV 5, 150-centipawn tolerance, one thread and 256 MB hash. It supported **26/26 positions, 5/5 combined sequences and 19/19 annotated sequence plies**, with **zero positions, sequences or plies flagged**. Artifact: [tactical-engine-audit](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43504822942/artifacts/14075917276).
+- The new overloaded-defender and trapped-piece examples for both colours are included in the passing semantic tests and engine audit. The corpus is now 26 positions (White 14 / Black 12).
+- Superseded push-triggered runs were cancelled while later commits were being pushed; they are cancellations, not failures. The final runs above tested the same final revision and both passed.
+- This is finite-depth engine support, not exhaustive proof of tactical correctness, every defence, or the human motif labels. The sequence audit follows the curated principal variations. No training, checkpoint evaluation, promotion, Elo estimate or neural playing-strength claim was produced.
