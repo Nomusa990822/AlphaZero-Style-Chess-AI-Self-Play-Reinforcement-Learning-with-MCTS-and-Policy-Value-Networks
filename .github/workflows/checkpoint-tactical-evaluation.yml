@@ -1,0 +1,125 @@
+name: Checkpoint tactical evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_evaluation:
+        description: "Confirm CPU evaluation of both backed-up checkpoints"
+        required: true
+        type: choice
+        options:
+          - "NO"
+          - "YES"
+        default: "NO"
+      simulations:
+        description: "Deterministic MCTS simulations per move"
+        required: true
+        type: choice
+        options:
+          - "100"
+          - "50"
+        default: "100"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checkpoint-tactical-evaluation
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    if: github.ref == 'refs/heads/chess-strength-training-upgrade' && inputs.confirm_evaluation == 'YES'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out selected feature branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install CPU PyTorch and project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install -r requirements.txt
+
+      - name: Download the immutable pilot checkpoint release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/checkpoints/fresh_pilot reports/checkpoint_tactical_evaluation
+          gh release download fresh-pilot-checkpoint-43497298757-1 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "best_model.pt" \
+            --pattern "latest_candidate.pt" \
+            --pattern "checkpoint-manifest.json" \
+            --dir data/checkpoints/fresh_pilot
+          test -s data/checkpoints/fresh_pilot/best_model.pt
+          test -s data/checkpoints/fresh_pilot/latest_candidate.pt
+          test -s data/checkpoints/fresh_pilot/checkpoint-manifest.json
+
+      - name: Verify checkpoint SHA-256 hashes
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root = Path("data/checkpoints/fresh_pilot")
+          manifest = json.loads((root / "checkpoint-manifest.json").read_text())
+          entries = {item["filename"]: item for item in manifest["checkpoints"]}
+          for name in ("best_model.pt", "latest_candidate.pt"):
+              if name not in entries:
+                  raise SystemExit(f"{name} missing from manifest")
+              path = root / name
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              expected = entries[name]["sha256"]
+              if digest != expected:
+                  raise SystemExit(f"SHA-256 mismatch for {name}: {digest} != {expected}")
+              print(f"Verified {name}: {digest}")
+          PY
+
+      - name: Evaluate baseline on individual tactical positions
+        run: |
+          python evaluate_tactics.py \
+            --checkpoint data/checkpoints/fresh_pilot/best_model.pt \
+            --positions benchmarks/tactical_positions.jsonl \
+            --simulations "${{ inputs.simulations }}" --device cpu \
+            --output reports/checkpoint_tactical_evaluation/baseline_positions.json
+
+      - name: Evaluate candidate on individual tactical positions
+        run: |
+          python evaluate_tactics.py \
+            --checkpoint data/checkpoints/fresh_pilot/latest_candidate.pt \
+            --positions benchmarks/tactical_positions.jsonl \
+            --simulations "${{ inputs.simulations }}" --device cpu \
+            --output reports/checkpoint_tactical_evaluation/candidate_positions.json
+
+      - name: Evaluate baseline on combined tactical sequences
+        run: |
+          python evaluate_tactical_sequences.py \
+            --checkpoint data/checkpoints/fresh_pilot/best_model.pt \
+            --positions benchmarks/tactical_sequences.jsonl \
+            --simulations "${{ inputs.simulations }}" --device cpu \
+            --output reports/checkpoint_tactical_evaluation/baseline_sequences.json
+
+      - name: Evaluate candidate on combined tactical sequences
+        run: |
+          python evaluate_tactical_sequences.py \
+            --checkpoint data/checkpoints/fresh_pilot/latest_candidate.pt \
+            --positions benchmarks/tactical_sequences.jsonl \
+            --simulations "${{ inputs.simulations }}" --device cpu \
+            --output reports/checkpoint_tactical_evaluation/candidate_sequences.json
+
+      - name: Upload reproducible evaluation reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-tactical-evaluation-${{ github.run_id }}
+          path: |
+            reports/checkpoint_tactical_evaluation/*.json
+            data/checkpoints/fresh_pilot/checkpoint-manifest.json
+          if-no-files-found: error
+          retention-days: 90
