@@ -308,3 +308,63 @@ def test_mcts_spends_root_simulations_on_mate_in_one_only():
         if move_uci != "f7g7"
     )
     assert search.select_action(root, temperature=0.0).uci() == "f7g7"
+
+
+
+def test_mcts_spends_black_root_simulations_on_mate_in_one_only():
+    board = chess.Board("8/8/8/8/8/5k2/5q2/7K b - - 0 1")
+    encoding = MoveEncoding()
+
+    class UniformInference:
+        def predict(self, position):
+            return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+    search = MCTS(
+        inference=UniformInference(),
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=5,
+            add_dirichlet_noise=False,
+            temperature=1.0,
+        ),
+    )
+
+    root = search.run(board)
+    mating_uci = {move.uci() for move in find_mate_in_one(board)}
+
+    assert mating_uci
+    assert sum(root.children[move].visit_count for move in mating_uci) == 5
+    assert all(
+        child.visit_count == 0
+        for move_uci, child in root.children.items()
+        if move_uci not in mating_uci
+    )
+
+
+def test_mcts_forced_loss_fallback_keeps_all_root_moves_eligible():
+    board = chess.Board("k6r/8/8/4n3/2b4q/8/8/6K1 w - - 0 1")
+    encoding = MoveEncoding()
+
+    class UniformInference:
+        def predict(self, position):
+            return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+    search = MCTS(
+        inference=UniformInference(),
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=5,
+            add_dirichlet_noise=False,
+            temperature=1.0,
+        ),
+    )
+
+    root = search.run(board)
+    eligible = search._root_children_for_action(root)
+
+    assert eligible
+    assert {child.move.uci() for child in eligible} == {
+        move.uci() for move in board.legal_moves
+    }
+    assert sum(child.visit_count for child in root.children.values()) == 5
+    assert search.select_action(root, temperature=0.0) in board.legal_moves
