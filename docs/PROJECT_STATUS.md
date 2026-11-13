@@ -111,3 +111,9 @@ For every meaningful development batch:
 ### Repair follow-up
 - Initial repair attempt 96a1d06e6cec6f93b2d1997cde0d5ff4b995b0d6 retained literal newline escapes in the import. Source inspection caught this before verification.
 - Corrected the import to actual line breaks in the current unverified revision. Await fresh CI.
+
+
+## Current unverified revision — 2026-11-13
+- Latest source repair: `ba247182a03ce116e0e038679f62d15deabb5cab`; it replaces literal escaped newline sequences in the forced-mate root-filter block in `src/mcts/search.py` with real line breaks. **Verification pending.**
+- Previous revision `fff08dcc147e5275914816244b7d09d8ac15b7ae`: CPU run [43415963144](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963144) failed during collection at line 205 of `src/mcts/search.py`; twelve modules failed to import and no assertions ran. Stockfish audit [43415963147](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43415963147) passed and uploaded artifact `14031965643`.
+- The latest verified code revision remains `0f12e052434a66f03499bd1f91abafa1afeeb2fa` until both workflows pass on the repaired revision. No checkpoint training, benchmark or playing-strength experiment has been run.
