@@ -653,3 +653,12 @@ Copy this section for each future engineering batch.
 - Previous verified branch head: `da7fc28f070cf1058b3082c734f1897bcce2765e`; both CPU tests and Stockfish audit passed on that documentation revision (runs `43421210565`, `43421210590`, plus duplicate runs `43421202306`, `43421202305`).
 - The initial individual-expansion measurements remain recorded above as preliminary/noisy; they are not replaced or presented as end-to-end engine performance.
 - No checkpoint experiment, training run, playing-strength gain or Elo result is claimed.
+
+
+### Verification — Batched SEE benchmark
+- Code revision `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a` passed CPU workflow [43421598036](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598036): **153 passed in 2.78 seconds**. The batch benchmark ran and uploaded artifact ID `14033619165`.
+- Stockfish audit [43421598059](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598059) passed; duplicate audit [43421606287](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43421606287) also passed.
+- Batch size 10, 25 paired batches per position/mode, 1,000 timed expansions per mode across four positions.
+- Aggregate median per expansion: disabled 0.158494 ms; enabled 0.267257 ms; nominal +68.62%. Pooled p95: disabled 0.321696 ms; enabled 0.414722 ms.
+- Position median overhead: starting position +10.19% (zero tactical candidates), simple capture +27.80%, poisoned queen capture +50.10%, promotion choices +68.04%.
+- This confirms measurable added work in the synthetic root-expansion path, but does not establish end-to-end slowdown or a reason to disable SEE. Keep default unchanged pending profiling/optimisation and, later, real-checkpoint tests. No training, playing-strength gain or Elo result is claimed.

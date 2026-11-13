@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `816c4593a7a8ab158dcbe246ed32a388c736b206` (153 CPU tests passed; benchmark artifact uploaded; Stockfish audit passed). The subsequent documentation-only branch head `da7fc28f070cf1058b3082c734f1897bcce2765e` also passed both workflows (CPU run 43421210565; audit run 43421210590).
+**Latest verified code revision:** `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a` (153 CPU tests passed in 2.78 seconds; CPU run 43421598036; batched benchmark completed and artifact 14033619165 uploaded; Stockfish audit run 43421598059 passed, with duplicate audit 43421606287 also passed).
 **Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator, and its conservative root-prior integration are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
@@ -169,7 +169,7 @@ For every meaningful development batch:
 - Verified revision: `816c4593a7a8ab158dcbe246ed32a388c736b206`.
 - CPU workflow [43420960017](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420960017): 153 tests passed in 3.53 seconds; benchmark step and artifact upload succeeded.
 - Aggregate microbenchmark: SEE disabled median 0.150311 ms, enabled median 0.245393 ms, nominal +63.26%; pooled p95 0.268644 ms disabled and 0.365839 ms enabled. Artifact ID `14033642158`.
-- These sub-millisecond measurements are runner-specific and likely sensitive to timer/scheduler noise; the percentage is preliminary, not an end-to-end speed penalty. A batched timing pass is being added before drawing firm performance conclusions.
+- These sub-millisecond measurements are runner-specific and likely sensitive to timer/scheduler noise; the percentage is preliminary, not an end-to-end speed penalty. A batched timing pass now exists; its first results are recorded below but still require interpretation as synthetic root-expansion microbenchmarks.
 - Stockfish audit [43420959887](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420959887) passed; 13/13 positions supported, 0 flagged for human review; artifact ID `14033706954`.
 
 
@@ -190,3 +190,14 @@ For every meaningful development batch:
 - The individual-expansion benchmark's sub-millisecond timings were too noise-sensitive for tuning decisions. The new implementation times batches of ten independently prepared root expansions, with 25 paired batches per position/mode and three warmups.
 - The timed region excludes setup and normalizes batch elapsed time per expansion. It continues to check legal-move preservation, prior normalization and board immutability.
 - The benchmark, its test and the CPU workflow update are awaiting CI on the new revision. No default setting has been changed pending more reliable measurements.
+
+
+### Verified — Batched SEE root-expansion overhead benchmark
+- Implementation revision: `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a`.
+- CPU workflow [43421598036](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598036): **153 tests passed in 2.78 seconds**; batched benchmark completed and artifact `see-root-overhead-benchmark` uploaded (ID `14033619165`).
+- Stockfish audit [43421598059](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43421598059): passed. Duplicate audit [43421606287](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43421606287) also passed.
+- Each sample times ten prepared root expansions; 25 batches per position/mode; 1,000 timed expansions per mode across four positions.
+- Aggregate median: SEE disabled **0.158494 ms/expansion**; enabled **0.267257 ms/expansion**; nominal overhead **68.62%**. Pooled p95: **0.321696 ms** disabled and **0.414722 ms** enabled.
+- Per-position nominal median overhead: starting position 10.19% (no SEE candidates), simple capture 27.80%, poisoned queen capture 50.10%, promotion choices 68.04%.
+- Batching provides longer timed intervals and a more informative comparison than the first single-expansion pass, but these remain runner-specific synthetic measurements. The starting-position overhead with no SEE candidates indicates a fixed integration/path cost, while the larger tactical-position costs reflect additional SEE work. Do not interpret the percentages as an end-to-end slowdown; model inference and simulations are excluded.
+- The first single-expansion measurements remain preserved above as preliminary data. No default was changed; no real checkpoint, training, playing-strength or Elo result is claimed.
