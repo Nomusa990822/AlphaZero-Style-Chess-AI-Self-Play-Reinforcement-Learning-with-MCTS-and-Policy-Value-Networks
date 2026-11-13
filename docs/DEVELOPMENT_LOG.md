@@ -1018,3 +1018,12 @@ Copy this section for each future engineering batch.
 - Duplicate push-triggered runs [43490750907](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750907) (CPU) and [43490750811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490750811) (Stockfish) were **cancelled** when the pull-request-triggered runs superseded them. They are cancellations, not failures; the replacement runs above passed.
 - No training workflow was dispatched. No checkpoint was created, no replay data was generated, and no playing-strength result was measured.
 - Dispatch limitation: GitHub requires a `workflow_dispatch` workflow file to exist on the repository's default branch. This pilot workflow currently exists only on the feature branch, so it is prepared and CI-verified but cannot be manually dispatched until the PR is merged or the workflow is otherwise made available on the default branch. The PR remains unmerged and `main` remains unchanged.
+
+
+## 2026-11-13 — Expand tactical corpus: overloaded defenders and trapped pieces
+
+- Added four human-annotated positions: overloaded-defender and trapped-piece motifs for both White and Black.
+- Corpus expanded from 22 to 26 positions (14 White / 12 Black). Source citations and annotations are stored with the positions.
+- Added semantic tests that replay the overloaded-defender continuations and both trapped-piece interpositions. Updated coverage assertions and benchmark documentation.
+- Python tests and Stockfish depth-16 audit are pending. Do not include the new positions in checkpoint scoring until both validations pass.
+- No model evaluation, training, or checkpoint promotion was started.
