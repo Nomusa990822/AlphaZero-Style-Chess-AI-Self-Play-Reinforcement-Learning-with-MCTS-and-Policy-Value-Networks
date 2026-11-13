@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `9aaaa34764e52d9133862227e646db8f24d5fde5` (145 CPU tests passed; documentation-only update after verified code revision `c9c19ccaa8554ec34045d2ed436f01ec769f3685`).
-**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, and the bounded forced-mate-in-two root safeguard are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
+**Latest verified code revision:** `274275f7f617cee4b5f55dc959661986426e34b7` (149 CPU tests passed in 3.82 seconds; CPU run 43418653846; Stockfish audit run 43418653867 passed).
+**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -141,4 +141,5 @@ For every meaningful development batch:
 - A finite capture-node budget returns None when the result is incomplete; unknown is not silently treated as a favourable exchange.
 - Added tests for an undefended queen capture, a poisoned rook capture, en-passant, promotion, invalid moves and invalid budgets.
 - This is a tactical evaluation primitive; it is not yet used to prune or bias MCTS moves. No playing-strength gain is claimed.
-- CPU tests and Stockfish audit: pending.
+- CPU workflow [43418653846](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43418653846): **passed; 149 tests passed in 3.82 seconds** on Python 3.11.
+- Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653867): **passed**; 13/13 tactical corpus positions supported, 0 flagged for human review; artifact ID 14032962642.

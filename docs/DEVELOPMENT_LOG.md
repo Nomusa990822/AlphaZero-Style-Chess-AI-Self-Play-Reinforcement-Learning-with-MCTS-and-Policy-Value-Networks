@@ -547,6 +547,9 @@ Copy this section for each future engineering batch.
 - The helper is not yet wired into MCTS move pruning or prior adjustment. This isolates and validates the exchange calculation before allowing it to influence search.
 
 ### Verification
-- Implementation/test revision: pending.
-- CPU test workflow and Stockfish tactical audit: pending.
-- No checkpoint experiment, training run, playing-strength gain or Elo result is claimed.
+- Implementation/test revision: `274275f7f617cee4b5f55dc959661986426e34b7`.
+- CPU test workflow [43418653846](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653846): **passed; 149 tests passed in 3.82 seconds** on Python 3.11.
+- Duplicate CPU workflow [43418661520](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418661520) also passed: 149 tests in 3.87 seconds.
+- Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653867): **passed**; all 13 corpus positions supported, 0 flagged for human review; artifact ID 14032962642. Duplicate audit run [43418661598](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418661598) also passed.
+- The four new static-exchange regression tests are included in the 149-test suite.
+- No checkpoint experiment, training run, measured playing-strength gain or Elo result is claimed.
