@@ -916,3 +916,14 @@ Copy this section for each future engineering batch.
 - Candidate corpus: **21 positions (White 11 / Black 10)**. CPU and Stockfish verification are pending. The last verified baseline is 20 positions (White 10 / Black 10) on `4e90222`.
 - The earlier White `Re8+` deflection candidate was rejected after Stockfish disagreed by about 452 centipawns; its failure is preserved above. The Black decoy is retained and supported by Stockfish.
 - No training or checkpoint evaluation was run.
+
+
+### White removal-of-the-defender — verified; balanced corpus review (2026-11-13)
+- Verified feature-branch revision: `c780bd752ea49a04aa79e869f5df7cbcb1288847`.
+- CPU workflow [43436850141](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436850141): **169 passed in 2.64 seconds**.
+- Stockfish audit [43436850163](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436850163): **21/21 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**. Audit artifact `14043378711`.
+- The White removal-of-the-defender line `32.Rxd4 exd4 33.Rxd3` is verified. The test also checks Black's `...Rc1+` and White's `Kh2` reply.
+- The first workflow pair [43436840285](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436840285) (CPU) and [43436840021](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436840021) (Stockfish) was cancelled; replacement runs above completed successfully. Cancellations are not failures.
+- The preceding 21-position audit on `de948a5` flagged the White `Re8+` deflection proposal (about 452 cp below the engine's best move); that candidate and its test were removed. The Black decoy remains supported.
+- Current corpus: **21 positions (White 11 / Black 10)**. Seven of the planned eight balanced motif additions are now verified: two deflection? No — only the Black deflection is verified; the White deflection candidate was rejected. The verified additions are Black deflection, White and Black decoys, White and Black removal-of-defender, and White and Black interference: seven positions. A sound White deflection example remains outstanding.
+- No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
