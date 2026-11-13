@@ -1,4 +1,5 @@
-# Small reviewed starter set. Add positions only after independent tactical review.
+# Curated tactical positions. Add entries only after checking position legality and the tactical idea.
 {"id":"mate-in-one-queen-mate-001","motif":"mating_net","fen":"7k/5Q2/5K2/8/8/8/8/8 w - - 0 1","acceptable_moves":["f7g7"]}
 {"id":"knight-fork-king-queen-001","motif":"fork","fen":"5k2/8/5q2/2N5/8/8/8/7K w - - 0 1","acceptable_moves":["c5d7"]}
 {"id":"undefended-queen-rook-capture-001","motif":"hanging_piece","fen":"q6k/8/8/8/8/8/7K/R7 w - - 0 1","acceptable_moves":["a1a8"]}
+{"id":"black-knight-checking-fork-king-queen-001","motif":"fork","fen":"7k/8/2n5/8/8/5K2/4Q3/8 b - - 0 1","acceptable_moves":["c6d4"]}
