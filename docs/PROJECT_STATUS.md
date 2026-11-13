@@ -5,12 +5,14 @@
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
 **Latest verified code revision:** `7f39e43b0b0174b730f3facf194d68577c6d3a10` (113 CPU tests passed; Stockfish tactical audit workflow passed; runs `43406066354` and `43406066235`).
-**Current tracking-branch head:** `711737ea3c22983ee53f65918e2076dfaa11587a` (verification record updated; this commit contains documentation only).
+**Current tracking-branch head:** `631ae06cfee322b62e0d64112d93bdd63ac7f6f3` (test-coverage and pending-verification log updated; test-only revision `187ad05954a70f28c7c3576f4d70139f4c1dbdc5`).
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
 ## Current verified state
+
+- New test-only revision `187ad05954a70f28c7c3576f4d70139f4c1dbdc5` adds Black mate-in-one simulation coverage and verifies that forced-loss positions retain every legal root move. CPU CI and the Stockfish audit are pending for the current branch head; these tests are not yet counted as passed.
 
 - Latest search-efficiency change: **verified by CI** on code revision `7f39e43b0b0174b730f3facf194d68577c6d3a10`. Root MCTS selection computes one candidate set before simulations: it prioritises all legal mate-in-one moves, otherwise excludes moves allowing an immediate opponent mate when safe alternatives exist. Forced-loss fallback is preserved, and deeper-tree selection remains unrestricted. The CPU suite passed **113 tests** in run [43406066354](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066354). The Stockfish tactical audit workflow also passed in run [43406066235](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066235), uploading artifact `tactical-engine-audit` (ID `14026509085`).
 
