@@ -76,16 +76,28 @@ jobs:
           sha256sum data/checkpoints/match_eval/latest_candidate.pt
 
       - name: Verify checkpoint identities before evaluation
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cd data/checkpoints/match_eval
 
-          # Expected sizes are taken from the published release asset metadata.
+          RELEASE_TAG="fresh-pilot-checkpoint-43497298757-1"
+          EXPECTED_BASELINE="7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471"
+          EXPECTED_CANDIDATE="3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7"
+
+          # Cross-check the pinned digests against GitHub's release asset metadata.
+          RELEASE_JSON="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG")"
+          API_BASELINE="$(jq -r '.assets[] | select(.name == "best_model.pt") | .digest' <<< "$RELEASE_JSON" | sed 's/^sha256://')"
+          API_CANDIDATE="$(jq -r '.assets[] | select(.name == "latest_candidate.pt") | .digest' <<< "$RELEASE_JSON" | sed 's/^sha256://')"
+          test "$API_BASELINE" = "$EXPECTED_BASELINE"
+          test "$API_CANDIDATE" = "$EXPECTED_CANDIDATE"
+
+          # Check sizes and then verify the actual downloaded bytes.
           test "$(stat -c%s best_model.pt)" -eq 3404943
           test "$(stat -c%s latest_candidate.pt)" -eq 10193391
-
-          echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  best_model.pt" | sha256sum --check -
-          echo "3b471702e89659307f11ec95b3f83316ccae7c29a4d7c9d6faa7afaa4f7231a7  latest_candidate.pt" | sha256sum --check -
+          echo "$EXPECTED_BASELINE  best_model.pt" | sha256sum --check -
+          echo "$EXPECTED_CANDIDATE  latest_candidate.pt" | sha256sum --check -
 
       - name: Run fixed-opponent match evaluation
         run: |
