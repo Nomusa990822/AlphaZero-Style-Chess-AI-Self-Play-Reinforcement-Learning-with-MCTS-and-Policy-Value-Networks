@@ -1,0 +1,56 @@
+name: Tactical engine audit
+
+on:
+  push:
+    branches:
+      - chess-strength-training-upgrade
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tactical-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stockfish-audit:
+    name: Stockfish · tactical corpus review
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Stockfish and Python dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes stockfish
+          python -m pip install --upgrade pip
+          python -m pip install "python-chess>=1.999"
+
+      - name: Run finite-depth tactical review
+        run: |
+          mkdir -p reports
+          python scripts/audit_tactical_corpus.py \
+            --engine "$(command -v stockfish || echo /usr/games/stockfish)" \
+            --depth 16 \
+            --multipv 5 \
+            --max-loss-cp 150 \
+            --output reports/tactical-engine-audit.json
+
+      - name: Upload engine review report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tactical-engine-audit
+          path: reports/tactical-engine-audit.json
+          if-no-files-found: error
+          retention-days: 30
