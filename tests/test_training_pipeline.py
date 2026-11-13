@@ -239,3 +239,24 @@ def test_automatic_device_resolution_returns_supported_torch_device():
 
     assert isinstance(device, torch.device)
     assert device.type in {"cuda", "mps", "cpu"}
+
+
+def test_replay_journal_recovers_games_and_avoids_duplicate_replay(tmp_path):
+    sample = make_dummy_sample(MoveEncoding().action_size)
+    snapshot = tmp_path / "latest_buffer.pkl"
+
+    writer = ReplayBuffer(capacity=10)
+    writer.save_game([sample], snapshot, iteration=1, game_number=1)
+
+    recovered = ReplayBuffer(capacity=10)
+    recovered.load(snapshot)
+    assert len(recovered) == 1
+
+    recovered.save(snapshot)
+    restored_again = ReplayBuffer(capacity=10)
+    restored_again.load(snapshot)
+
+    assert len(restored_again) == 1
+    assert not (tmp_path / "latest_buffer_journal").exists() or not list(
+        (tmp_path / "latest_buffer_journal").glob("*.pkl")
+    )
