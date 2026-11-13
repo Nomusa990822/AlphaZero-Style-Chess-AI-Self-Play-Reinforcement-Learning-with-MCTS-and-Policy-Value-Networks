@@ -134,3 +134,15 @@ def test_benchmark_accepts_any_move_in_curated_set():
     result = evaluate_tactical_selector([case], lambda board: "d2d4")
     assert result.correct == 1
     assert result.accuracy == 1.0
+
+
+def test_benchmark_reports_white_and_black_separately():
+    black_fen = "7k/8/2n5/8/8/5K2/4Q3/8 b - - 0 1"
+    white_case = position("white-case", "fork", moves=["e2e4"])
+    black_case = position("black-case", "fork", fen=black_fen, moves=["c6d4"])
+    selected = iter(["e2e4", "c6d4"])
+
+    result = evaluate_tactical_selector([white_case, black_case], lambda board: next(selected))
+
+    assert result.by_color["white"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
+    assert result.by_color["black"] == {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}
