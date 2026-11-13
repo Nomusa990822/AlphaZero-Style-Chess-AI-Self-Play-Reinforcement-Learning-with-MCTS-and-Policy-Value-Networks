@@ -995,3 +995,17 @@ Copy this section for each future engineering batch.
 - Stockfish audit [43439201743](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201743): **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged**. Artifact `14045506585`.
 - The manual training workflow now checks for a non-empty `data/checkpoints/best_model.pt` before installing Python/PyTorch. This workflow was not dispatched.
 - The missing checkpoint remains unresolved. No training or neural tactical evaluation was run.
+
+
+## 2026-11-13 — Prepare bounded fresh-start CPU pilot (not launched)
+
+### Changes
+- Added `fresh_start_pilot.py`, a separate entry point that explicitly creates a random-initialisation baseline checkpoint, labels its metadata, and then starts the existing pipeline in checkpoint-resume mode. The existing resume safety gate remains intact.
+- Pilot budget is fixed at one iteration, four self-play games, an 80-ply cap, eight MCTS simulations for self-play and evaluation, one training epoch, and two colour-balanced candidate-evaluation games.
+- Pilot outputs use isolated `fresh_pilot` checkpoint, replay-buffer and log paths. The script refuses to overwrite an existing baseline.
+- Added a manually dispatched GitHub Actions workflow. It is restricted to `chess-strength-training-upgrade`, defaults to NO, requires explicit YES, has a three-hour timeout, and preserves checkpoint/replay/log artifacts for 90 days plus a SHA-256 manifest and durable prerelease checkpoint backup on success.
+- Added a configuration regression test. No training workflow was dispatched; no model was trained.
+
+### Verification
+- Implementation revision: pending CPU CI and Stockfish audit.
+- The pilot is a bounded pipeline smoke test only. Its tiny self-play/evaluation sample is not a statistically meaningful strength estimate and must not be presented as Elo or proof of tactical competence.

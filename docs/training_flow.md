@@ -67,3 +67,25 @@ These evaluations use deterministic MCTS settings and report motif, colour,
 phase and sequence results. Sequence scoring follows annotated principal
 variations; it does not prove that each line is forced against every defence.
 A benchmark score is not an Elo estimate.
+
+
+## Fresh-start smoke pilot (prepared, not launched)
+
+The original training entry point remains in resume mode and still refuses to run
+without a compatible checkpoint. For an explicitly authorised fresh start, use
+the separate `fresh_start_pilot.py` entry point. It creates a random-initialised
+baseline checkpoint with metadata marking it as untrained, then starts the
+pipeline in resume mode. It refuses to overwrite an existing pilot baseline.
+
+The bounded pilot uses one iteration, four self-play games, an 80-ply cap,
+eight MCTS simulations for both self-play and candidate evaluation, one training
+epoch, and two colour-swapped candidate-evaluation games. Outputs are isolated
+under `data/checkpoints/fresh_pilot/`, `data/replay_buffer/fresh_pilot/`,
+and `data/logs/fresh_pilot/`.
+
+The separate manual GitHub Actions workflow is restricted to the feature branch
+and requires an explicit `YES`; it defaults to `NO`. It uploads pilot outputs
+for 90 days and publishes a checkpoint prerelease with SHA-256 manifest on
+success. Do not dispatch it until the user explicitly authorises the compute
+run. The pilot validates the training pipeline and backup path; its small game
+sample is not a meaningful playing-strength or Elo evaluation.

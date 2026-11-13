@@ -466,3 +466,10 @@ For every meaningful development batch:
 - Stockfish: **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged** ([43439201743](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201743), artifact `14045506585`).
 - The training workflow now fails before dependency installation if the configured best checkpoint is absent. No training workflow was dispatched.
 - No checkpoint was found in the current tracked tree or release listing; no model tactical evaluation, Elo estimate or playing-strength claim has been made.
+
+
+## Fresh-start pilot readiness (2026-11-13)
+- The previous learned checkpoint is unavailable. The original resume workflow remains protected by its missing-checkpoint gate.
+- A separate, manually dispatched fresh-start CPU pilot is prepared on `chess-strength-training-upgrade`; it creates a clearly labelled random baseline and uses isolated pilot output paths.
+- Pilot budget: 1 iteration, 4 self-play games, 80-ply cap, 8 MCTS simulations, 1 training epoch, and 2 paired evaluation games. This is a pipeline smoke test, not an Elo/strength test.
+- The pilot workflow defaults to NO and requires YES. It has not been dispatched. CPU CI and Stockfish verification are pending.
