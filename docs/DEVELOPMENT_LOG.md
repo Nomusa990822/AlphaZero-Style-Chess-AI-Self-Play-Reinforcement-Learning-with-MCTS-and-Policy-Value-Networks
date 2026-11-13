@@ -978,3 +978,12 @@ Copy this section for each future engineering batch.
 - Added White `Rxd4 exd4 Rxd3 Rc1+ Kh2` and Black `...Rxc4+ Rxc4 ...Nb5#` removal-of-the-defender combinations. Both lines passed semantic legality tests and finite-depth Stockfish review.
 - Initial workflow pair [43437915823](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437915823) (CPU) and [43437915817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437915817) (Stockfish) was cancelled; replacement runs above passed on the same revision. Cancellations are not failures.
 - Sequence corpus now has **five combinations and nineteen annotated plies**. This remains annotated principal-variation line-following, not proof of forcedness against all defences. No training or checkpoint evaluation was run.
+
+
+### Checkpoint recovery audit and missing-checkpoint safety gate (2026-11-13)
+- Audited the feature-branch Git tree: `data/checkpoints/` is ignored and no `.pt` weights are tracked. The repository release listing returned no checkpoint releases. The latest 100 Actions runs contained no run of the dedicated `train-and-backup.yml` workflow; no training run was launched during this task.
+- `data/logs/training_metrics.jsonl` contains historic metric records but no recoverable model state.
+- Found a safety gap: `resume_best_model=True` silently proceeded with a newly initialised network when the checkpoint path did not exist. Added a fail-fast guard in `AlphaZeroPipeline.__init__` and a regression test proving startup is refused if the resume checkpoint is missing.
+- Added an early checkpoint-presence gate to `.github/workflows/train-and-backup.yml`, before Python or PyTorch installation, so an accidental manual dispatch cannot spend runner time on a fresh random model.
+- Documented checkpoint recovery, hash-manifest generation, durable backup expectations and post-recovery tactical evaluation in `docs/training_flow.md`.
+- No checkpoint was recovered, no training workflow was dispatched, and no model evaluation was run. CPU CI verification is pending.

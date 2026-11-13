@@ -92,6 +92,14 @@ class AlphaZeroPipeline:
         self.device = self._resolve_device(self.config.device)
         print(f"Using training device: {self.device}")
 
+        if self.config.resume_best_model and not checkpoint_exists(self.config.best_model_checkpoint):
+            raise FileNotFoundError(
+                "resume_best_model=True, but the best-model checkpoint is missing: "
+                f"{self.config.best_model_checkpoint}. Refusing to initialise random "
+                "weights silently. Restore a compatible checkpoint or explicitly set "
+                "resume_best_model=False to authorise fresh training."
+            )
+
         self.metrics_logger = MetricsLogger(self.config.log_dir)
         self.replay_buffer = ReplayBuffer(capacity=self.config.replay_buffer_capacity)
         replay_path = Path(self.config.replay_buffer_path)

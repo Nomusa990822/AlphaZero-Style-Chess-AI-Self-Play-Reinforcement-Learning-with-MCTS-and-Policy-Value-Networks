@@ -451,3 +451,10 @@ For every meaningful development batch:
 - Stockfish: **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged** ([43437925723](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437925723), artifact `14043849570`).
 - Five combinations cover checking fork/hanging queen, discovered check/hanging queen, decoy/hanging bishop, and White/Black removal-of-the-defender combinations. The corpus contains nineteen annotated plies with both colours represented.
 - These results validate the annotated lines at finite depth; they do not prove every line is forced against all possible replies. No training, checkpoint evaluation or Elo claim has been made.
+
+
+### Checkpoint recovery/readiness audit (2026-11-13)
+- No checkpoint weights are currently present in the feature-branch Git tree; `data/checkpoints/` is intentionally gitignored. The GitHub release listing contains no checkpoint release. The latest 100 Actions runs include no invocation of the dedicated training-and-backup workflow.
+- Historical JSONL training metrics are not model weights and cannot reconstruct `best_model.pt`.
+- Added fail-fast behaviour when `resume_best_model=True` but the configured checkpoint is missing. Added a workflow preflight before dependency installation and documented the restore/evaluation process in `docs/training_flow.md`.
+- Training remains unstarted. No checkpoint evaluation, Elo estimate or neural playing-strength claim has been made. CPU CI verification is pending.

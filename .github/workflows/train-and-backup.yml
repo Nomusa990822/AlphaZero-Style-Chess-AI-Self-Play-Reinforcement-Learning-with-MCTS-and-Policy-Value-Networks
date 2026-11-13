@@ -28,6 +28,14 @@ jobs:
     steps:
       - name: Check out selected branch
         uses: actions/checkout@v4
+      - name: Require an existing best-model checkpoint before spending runner time
+        run: |
+          if [[ ! -s data/checkpoints/best_model.pt ]]; then
+            echo "::error::No non-empty data/checkpoints/best_model.pt was found."
+            echo "This workflow is configured to resume an existing model, not start from random weights."
+            echo "Restore a compatible checkpoint before dispatching training."
+            exit 1
+          fi
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

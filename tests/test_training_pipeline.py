@@ -13,7 +13,7 @@ from src.training.checkpoint import load_checkpoint
 from src.training.dataset import AlphaZeroDataset
 from src.training.loss import alphazero_loss
 from src.training.metrics import MetricsLogger
-from src.training.pipeline import AlphaZeroPipeline
+from src.training.pipeline import AlphaZeroPipeline, PipelineConfig
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGenerator, SelfPlaySample
 from src.training.trainer import AlphaZeroTrainer, TrainerConfig
@@ -289,3 +289,31 @@ def test_self_play_emits_completed_game_callback_and_neutral_move_cap():
     assert games[0].ended_by_move_limit
     assert games[0].result == "1/2-1/2"
     assert all(sample.value_target == 0.0 for sample in games[0].samples)
+
+
+
+def test_resume_best_model_refuses_to_start_without_checkpoint(tmp_path):
+    config = PipelineConfig(
+        resume_best_model=True,
+        best_model_checkpoint=str(tmp_path / "missing" / "best_model.pt"),
+        replay_buffer_path=str(tmp_path / "replay" / "latest_buffer.pkl"),
+        log_dir=str(tmp_path / "logs"),
+    )
+
+    try:
+        AlphaZeroPipeline(
+            move_encoding=MoveEncoding(),
+            encoder=BoardEncoder(),
+            network_config=NetworkConfig(
+                input_channels=20,
+                board_size=8,
+                num_filters=8,
+                num_res_blocks=1,
+                value_hidden_size=16,
+            ),
+            pipeline_config=config,
+        )
+    except FileNotFoundError as exc:
+        assert "Refusing to initialise random weights silently" in str(exc)
+    else:
+        raise AssertionError("Missing resume checkpoint must block pipeline startup")
