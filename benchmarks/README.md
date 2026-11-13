@@ -23,9 +23,10 @@ The loader validates FENs, terminal positions, duplicate IDs, and move legality.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
-The committed `tactical_positions.jsonl` is only a small starter corpus. It
-covers a mating net, a knight fork, and a hanging-piece capture. It is not
-large or diverse enough to support a general tactical-strength claim.
+The committed `tactical_positions.jsonl` is only a small four-position starter
+corpus. It covers a mating net, knight forks for both sides to move, and a
+hanging-piece capture. It is not large or diverse enough to support a general
+tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
