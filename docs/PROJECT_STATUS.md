@@ -521,3 +521,13 @@ For every meaningful development batch:
   and CLI arguments against the feature branch.
 - Workflow repair is pending GitHub Actions verification. Both checkpoints
   remain unchanged and separately backed up.
+
+
+## Checkpoint tactical evaluation — completed (2026-11-13)
+
+- Workflow [43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826): **SUCCESS**, all evaluation and artifact-upload steps passed.
+- Baseline vs candidate on 22 individual tactical positions: **4/22 (18.2%) vs 5/22 (22.7%)**.
+- Baseline vs candidate on five combined sequences: **3/7 annotated plies (42.9%) vs 3/7 (42.9%)**; each completed 1/5 sequences. Zero illegal moves for either checkpoint in either benchmark.
+- Candidate's small improvement on individual positions did not carry over to the sequence benchmark. This is a limited curated diagnostic, not an overall chess-strength or Elo measurement.
+- Evaluation reports artifact ID `14074627894` is attached to the workflow run. Both original checkpoints remain backed up and unchanged; no promotion or training occurred.
+- Detailed results, checkpoint hashes, settings and limitations are in `docs/EXPERIMENT_LOG.md`.
