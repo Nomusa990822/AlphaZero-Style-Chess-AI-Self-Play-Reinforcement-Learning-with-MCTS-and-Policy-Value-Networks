@@ -153,3 +153,4 @@ class ReplayBuffer:
                 if not isinstance(chunk_samples, list):
                     raise ValueError(f"Invalid replay journal chunk: {chunk_path}")
                 self.buffer.extend(self._upgrade_samples(chunk_samples))
+                self._pending_journal_files.add(chunk_path.name)
