@@ -1037,3 +1037,13 @@ Copy this section for each future engineering batch.
 - The new overloaded-defender and trapped-piece examples for both colours are included in the passing semantic tests and engine audit. The corpus is now 26 positions (White 14 / Black 12).
 - Superseded push-triggered runs were cancelled while later commits were being pushed; they are cancellations, not failures. The final runs above tested the same final revision and both passed.
 - This is finite-depth engine support, not exhaustive proof of tactical correctness, every defence, or the human motif labels. The sequence audit follows the curated principal variations. No training, checkpoint evaluation, promotion, Elo estimate or neural playing-strength claim was produced.
+
+
+## 2026-11-13 — Build fixed-opponent match evaluation
+
+- Added evaluate_vs_stockfish.py to compare the immutable fresh-start pilot baseline and one-iteration candidate against Stockfish at fixed UCI Elo settings 1320, 1600 and 1900.
+- Each checkpoint faces 12 games per opponent setting: six fixed opening positions, each played once with the model as White and once as Black. The full planned experiment is 72 games (2 checkpoints × 3 opponent settings × 12 games).
+- Match settings: CPU inference, 16 MCTS simulations, deterministic model move selection, no Dirichlet noise, 120-ply game cap, Stockfish 0.05-second move limit, one Stockfish thread and 64 MB hash. Reports include checkpoint SHA-256, per-colour results, W/D/L, score and game-level records.
+- Added schedule/opening/report tests. CPU suite passed **179 tests in 3.44 seconds** on revision 3fc9183769cbf74050503b627fc192c26e11f302 (run 43506781688); Stockfish tactical audit also passed (run 43506781713).
+- Added a separately gated workflow_dispatch workflow on a branch based on main; it must be merged to the default branch before GitHub will expose the manual dispatch. It checks out the tested feature-branch evaluator, downloads the immutable pilot release, verifies both checkpoint SHA-256 hashes, runs the 72-game match and uploads the report. It defaults to NO and does not train or modify checkpoints.
+- **The match evaluation has not been launched.** No match outcomes, playing-strength result or Elo estimate exist yet. The candidate remains unpromoted; the baseline remains selected.
