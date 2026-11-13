@@ -91,6 +91,11 @@ class SelfPlayGenerator:
             return -1.0
         return 0.0
 
+    @staticmethod
+    def _value_for_player(white_value: float, player_to_move: bool) -> float:
+        """Return the undiscounted final outcome from the mover's perspective."""
+        return white_value if player_to_move == chess.WHITE else -white_value
+
     def _temperature_for_move(self, move_number: int) -> float:
         if move_number < self.opening_temperature_moves:
             return self.opening_temperature
@@ -177,13 +182,9 @@ class SelfPlayGenerator:
         for move_index, (state, policy_target, player_to_move) in enumerate(
             zip(history_states, history_policy_targets, history_players)
         ):
-            base_value = white_value if player_to_move == chess.WHITE else -white_value
-            
-            distance_from_end = total_moves - move_index - 1
-            decay = 0.997 ** distance_from_end
-            
-            value_target = base_value * decay
-            value_target = max(min(value_target, 1.0), -1.0)
+            # AlphaZero value targets use the final game outcome without
+            # distance discounting; the side-to-move perspective is flipped.
+            value_target = self._value_for_player(white_value, player_to_move)
             
             samples.append(
                 SelfPlaySample(
