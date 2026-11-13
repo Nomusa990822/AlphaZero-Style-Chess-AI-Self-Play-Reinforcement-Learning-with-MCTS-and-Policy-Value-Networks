@@ -207,3 +207,11 @@ For every meaningful development batch:
 - The root SEE prior adjustment now returns existing normalized priors immediately when the position contains no captures or promotions. This avoids copying and renormalizing the dictionary in quiet positions.
 - A regression test verifies that the no-candidate path never calls SEE and preserves the original prior object/distribution.
 - CPU tests, the batched benchmark and Stockfish audit are pending on the new implementation revision. Tactical positions continue through the existing bounded SEE scoring path.
+
+
+### Verified — SEE quiet-position fast path
+- Latest verified implementation revision: `8124b000aef61645b57fd3f686ef81a13174530d`.
+- CPU tests: **154 passed** on runs `43423373600` (3.72 sec) and `43423379443` (3.22 sec). The benchmark artifact uploaded in both runs (`14034344758`, `14034629057`).
+- Stockfish audit passed on runs `43423379514` and `43423373448`.
+- Quiet positions with no captures/promotions now bypass SEE scoring, prior dictionary copying and renormalization. The tactical-candidate path is unchanged.
+- Benchmark timing was affected by concurrent runner activity; the new measurements do not establish a reliable performance gain. Keep SEE enabled/disabled defaults unchanged pending isolated profiling.

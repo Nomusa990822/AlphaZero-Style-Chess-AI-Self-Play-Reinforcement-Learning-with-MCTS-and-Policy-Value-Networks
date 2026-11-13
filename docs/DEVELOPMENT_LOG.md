@@ -678,3 +678,13 @@ Copy this section for each future engineering batch.
 - Stockfish tactical audit: pending.
 - Previous implementation revision `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a`: 153 CPU tests passed in 2.78 seconds; benchmark artifact `14033619165`; Stockfish audit passed.
 - No default changed, no training/checkpoint experiment, no playing-strength result or Elo result claimed.
+
+
+### Verification — SEE quiet-position fast path
+- Implementation revision `8124b000aef61645b57fd3f686ef81a13174530d`.
+- CPU run [43423373600](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423373600): **154 passed in 3.72 seconds**; batched benchmark completed and uploaded artifact ID `14034344758`.
+- Duplicate CPU run [43423379443](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423379443): passed; **154 passed in 3.22 seconds**; benchmark artifact ID `14034629057`.
+- Stockfish audit [43423379514](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423379514): passed. Duplicate audit [43423373448](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43423373448) also passed.
+- The quiet-position fast path is covered by a regression test that asserts the SEE evaluator is not called and the original normalized prior dictionary is returned unchanged.
+- The concurrent benchmark runs reported differing absolute baselines (including SEE-disabled starting-position medians of 0.410099 ms and 0.263501 ms) and nominal starting-position overhead of 7.54% and 9.15%. Other position overheads remained substantial. Because the paired workflows ran concurrently on shared GitHub-hosted runner capacity, these measurements are not a controlled before/after comparison and do not establish a reliable speedup. Keep the SEE default unchanged; isolate benchmark runs before making performance decisions.
+- No checkpoint experiment, training, playing-strength gain or Elo result is claimed.
