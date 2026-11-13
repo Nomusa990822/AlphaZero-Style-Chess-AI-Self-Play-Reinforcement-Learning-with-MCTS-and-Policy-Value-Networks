@@ -1,3 +1,19 @@
+## 2026-11-13 — Add motif-specific tactical semantics tests; correct fork geometry
+
+### Changes
+- Added `tests/test_tactical_corpus_semantics.py` to verify that curated moves demonstrate their stated ideas, including checkmate, forks, undefended-piece captures, absolute pins, skewers, discovered check/attack, a defensive check evasion, and promotion with check.
+- The first full CI run for these tests, [43404336724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404336724), **failed** in `test_both_fork_moves_attack_the_king_and_queen`: the test expected the black king on e8, but the corpus FEN places it on f8. This was a test-coordinate error; the failure did not show that the corpus move was illegal.
+- Corrected the expected king square from e8 to f8 in commit `62bbeff2df149e525715cf119474a0591e6069e8`.
+
+### Verification
+- Failed run: [43404336724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404336724) — test suite failed on the incorrect square assertion.
+- Repair revision: `62bbeff2df149e525715cf119474a0591e6069e8` — **CI pending; do not mark the semantic-test batch as passed until a completed successful run is recorded.**
+- The prior thirteen-position Stockfish audit and prior CPU test run remain successful historical checks; they do not validate this newly added test file.
+- No checkpoint benchmark or playing-strength result was produced by this test-only change.
+
+### Follow-up
+- Check the next full CPU test run. If another semantic assertion fails, inspect the exact FEN and board geometry, correct the test only when the corpus annotation is sound, and record each run outcome here and in Project Status.
+
 ## 2026-11-13 — Add reproducible Stockfish-assisted tactical review
 
 ### Changes
