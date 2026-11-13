@@ -1,6 +1,6 @@
 """Resource-bounded sweep of MCTS tactical-search configurations."""
 from __future__ import annotations
-import argparse, hashlib, json
+import argparse, hashlib, json, math
 from pathlib import Path
 from time import perf_counter
 import chess, torch
@@ -28,7 +28,7 @@ def parse_floats(value: str, option: str) -> list[float]:
         values = [float(part.strip()) for part in value.split(",")]
     except ValueError as exc:
         raise argparse.ArgumentTypeError(f"{option} must be comma-separated numbers") from exc
-    if not values or any(v <= 0 for v in values) or len(set(values)) != len(values):
+    if not values or any(not math.isfinite(v) or v <= 0 for v in values) or len(set(values)) != len(values):
         raise argparse.ArgumentTypeError(f"{option} values must be unique positive numbers")
     return values
 
@@ -74,59 +74,122 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def main() -> None:
-    args = parse_args()
+def run_benchmark(args: argparse.Namespace) -> dict:
+    """Execute the configured sweep and return its complete report.
+
+    Module-level dependencies are kept replaceable so tests can exercise the
+    orchestration without allocating a neural network or requiring a checkpoint.
+    """
     checkpoint = Path(args.checkpoint)
-    if not checkpoint.is_file(): raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
+    if not checkpoint.is_file():
+        raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
     positions = load_tactical_positions(args.positions)[:args.max_positions]
-    if not positions: raise ValueError("The selected tactical corpus contains no positions.")
+    if not positions:
+        raise ValueError("The selected tactical corpus contains no positions.")
     planned = estimate_simulations(len(positions), args.simulations, args.c_puct)
     if planned > args.max_total_simulations:
-        raise ValueError(f"Planned budget {planned} exceeds cap {args.max_total_simulations}; reduce the grid or positions.")
+        raise ValueError(
+            f"Planned budget {planned} exceeds cap {args.max_total_simulations}; "
+            "reduce the grid or positions."
+        )
+
     device = resolve_device(args.device)
     digest = hashlib.sha256(checkpoint.read_bytes()).hexdigest()
     encoding = MoveEncoding()
-    network = AlphaZeroNet(action_size=encoding.action_size, config=NetworkConfig(
-        input_channels=20, board_size=8, num_filters=64, num_res_blocks=3, value_hidden_size=128))
+    network = AlphaZeroNet(
+        action_size=encoding.action_size,
+        config=NetworkConfig(
+            input_channels=20, board_size=8, num_filters=64,
+            num_res_blocks=3, value_hidden_size=128,
+        ),
+    )
     payload = load_checkpoint(checkpoint, network, optimizer=None, map_location=device)
-    inference = ModelInference(model=network, move_encoding=encoding, encoder=BoardEncoder(), device=device)
+    inference = ModelInference(
+        model=network, move_encoding=encoding, encoder=BoardEncoder(), device=device
+    )
     results, all_started = [], perf_counter()
     for simulations in args.simulations:
         for c_puct in args.c_puct:
             for filter_enabled in (True, False):
-                search = MCTS(inference=inference, move_encoding=encoding, config=MCTSConfig(
-                    num_simulations=simulations, c_puct=c_puct, add_dirichlet_noise=False,
-                    temperature=0.0, use_tactical_root_filter=filter_enabled))
+                search = MCTS(
+                    inference=inference,
+                    move_encoding=encoding,
+                    config=MCTSConfig(
+                        num_simulations=simulations,
+                        c_puct=c_puct,
+                        add_dirichlet_noise=False,
+                        temperature=0.0,
+                        use_tactical_root_filter=filter_enabled,
+                    ),
+                )
                 selected, rows, started = {}, [], perf_counter()
                 for case in positions:
                     board = chess.Board(case.fen)
-                    move = search.select_action(search.run(board.copy(stack=True)), temperature=0.0)
+                    move = search.select_action(
+                        search.run(board.copy(stack=True)), temperature=0.0
+                    )
                     selected[case.fen] = move.uci()
-                    rows.append({"id": case.position_id, "selected_move": move.uci(),
-                                 "correct": move.uci() in case.acceptable_moves})
+                    rows.append({
+                        "id": case.position_id,
+                        "selected_move": move.uci(),
+                        "correct": move.uci() in case.acceptable_moves,
+                    })
                 elapsed = perf_counter() - started
-                score = evaluate_tactical_selector(positions, lambda board, m=selected: m[board.fen()])
+                score = evaluate_tactical_selector(
+                    positions, lambda board, m=selected: m[board.fen()]
+                )
                 results.append({
-                    "simulations_per_position": simulations, "c_puct": c_puct,
-                    "tactical_root_filter": filter_enabled, "positions": len(positions),
+                    "simulations_per_position": simulations,
+                    "c_puct": c_puct,
+                    "tactical_root_filter": filter_enabled,
+                    "positions": len(positions),
                     "total_simulations": len(positions) * simulations,
-                    "correct": score.correct, "accuracy": score.accuracy, "illegal": score.illegal,
-                    "by_motif": score.by_motif, "by_color": score.by_color, "by_phase": score.by_phase,
-                    "failures": list(score.failures), "elapsed_seconds": round(elapsed, 6),
-                    "selections": rows})
-    report = {
-        "checkpoint": str(checkpoint), "checkpoint_sha256": digest,
-        "checkpoint_epoch": payload.get("epoch"), "corpus": str(args.positions),
-        "positions_evaluated": len(positions), "device": str(device),
-        "dirichlet_noise": False, "temperature": 0.0,
-        "simulation_budgets": args.simulations, "c_puct_values": args.c_puct,
-        "planned_total_simulations": planned, "maximum_total_simulations": args.max_total_simulations,
-        "elapsed_seconds": round(perf_counter() - all_started, 6), "configurations": results,
-        "interpretation_limit": "A small curated tactical corpus is diagnostic only, not an Elo estimate or proof of general playing-strength improvement."}
-    rendered = json.dumps(report, indent=2, sort_keys=True)
-    print(rendered)
-    output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(rendered + "\n", encoding="utf-8")
+                    "correct": score.correct,
+                    "accuracy": score.accuracy,
+                    "illegal": score.illegal,
+                    "by_motif": score.by_motif,
+                    "by_color": score.by_color,
+                    "by_phase": score.by_phase,
+                    "failures": list(score.failures),
+                    "elapsed_seconds": round(elapsed, 6),
+                    "selections": rows,
+                })
+
+    return {
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": digest,
+        "checkpoint_epoch": payload.get("epoch"),
+        "corpus": str(args.positions),
+        "positions_evaluated": len(positions),
+        "device": str(device),
+        "dirichlet_noise": False,
+        "temperature": 0.0,
+        "simulation_budgets": args.simulations,
+        "c_puct_values": args.c_puct,
+        "planned_total_simulations": planned,
+        "maximum_total_simulations": args.max_total_simulations,
+        "elapsed_seconds": round(perf_counter() - all_started, 6),
+        "configurations": results,
+        "interpretation_limit": (
+            "A small curated tactical corpus is diagnostic only, not an Elo "
+            "estimate or proof of general playing-strength improvement."
+        ),
+    }
+
+
+def write_report(report: dict, output_path: str | Path) -> Path:
+    """Persist a machine-readable report, creating its parent directory."""
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return output
+
+
+def main() -> None:
+    args = parse_args()
+    report = run_benchmark(args)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    output = write_report(report, args.output)
     print(f"Saved bounded search benchmark: {output}")
 
 

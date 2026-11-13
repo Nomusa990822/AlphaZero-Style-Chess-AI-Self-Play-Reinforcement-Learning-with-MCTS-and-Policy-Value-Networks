@@ -188,3 +188,14 @@ the network or starting search and refuses to exceed the configured cap.
 The default cap is 5,000 simulations across both filter modes and all
 configurations. A compatible real checkpoint is required; the runner does
 not train or create model weights. Results are diagnostic, not an Elo claim.
+
+
+## Benchmark orchestration tests
+
+The CPU test suite also exercises the sweep orchestration with mocked model,
+checkpoint and MCTS components. It checks every configuration in the default
+grid, confirms one network construction and deterministic settings, validates
+checkpoint hash/epoch metadata and JSON report persistence, and verifies that
+missing-checkpoint and over-budget failures happen before expensive setup.
+Non-finite PUCT values such as \`nan\` and \`inf\` are rejected. These tests do
+not run training or claim anything about playing strength.

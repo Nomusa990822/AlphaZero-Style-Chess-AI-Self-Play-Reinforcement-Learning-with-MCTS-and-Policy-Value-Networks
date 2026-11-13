@@ -440,3 +440,21 @@ Copy this section for each future engineering batch.
 
 ### Follow-up
 - Preserve a compatible checkpoint independently before running the resource-bounded search sweep. Use the same checkpoint, corpus, device and controlled budgets; save actual output and checkpoint hash in `EXPERIMENT_LOG.md`.
+
+
+## 2026-11-13 — Exercise the MCTS configuration benchmark execution path
+
+### Changes
+- Refactored the sweep orchestration into \`run_benchmark(args)\` so the execution path can be tested independently of CLI parsing and with replaceable model/search components.
+- Added mocked end-to-end orchestration coverage for all simulation-budget, PUCT and filter-mode combinations, single network construction, deterministic search settings, checkpoint SHA-256/epoch metadata, per-position selections, and persisted JSON report round-tripping.
+- Added preflight regression coverage proving an over-budget plan is rejected before network construction and a missing checkpoint is rejected before corpus loading.
+- Hardened the PUCT parser to reject non-finite values (\`nan\`, positive/negative infinity) as well as non-positive values.
+- No training or actual checkpoint search is performed by these tests.
+
+### Verification
+- Implementation and test revision is being submitted; CPU CI and the tactical audit are **pending**. Do not mark this batch as passed until the workflows complete.
+- Existing latest verified baseline remains \`040877a1ab822e7023a68b8f025eb17535eac073\`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
+- No compatible trained checkpoint is available; no search sweep, training run, playing-strength result or Elo claim is produced.
+
+### Follow-up
+- Inspect the first CI run for this batch. Preserve any failure and repair it before updating the verified revision. Once CI passes, use the real checkpoint only when it has been recovered and independently backed up.
