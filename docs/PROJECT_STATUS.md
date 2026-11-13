@@ -384,3 +384,10 @@ For every meaningful development batch:
 - Candidate corpus: **21 positions (White 11 / Black 10)**. CPU tests and Stockfish finite-depth review are pending; the last verified baseline remains 19 positions on `87ed473`.
 - These additions bring the planned eight-position batch to seven examples; one further White removal-of-the-defender example remains to be sourced and verified.
 - No training, checkpoint evaluation, or Elo claim was made.
+
+
+### Tactical candidate correction — White deflection rejected (2026-11-13)
+- The proposed `Re8+` deflection example was removed after Stockfish review showed the accepted move was about 452 centipawns below the engine's best choice; sacrificing a rook to collect a knight did not make a sound benchmark win.
+- The Black decoy example is retained; Stockfish supported its accepted move within the configured tolerance.
+- Candidate corpus is reduced to **20 positions (White 10 / Black 10)**. The rejected position and its semantic test are removed in the next correction revision. The 21-position review's single flag remains recorded in DEVELOPMENT_LOG.md.
+- No training, checkpoint evaluation, or Elo claim was made.

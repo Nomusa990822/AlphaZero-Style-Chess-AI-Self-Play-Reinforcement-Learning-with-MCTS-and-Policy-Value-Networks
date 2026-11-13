@@ -899,3 +899,12 @@ Copy this section for each future engineering batch.
 - Added a Black-to-move decoy example from ChessFlame/Lichess puzzle 06a9D: `43...Qh7+ 44.Qh6 Qxh6+ 45.Kxh6 Nxg4+`, attracting the White queen onto h6 before the knight captures the bishop with check. Source: https://www.chessflame.com/puzzles/lichess_06a9D.
 - Added semantic tests for the forcing lines and updated corpus colour-count expectations. Candidate corpus: **21 positions (White 11 / Black 10)**.
 - These additions are awaiting CPU and Stockfish verification. The last verified baseline remains 19 positions on `87ed473`. No training or checkpoint evaluation was run.
+
+
+### Stockfish review — reject White deflection candidate, retain Black decoy (2026-11-13)
+- Candidate revision `de948a52a0fb61d7ec5612d754d08eaab9847f8c) CPU workflow [43436251001](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436251001) passed **169 tests in 4.09 seconds**.
+- Stockfish audit [43436251026](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436251026) reviewed 21 positions: **20 supported, 1 flagged**; both sequences and all six annotated plies remained supported. Artifact `14042138941`.
+- The flagged position was `white-rook-deflects-defending-rook-from-knight-001`. Stockfish preferred other moves by approximately **452 centipawns** over the proposed `Re8+` sacrifice. The line gives up a rook to win a knight and is not a sound positive benchmark example. Removed this candidate and its semantic test; it must not be counted.
+- The new Black decoy `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+` was supported within the configured engine tolerance and is retained.
+- The first run pair [43436238211](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436238211) (CPU) and [43436238354](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43436238354) (Stockfish) was cancelled and replaced by the completed pair above. The replacement CPU passed; the replacement Stockfish run completed successfully as a workflow but flagged the unsound candidate. Cancellation and review flag are not test failures.
+- Next revision removes the rejected candidate. Expected corpus: **20 positions (White 10 / Black 10)**. No training or checkpoint evaluation was run.
