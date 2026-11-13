@@ -10,6 +10,7 @@ parent selects among its actions.
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable
 
 from src.mcts.node import MCTSNode
 
@@ -29,12 +30,22 @@ def compute_puct_score(parent: MCTSNode, child: MCTSNode, c_puct: float) -> floa
     return q_value + u_value
 
 
-def select_best_child(node: MCTSNode, c_puct: float) -> MCTSNode:
-    """Select the child with the highest parent-perspective PUCT score."""
-    if not node.children:
-        raise ValueError("Cannot select child from node with no children.")
+def select_best_child(
+    node: MCTSNode,
+    c_puct: float,
+    candidates: Iterable[MCTSNode] | None = None,
+) -> MCTSNode:
+    """Select the highest-scoring child, optionally from a restricted set.
+
+    candidates lets the root search apply exact tactical safety constraints
+    without deleting legal children from the tree. Non-root selection remains
+    unrestricted unless a caller explicitly supplies candidates.
+    """
+    eligible = list(node.children.values()) if candidates is None else list(candidates)
+    if not eligible:
+        raise ValueError("Cannot select child from an empty candidate set.")
 
     return max(
-        node.children.values(),
+        eligible,
         key=lambda child: compute_puct_score(node, child, c_puct),
     )

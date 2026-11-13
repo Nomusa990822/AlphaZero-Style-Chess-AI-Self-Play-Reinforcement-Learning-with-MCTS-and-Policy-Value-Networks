@@ -145,13 +145,25 @@ class MCTS:
         root.visit_count += 1
         root.value_sum += root_value
 
+        # Apply exact one-ply safety (and mate-in-one priority) once at the
+        # root. Reusing this candidate set prevents simulations being spent
+        # on root moves that the final action/policy would later discard.
+        root_search_children = self._root_children_for_action(root)
+
         for _ in range(self.config.num_simulations):
             node = root
             search_path = [node]
 
             # Selection
             while node.expanded() and node.children:
-                node = select_best_child(node, self.config.c_puct)
+                if node is root:
+                    node = select_best_child(
+                        node,
+                        self.config.c_puct,
+                        candidates=root_search_children,
+                    )
+                else:
+                    node = select_best_child(node, self.config.c_puct)
                 search_path.append(node)
 
             # Expansion / evaluation
@@ -171,6 +183,14 @@ class MCTS:
         the least-bad continuation.
         """
         children = list(root.children.values())
+        mating_moves = find_mate_in_one(root.board.copy(stack=True))
+        if mating_moves:
+            mating_uci = {move.uci() for move in mating_moves}
+            mating_children = [
+                child for child in children if child.move.uci() in mating_uci
+            ]
+            return mating_children or children
+
         safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
         if not safe_moves:
             return children

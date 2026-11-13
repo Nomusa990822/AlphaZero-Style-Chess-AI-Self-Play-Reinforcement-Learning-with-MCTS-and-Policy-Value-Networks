@@ -1,3 +1,20 @@
+## 2026-11-13 — Apply root tactical constraints during MCTS simulation
+
+### Changes
+- Extended PUCT child selection to accept an explicit eligible-child set while preserving unrestricted selection as the default.
+- MCTS now computes its root tactical candidate set once before simulations and uses that set whenever selecting the root action.
+- Root search prioritises all legal mate-in-one moves; otherwise it excludes moves that permit an immediate opponent mate when at least one safe move exists.
+- The existing forced-loss fallback is preserved: if every legal move permits mate in one, all root children remain eligible.
+- Added regressions proving restricted PUCT selection and that a mate-in-one root spends its simulations on mating moves only. Deeper tree selection remains unrestricted.
+
+### Verification
+- Automated tests and both CI workflows for this implementation revision: **pending**.
+- No Stockfish benchmark, real-checkpoint tactical benchmark, training run, or playing-strength measurement was produced by this search change.
+- This is a search-budget allocation improvement; strength improvement must be measured separately.
+
+### Follow-up
+- Inspect CPU CI and tactical audit results. Record every failure and repair, then record the first successful run without deleting failed-run history.
+
 ## 2026-11-13 — Semantic regression repair verified by CI
 
 ### Verification

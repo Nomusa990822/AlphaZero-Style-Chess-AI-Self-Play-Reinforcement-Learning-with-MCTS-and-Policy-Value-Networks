@@ -264,3 +264,47 @@ def test_one_ply_safety_filter_keeps_starting_position_moves_and_preserves_board
 
     assert set(safe_moves) == set(board.legal_moves)
     assert board.fen() == original_fen
+
+
+
+def test_puct_can_restrict_selection_to_supplied_candidates():
+    board = chess.Board()
+    root = MCTSNode(board=board)
+    root.expand({"e2e4": 0.5, "d2d4": 0.5})
+    root.visit_count = 10
+
+    excluded = root.children["e2e4"]
+    eligible = root.children["d2d4"]
+    excluded.visit_count = 10
+    eligible.visit_count = 0
+
+    assert select_best_child(root, c_puct=0.0, candidates=[eligible]) is eligible
+
+
+def test_mcts_spends_root_simulations_on_mate_in_one_only():
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+    encoding = MoveEncoding()
+
+    class UniformInference:
+        def predict(self, position):
+            return np.ones(encoding.action_size, dtype=np.float32), 0.0
+
+    search = MCTS(
+        inference=UniformInference(),
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=5,
+            add_dirichlet_noise=False,
+            temperature=1.0,
+        ),
+    )
+
+    root = search.run(board)
+
+    assert root.children["f7g7"].visit_count == 5
+    assert all(
+        child.visit_count == 0
+        for move_uci, child in root.children.items()
+        if move_uci != "f7g7"
+    )
+    assert search.select_action(root, temperature=0.0).uci() == "f7g7"

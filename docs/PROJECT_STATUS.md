@@ -12,6 +12,9 @@
 
 ## Current verified state
 
+- Latest search-efficiency change: **pending CI**. Root MCTS selection now uses a one-time root candidate set so immediate mate-in-one moves are prioritised and known one-ply mate-losing moves are excluded when safe alternatives exist. Forced-loss fallback and unrestricted deeper-tree selection are preserved. Automated regression tests were added; do not treat this change as verified until CI completes.
+
+
 - Both follow-up workflows passed on branch head `592671dc283ab86d0dc52a285c74da8204f0fc3b`: CPU tests run [43404899202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899202), and Stockfish tactical audit run [43404899148](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899148). The fork-coordinate failure and its repair are retained in the chronological log.
 
 - **Latest semantic-test CI failure and repair:** run [43404336724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404336724) failed because the fork test expected the black king on e8 rather than f8. The test coordinate was corrected, and the repaired revision `592671dc283ab86d0dc52a285c74da8204f0fc3b` passed the CPU test workflow [43404899202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899202) and the Stockfish audit workflow [43404899148](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899148). The original failure remains preserved in `DEVELOPMENT_LOG.md`.
