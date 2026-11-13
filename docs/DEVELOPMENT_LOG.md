@@ -1,3 +1,22 @@
+## 2026-11-13 — Enforce a controlled tactical motif taxonomy
+
+**Implementation revision:** `55bcd72f494f575f9171cf35bc569eb341371b77`  
+**Regression-test revision:** `135b863d5acc80e118455918506661a16342609e`  
+**Benchmark documentation revision:** `058097ce1928300e4130eeb781f02f72e6aba843`
+
+### Changes
+- Added a canonical set of supported tactical motif labels covering mating nets, forks, hanging pieces, pins, skewers, discovered attacks, double attacks, deflections, decoys, overloaded defenders, trapped pieces, defensive resources and endgame tactics.
+- The corpus loader now rejects unknown labels rather than silently creating inconsistent per-motif score groups.
+- Added a regression test for unknown motif rejection and documented the accepted taxonomy.
+
+### Verification
+- The preceding code batch passed the full GitHub Actions CPU test suite in run [43396703300](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43396703300).
+- CI for this taxonomy change is pending.
+- This is a data-quality safeguard; it does not increase chess playing strength by itself.
+
+### Follow-up
+- Grow the corpus with independently reviewed tactical examples, then run it against a real checkpoint when a compatible checkpoint is available.
+
 ## 2026-11-13 — Test the tactical evaluation CLI
 
 **Test revision:** `3d203b13dff5931b882bfbb1ec9f191a2229d00e`  
