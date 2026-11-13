@@ -1,3 +1,22 @@
+## 2026-11-13 — Test the tactical evaluation CLI
+
+**Test revision:** `3d203b13dff5931b882bfbb1ec9f191a2229d00e`  
+**Documentation revision:** `5fd50caab0da4971c218c9eaced4140fd982d70d`
+
+### Changes
+- Added isolated tests for CPU device selection and explicit failure when CUDA is requested but unavailable.
+- Added a mocked end-to-end CLI test covering checkpoint loading, deterministic MCTS configuration (no Dirichlet noise, zero temperature), selector invocation, JSON report contents and output-file writing.
+- Added a missing-checkpoint regression test.
+- Updated benchmark documentation to describe the four-position starter corpus and its limitations.
+
+### Verification
+- GitHub Actions for the previous corpus update was queued when checked; the new CLI tests are awaiting CI.
+- Tests mock model/search execution and do not require a real checkpoint or GPU.
+- No real-checkpoint tactical benchmark or playing-strength improvement is claimed.
+
+### Follow-up
+- Review the CI result, then continue growing the tactical corpus only with independently verified positions and meaningful tactical ground truth.
+
 ## 2026-11-13 — Add black-to-move tactical coverage
 
 **Corpus revision:** `2e18f4d35b12fce02d6777d0afb4f1d0d0390e94`  
