@@ -4,16 +4,15 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `592671dc283ab86d0dc52a285c74da8204f0fc3b` (CPU tests and Stockfish tactical audit both passed; workflow runs `43404899202` and `43404899148`).
-**Current tracking-branch head:** `7ce648911749587f12cf3d52edce33a8fd16c4d1` (documentation records updated after successful verification).
+**Latest verified code revision:** `7f39e43b0b0174b730f3facf194d68577c6d3a10` (113 CPU tests passed; Stockfish tactical audit workflow passed; runs `43406066354` and `43406066235`).
+**Current tracking-branch head:** `711737ea3c22983ee53f65918e2076dfaa11587a` (verification record updated; this commit contains documentation only).
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
 
 ## Current verified state
 
-- Latest search-efficiency change: **pending CI**. Root MCTS selection now uses a one-time root candidate set so immediate mate-in-one moves are prioritised and known one-ply mate-losing moves are excluded when safe alternatives exist. Forced-loss fallback and unrestricted deeper-tree selection are preserved. Automated regression tests were added; do not treat this change as verified until CI completes.
-
+- Latest search-efficiency change: **verified by CI** on code revision `7f39e43b0b0174b730f3facf194d68577c6d3a10`. Root MCTS selection computes one candidate set before simulations: it prioritises all legal mate-in-one moves, otherwise excludes moves allowing an immediate opponent mate when safe alternatives exist. Forced-loss fallback is preserved, and deeper-tree selection remains unrestricted. The CPU suite passed **113 tests** in run [43406066354](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066354). The Stockfish tactical audit workflow also passed in run [43406066235](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406066235), uploading artifact `tactical-engine-audit` (ID `14026509085`).
 
 - Both follow-up workflows passed on branch head `592671dc283ab86d0dc52a285c74da8204f0fc3b`: CPU tests run [43404899202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899202), and Stockfish tactical audit run [43404899148](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899148). The fork-coordinate failure and its repair are retained in the chronological log.
 
@@ -67,7 +66,8 @@
 
 ## Prioritised next work
 
-1. Expand the tactical corpus with independently checked positions across defensive resources, discovered attacks, and endgame tactics.
+1. Add a reproducible, resource-bounded search-quality benchmark that compares tactical safeguards and candidate MCTS configurations on fixed positions, including nodes/simulation allocation and engine-supported outcomes.
+2. Expand the tactical corpus with independently checked positions across defensive resources, discovered attacks, and endgame tactics.
 2. Run and record the tactical benchmark against an actual checkpoint when one is available.
 3. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 4. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.
