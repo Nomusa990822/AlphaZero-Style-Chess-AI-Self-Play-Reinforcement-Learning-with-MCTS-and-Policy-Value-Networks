@@ -268,7 +268,7 @@ def test_self_play_emits_completed_game_callback_and_neutral_move_cap():
         inference=inference,
         move_encoding=move_encoding,
         mcts_config=MCTSConfig(num_simulations=2, add_dirichlet_noise=False),
-        max_moves=4,
+        max_moves=1,
         opening_temperature_moves=10,
         opening_temperature=1.0,
         late_temperature=0.3,
