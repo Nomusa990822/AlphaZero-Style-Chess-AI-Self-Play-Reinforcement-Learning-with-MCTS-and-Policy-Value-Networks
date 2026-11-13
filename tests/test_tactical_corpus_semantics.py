@@ -169,7 +169,7 @@ def test_black_bishop_deflection_draws_white_queen_off_mating_square():
     assert reply in board.legal_moves
     board.push(reply)
     assert board.piece_at(chess.D4) == chess.Piece(chess.QUEEN, chess.WHITE)
-    assert chess.F1 not in board.attackers(chess.WHITE, chess.F1) if False else True
+    assert chess.F1 not in board.attacks(chess.D4)
 
     mating_move = chess.Move.from_uci("f3f1")
     assert mating_move in board.legal_moves
