@@ -1,0 +1,85 @@
+name: Tactical policy learning pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_tactical_training:
+        description: "Train a separate experimental candidate from the immutable baseline. No promotion."
+        required: true
+        type: choice
+        options:
+          - "NO"
+          - "YES"
+        default: "NO"
+      epochs:
+        description: "Small bounded policy-only training run"
+        required: true
+        type: choice
+        options:
+          - "4"
+          - "8"
+          - "12"
+        default: "8"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tactical-policy-learning-pilot
+  cancel-in-progress: false
+
+jobs:
+  train:
+    if: github.ref == 'refs/heads/main' && inputs.confirm_tactical_training == 'YES'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CPU PyTorch
+        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2.0"
+
+      - name: Install project dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Download and verify immutable baseline checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/checkpoints reports
+          gh release download fresh-pilot-checkpoint-43497298757-1 \
+            --repo "$GITHUB_REPOSITORY" --pattern best_model.pt \
+            --dir data/checkpoints
+          echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  data/checkpoints/best_model.pt" | sha256sum --check -
+
+      - name: Run tactical policy-only training pilot
+        run: |
+          python scripts/train_tactical_policy.py \
+            --checkpoint data/checkpoints/best_model.pt \
+            --epochs "${{ inputs.epochs }}" \
+            --learning-rate 0.00001 \
+            --batch-size 8 \
+            --output-checkpoint data/checkpoints/tactical_policy_candidate.pt \
+            --output-report reports/tactical-policy-learning-report.json
+
+      - name: Upload isolated candidate and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tactical-policy-learning-pilot-${{ github.run_id }}
+          path: |
+            data/checkpoints/tactical_policy_candidate.pt
+            reports/tactical-policy-learning-report.json
+          if-no-files-found: error
+          retention-days: 90
