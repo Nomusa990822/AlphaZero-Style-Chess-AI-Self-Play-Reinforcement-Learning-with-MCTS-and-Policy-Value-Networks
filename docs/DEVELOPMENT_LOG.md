@@ -1,5 +1,23 @@
 # Development Log
 
+## 2026-11-13 — Strict tactical-position legality validation
+
+**Implementation revision:** `c81b7e1a91bff1fc91f98aaf4e53419a00c27360`  
+**Test revisions:** `836a17bf024c0a0a8fcffe3073fc85021eef8e6a`, `573a2b6360d28d7d1769019b4e1fdff25f32afcc`
+
+### Changes
+- Strengthened `TacticalPosition.from_dict` to reject structurally invalid chess positions using `python-chess` position validation, in addition to rejecting terminal positions and illegal acceptable UCI moves.
+- Added a regression test for an impossible position with adjacent kings.
+- Strengthened the curated-corpus test so every entry must be a valid, non-terminal chess position and every accepted move must be legal.
+
+### Verification
+- GitHub Actions is triggered by these branch updates; the final test result is pending until the latest run completes.
+- No local test execution or real-checkpoint tactical benchmark is claimed in this entry.
+- No new tactical motifs or benchmark scores are claimed; this batch improves dataset integrity only.
+
+### Follow-up
+- Expand the corpus with independently checked examples for both sides and a broader set of tactical motifs, then test the checkpoint evaluation CLI.
+
 This is the chronological engineering journal for the project. Entries describe implemented changes and verified evidence, not proposed capabilities. The initial entries consolidate earlier work so future batches can be tracked consistently.
 
 ## 2026-11-13 — Tactical checkpoint evaluation and benchmark corpus
