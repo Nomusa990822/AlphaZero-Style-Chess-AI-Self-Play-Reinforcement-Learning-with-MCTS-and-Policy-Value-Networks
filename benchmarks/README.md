@@ -101,3 +101,17 @@ python scripts/audit_tactical_corpus.py \\
   --max-loss-cp 150 \\
   --output reports/tactical-engine-audit.json
 ```
+
+
+## First recorded engine review
+
+The thirteen-position starter corpus was reviewed by Stockfish 17.1 in GitHub
+Actions on 2026-11-13 (depth 16, MultiPV 5, one thread, 256 MB hash). All
+13 curated acceptable moves were within 150 centipawns of the engine's best
+line, and no positions were flagged by the configured comparison. The JSON
+report is retained as the `tactical-engine-audit` artifact from workflow run
+[43403925496](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43403925496).
+
+This is a first-pass consistency check, not a proof that every motif label is
+correct, that every move is uniquely best, or that the corpus is comprehensive.
+The audit tolerance is a review aid, not a chess-theoretic correctness rule.
