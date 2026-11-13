@@ -1052,3 +1052,20 @@ Copy this section for each future engineering batch.
 - Pilot produced 4 self-play games / 274 positions, one training epoch and two candidate-evaluation draws. Candidate was NOT promoted (0 wins, 0 losses, 2 draws; score 0.50; 90% lower confidence bound 0.50).
 - Baseline and candidate checkpoints were preserved with SHA-256 hashes in the manifest. Actions artifact 14071428532 contains checkpoints, replay buffer and logs; prerelease [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1) contains both checkpoint files and manifest.
 - Detailed metrics and limitations are recorded in docs/EXPERIMENT_LOG.md. This successful smoke test does not establish playing strength or Elo.
+
+
+## 2026-11-13 — Repair checkpoint tactical-evaluation dispatch workflow
+
+- Corrected the dispatch model: the workflow is launched from `main`, where
+  GitHub exposes `workflow_dispatch` inputs, and the job explicitly checks
+  out `chess-strength-training-upgrade` for the evaluation code and corpora.
+- Restricted execution to a `main` dispatch with the explicit
+  `confirm_evaluation == YES` input. The default remains `NO`; no evaluation
+  was dispatched as part of this repair.
+- Corrected the prerelease manifest asset name to
+  `fresh-pilot-checkpoint-manifest.json`, matching the actual release asset.
+- Confirmed the two evaluator scripts and their CLI flags exist on the feature
+  branch. Reordered dependency installation so the CPU-only PyTorch wheel is
+  installed after project requirements.
+- This workflow/documentation repair is not yet CI-verified. No checkpoint
+  evaluation, training, checkpoint promotion, or Elo claim has occurred.
