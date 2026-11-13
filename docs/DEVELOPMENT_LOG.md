@@ -1069,3 +1069,14 @@ Copy this section for each future engineering batch.
   installed after project requirements.
 - This workflow/documentation repair is not yet CI-verified. No checkpoint
   evaluation, training, checkpoint promotion, or Elo claim has occurred.
+
+
+## 2026-11-13 — Checkpoint tactical evaluation completed successfully
+
+- Workflow [43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826) completed with **SUCCESS** on workflow revision `43a68cebd39271c687adf068859f29ca69462882`. All eleven substantive steps completed successfully.
+- The workflow checked out `chess-strength-training-upgrade`, installed CPU-only dependencies, downloaded the immutable fresh-pilot release, verified both checkpoint SHA-256 hashes against the manifest, evaluated both checkpoints on both tactical corpora at 100 MCTS simulations, and uploaded the reports.
+- Individual positions: baseline **4/22 (18.2%)**; candidate **5/22 (22.7%)**. Both had zero illegal selected moves.
+- Combined sequences: both checkpoints matched **3/7 annotated plies (42.9%)**, completed **1/5 sequences (20%)**, and had zero illegal selected moves. Both completed the same removal-of-defender/mating-net sequence.
+- Candidate's one-position increase is a small result on a curated 22-position set, not evidence of overall playing-strength improvement. Sequence performance was unchanged. Sequence scoring follows the annotated principal variation and does not exhaustively test alternative defences.
+- Reports artifact: [checkpoint-tactical-evaluation-43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826) (artifact ID `14074627894`; expires 2027-02-11). It contains four JSON reports and the checkpoint manifest.
+- No training was run, no checkpoint was modified or promoted, and no Elo or general playing-strength claim is made. Full measured details are in `docs/EXPERIMENT_LOG.md`.
