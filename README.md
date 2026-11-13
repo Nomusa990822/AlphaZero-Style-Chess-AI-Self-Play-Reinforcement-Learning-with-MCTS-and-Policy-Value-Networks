@@ -692,7 +692,7 @@ flowchart TB
 ```
 
 > [!WARNING]
-> The current evaluator uses a limited head-to-head game set and a material-based adjudication rule when its evaluation games reach the move limit. Evaluation scores should therefore be interpreted as experimental signals, not definitive estimates of playing strength.
+> Evaluation is now deterministic and colour-balanced, and move-limit games are scored as draws instead of material-only wins. The configured match is still relatively small, so scores should be treated as experimental signals rather than definitive estimates of playing strength.
 
 ---
 
@@ -927,7 +927,7 @@ This initialises a chess board, constructs the model and inference pipeline, and
 python train_pipeline.py
 ```
 
-The training entry point constructs the board encoder, move encoder, network configuration and iterative training pipeline. It currently uses CPU execution and the two-iteration experimental configuration documented in [section 10](#10--experimental-training-results).
+The training entry point constructs the board encoder, move encoder, network configuration and iterative training pipeline. It automatically selects CUDA when available, then Apple MPS, and otherwise CPU. It retains the two-iteration experimental configuration documented in [section 10](#10--experimental-training-results).
 
 ### Play against the AI
 
