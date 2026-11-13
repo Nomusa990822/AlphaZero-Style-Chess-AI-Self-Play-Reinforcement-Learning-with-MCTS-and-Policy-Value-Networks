@@ -952,3 +952,12 @@ Copy this section for each future engineering batch.
 - Expanded sequence evaluator regression coverage from two to three combinations and from six to eleven annotated plies. The updated tests assert both colours are represented and account for five White and six Black plies.
 - Updated benchmark documentation with the current sequence corpus and checkpoint evaluation command.
 - CPU and Stockfish sequence-audit checks are pending. Existing sequence evaluation remains annotated principal-variation line-following, not proof of forcedness against every defence. No checkpoint training/evaluation was run.
+
+
+### Third tactical combination — CI verified (2026-11-13)
+- Verified revision: `21da837e3070e9cb6e96ca383f5c963e894b9cdb`.
+- CPU workflow [43437583240](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437583240): **170 passed in 3.15 seconds**.
+- Stockfish audit [43437583217](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437583217): **22/22 individual positions supported, 0 flagged; 3/3 sequences and 11/11 annotated plies supported, 0 flagged**. Audit artifact `14044310522`.
+- Added the Black decoy combination `...Qh7+ Qh6 Qxh6+ Kxh6 Nxg4+`. Sequence tests now validate three combinations and account for eleven annotated plies (White 5 / Black 6).
+- Initial workflow attempts [43437573943](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437573943) (CPU) and [43437573942](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437573942) (Stockfish) were cancelled; the replacement pair above passed on the same revision. These cancellations are not failures.
+- The sequence metric remains annotated principal-variation line-following; it does not prove the line is forced against every defence. No training or checkpoint evaluation was run.
