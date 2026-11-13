@@ -29,7 +29,7 @@ def test_mating_net_move_is_checkmate():
 def test_both_fork_moves_attack_the_king_and_queen():
     cases = cases_by_id()
     expected = {
-        "knight-fork-king-queen-001": ("c5d7", chess.BLACK, chess.E8, chess.F6),
+        "knight-fork-king-queen-001": ("c5d7", chess.BLACK, chess.F8, chess.F6),
         "black-knight-checking-fork-king-queen-001": ("c6d4", chess.WHITE, chess.F3, chess.E2),
     }
     for position_id, (uci, victim_color, king_square, queen_square) in expected.items():
