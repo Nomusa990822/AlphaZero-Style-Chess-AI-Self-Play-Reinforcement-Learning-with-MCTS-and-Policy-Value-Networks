@@ -417,3 +417,13 @@ Copy this section for each future engineering batch.
 
 ### Follow-up
 - When training is intentionally authorised, use the manual workflow and explicitly confirm `YES`. After successful training, download the prerelease checkpoint and manifest to independent storage. The 90-day Actions artifact is temporary, not a permanent archive.
+
+
+## 2026-11-13 — Resource-bounded MCTS configuration benchmark
+
+- **Goal:** compare simulation budgets, PUCT constants and tactical-root-filter modes without launching training.
+- **Design:** load one real checkpoint and inference wrapper; disable Dirichlet noise; select at temperature zero; preflight the complete simulation count and reject over-budget runs before loading the model.
+- **Implementation:** added `benchmark_search_configs.py`, parser/budget regression tests and usage documentation.
+- **Verification:** pending CI on this revision. No real-checkpoint benchmark was executed because no compatible checkpoint is available; no playing-strength result is claimed.
+- **Prior verification:** documentation commit `e100f226b9df853e0bb36873989eb2eb5996dcff` passed CPU workflow [43410650186](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43410650186): **120 passed in 3.68 seconds**.
+- **Follow-up:** run this sweep only after a compatible checkpoint is generated and independently backed up; record actual measurements in `EXPERIMENT_LOG.md`.

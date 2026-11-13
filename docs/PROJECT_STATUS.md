@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code and tracking revision:** `822b2213d5931499853c1c67391e8d8243140ab5` (120 CPU tests passed; Stockfish tactical audit passed; see CI run records below).
-**Current state:** checkpoint recovery workflow and SHA-256 manifest tooling are CI-verified; the paired tactical-filter runner is also CI-verified. No real-checkpoint ablation experiment has been run. Training remains manual-only and has not been started.
+**Latest verified code and tracking revision:** `e100f226b9df853e0bb36873989eb2eb5996dcff` (120 CPU tests passed; documentation commit CI run 43410650186 passed; current benchmark revision awaits CI).
+**Current state:** checkpoint recovery and manifest tooling are CI-verified. A resource-bounded MCTS configuration sweep has been added in the current revision and awaits CI. No real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -68,10 +68,12 @@
 - The checkpoint evaluation CLI requires an actual compatible checkpoint file. Do not report a checkpoint benchmark score until it has been run against a real checkpoint and its output saved.
 - The repository has not yet established a large, independently reviewed tactical suite or a standard external-engine match protocol.
 
+- Resource-bounded search sweep: `benchmark_search_configs.py` compares simulation budgets, PUCT constants and filter modes under a preflight total-simulation cap. Current revision awaits CI; no actual checkpoint benchmark has run.
+
 ## Prioritised next work
 
 1. Run `compare_tactical_filters.py` against a real compatible trained checkpoint using identical corpus, device and simulation budget; record the JSON report and checkpoint hash. The runner and tests have already passed CI.
-2. Add a reproducible, resource-bounded search-quality benchmark that compares tactical safeguards and candidate MCTS configurations on fixed positions, including nodes/simulation allocation and engine-supported outcomes.
+2. Run the resource-bounded search sweep against a real compatible checkpoint after preserving an independent backup; inspect per-position changes before drawing conclusions.
 3. Expand the tactical corpus with independently checked positions across defensive resources, discovered attacks, and endgame tactics.
 4. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 5. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.

@@ -165,3 +165,26 @@ A checkpoint must exist locally at the supplied path. Model checkpoints are
 not committed to the repository. If no compatible checkpoint is available,
 do not substitute an untrained random network and present its score as learned
 playing strength. A small tactical corpus remains diagnostic, not an Elo test.
+
+
+## Resource-bounded MCTS configuration sweep
+
+`benchmark_search_configs.py` compares simulation budgets, PUCT exploration
+constants and tactical-root-filter on/off using one real checkpoint and one
+inference wrapper. It disables Dirichlet noise, selects deterministically and
+reports per-position moves, correctness, motif/colour/phase summaries and
+runtime.
+
+```bash
+python benchmark_search_configs.py \
+  --checkpoint data/checkpoints/best_model.pt \
+  --simulations 25,50 --c-puct 1.0,1.5 \
+  --max-positions 13 --max-total-simulations 5000 \
+  --device cpu --output reports/search-config-sweep.json
+```
+
+The runner calculates the complete planned simulation count before loading
+the network or starting search and refuses to exceed the configured cap.
+The default cap is 5,000 simulations across both filter modes and all
+configurations. A compatible real checkpoint is required; the runner does
+not train or create model weights. Results are diagnostic, not an Elo claim.
