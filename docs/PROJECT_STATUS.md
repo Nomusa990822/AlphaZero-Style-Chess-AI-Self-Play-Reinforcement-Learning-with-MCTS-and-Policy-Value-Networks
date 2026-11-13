@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a` (153 CPU tests passed in 2.78 seconds; CPU run 43421598036; batched benchmark completed and artifact 14033619165 uploaded; Stockfish audit run 43421598059 passed, with duplicate audit 43421606287 also passed).
-**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator, and its conservative root-prior integration are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
+****Latest verified code revision:** `87ed473223d078518ca12a75ab36a1bc4a4fc527` (167 CPU tests passed; CPU run 43435423576; Stockfish tactical review 19/19 positions and 2/2 sequences / 6/6 plies supported, 0 flagged; run 43435423818).n 2.78 seconds; CPU run 43421598036; batched benchmark completed and artifact 14033619165 uploaded; Stockfish audit run 43421598059 passed, with duplicate audit 43421606287 also passed).
+**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, the bounded static exchange evaluator and conservative root-prior integration, and the expanded 19-position tactical corpus with two annotated combinations are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -362,8 +362,18 @@ For every meaningful development batch:
 - Corpus total: **18 positions (White 10 / Black 8)**. The broader balanced eight-position motif batch is still incomplete. Finite-depth Stockfish review is not exhaustive proof of all defences. No training, checkpoint evaluation or Elo claim was made.
 
 
-### Interference motif — Black-to-move example pending verification (2026-11-13)
-- Added a second example from Cor van Wijgerden, *Step 4*, “Elimination of the defence: interfering,” position 6: `...Rd1+`; `Rxd1 Qxb2` loses White's queen, while `Bxd1 Qe1#` is mate. Source: [Step 4 PDF](https://www.stappenmethode.nl/lesmateriaal/memos/en_gs_4.pdf), lines 91–103.
-- Semantic tests cover both defensive branches. Candidate corpus: **19 positions (White 10 / Black 9)**.
-- This addition is pending CPU and Stockfish checks. The first White interference example remains verified; this candidate is not yet counted as verified.
-- No training, checkpoint evaluation or Elo claim was made.
+### Interference motif — Black-to-move example verified (2026-11-13)
+- Verified revision: `87ed473223d078518ca12a75ab36a1bc4a4fc527`.
+- Added the second example from Cor van Wijgerden, *Step 4*, “Elimination of the defence: interfering,” position 6: `...Rd1+`; `Rxd1 Qxb2` loses White's queen, while `Bxd1 Qe1#` is mate. Source: [Step 4 PDF](https://www.stappenmethode.nl/lesmateriaal/memos/en_gs_4.pdf), lines 91–103.
+- CPU [43435423576](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423576): **167 passed**. Stockfish [43435423818](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423818): **19/19 positions, 0 flagged; 2/2 sequences and 6/6 plies supported, 0 flagged**; artifact `14042118119`.
+- The Black interference semantic tests cover both defensive branches. The earlier cancelled workflow pair [43435412949](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435412949) / [43435412938](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435412938) remains classified as cancelled, not failed.
+- Corpus total: **19 positions (White 10 / Black 9)**. The planned eight-position expansion batch remains incomplete. No training, checkpoint evaluation or Elo claim was made.
+
+
+## Latest verified tactical corpus state — 2026-11-13
+- Feature branch revision: `87ed473223d078518ca12a75ab36a1bc4a4fc527`.
+- CPU suite: **167 passed** ([run 43435423576](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423576)).
+- Stockfish finite-depth review: **19/19 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged** ([run 43435423818](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423818), artifact `14042118119`).
+- Current corpus balance: **White 10 / Black 9**. The Black interference example is verified; the broader eight-position motif batch remains incomplete.
+- SEE aggregate synthetic root-expansion median overhead: **+67.69%** (0.162983 ms disabled / 0.273301 ms enabled; artifact `14043771602`). This is not an end-to-end speed or playing-strength measurement.
+- No compatible trained checkpoint is available in the repository. No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.

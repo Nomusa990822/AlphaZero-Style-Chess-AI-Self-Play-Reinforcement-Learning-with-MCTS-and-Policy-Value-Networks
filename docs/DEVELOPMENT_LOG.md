@@ -881,3 +881,14 @@ Copy this section for each future engineering batch.
 - Added semantic coverage for the checking rook, the rook-capture branch that abandons b1 and loses the queen, and the bishop-capture branch ending in checkmate.
 - Candidate corpus total: **19 positions (White 10 / Black 9)**. This new position is pending CPU and Stockfish checks on the same revision; do not count it as verified until both pass.
 - The first interference example remains verified on `932d105`. No training or checkpoint evaluation was run.
+
+
+### Second interference example — verified (2026-11-13)
+- Verified feature-branch revision: `87ed473223d078518ca12a75ab36a1bc4a4fc527`.
+- CPU workflow [43435423576](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423576): **167 passed in 3.65 seconds**.
+- Stockfish tactical review [43435423818](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435423818): **19/19 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**. Audit artifact `14042118119`.
+- The Black interference position is supported: `...Rd1+`; `Rxd1 Qxb2` wins White's queen, while `Bxd1 Qe1#` is checkmate. Semantic tests cover both branches.
+- The final replacement pair completed successfully. The earlier pair [43435412949](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435412949) (CPU) and [43435412938](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43435412938) (Stockfish) was cancelled; these are cancellations, not failures.
+- CPU SEE benchmark artifact `14043771602`: aggregate median root-expansion overhead **+67.69%** (0.162983 ms disabled / 0.273301 ms enabled). This is a synthetic microbenchmark only, not end-to-end search speed or playing strength.
+- The verified tactical corpus now contains **19 positions (White 10 / Black 9)**. The planned eight-position expansion batch is not yet complete. Stockfish finite-depth support is a review signal, not proof of forcedness against every defence or perfect motif labels.
+- No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
