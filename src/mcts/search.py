@@ -14,7 +14,7 @@ from src.engine.move_encoding import MoveEncoding
 from src.mcts.dirichlet_noise import apply_dirichlet_noise
 from src.mcts.node import MCTSNode
 from src.mcts.puct import select_best_child
-from src.mcts.tactics import find_mate_in_one
+from src.mcts.tactics import find_mate_in_one, find_moves_avoiding_mate_in_one
 from src.model.inference import ModelInference
 
 
@@ -162,6 +162,23 @@ class MCTS:
 
         return root
 
+    def _root_children_for_action(self, root: MCTSNode) -> list[MCTSNode]:
+        """
+        Apply a one-ply checkmate-safety filter to root actions.
+
+        If at least one move avoids immediate mate, unsafe moves are excluded.
+        If every move permits mate, retain all children so MCTS can still rank
+        the least-bad continuation.
+        """
+        children = list(root.children.values())
+        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
+        if not safe_moves:
+            return children
+
+        safe_uci = {move.uci() for move in safe_moves}
+        filtered = [child for child in children if child.move.uci() in safe_uci]
+        return filtered or children
+
     def select_action(self, root: MCTSNode, temperature: float | None = None) -> chess.Move:
         """
         Select move from root visit counts.
@@ -183,8 +200,8 @@ class MCTS:
         if mating_moves:
             return mating_moves[0]
 
+        children = self._root_children_for_action(root)
         temperature = self.config.temperature if temperature is None else temperature
-        children = list(root.children.values())
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
 
         if temperature <= 1e-8:
@@ -235,7 +252,7 @@ class MCTS:
                 full_probs[idx] = probability
             return full_probs, move_probs
 
-        children = list(root.children.values())
+        children = self._root_children_for_action(root)
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
 
         if temperature <= 1e-8:
