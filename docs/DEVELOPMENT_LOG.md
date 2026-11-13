@@ -577,3 +577,13 @@ Copy this section for each future engineering batch.
 
 ### Follow-up
 - Inspect CI for this revision, preserve any failures in this log, and repair before updating the verified revision. If verified, next measure the added root expansion cost and use a real checkpoint before making any strength claim.
+
+
+### Verification — SEE-guided root prior adjustment
+
+- Implementation/test revision: `4fabc4562de186955f909059997ac23b15a0493e`.
+- CPU workflow [43419431349](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419431349): **passed; 152 tests passed in 2.56 seconds** on Python 3.11.
+- Duplicate CPU workflow [43419439368](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419439368) also passed.
+- Stockfish tactical audit [43419439546](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419439546): **passed**; all 13 corpus positions supported within the configured tolerance, 0 flagged for human review; artifact `tactical-engine-audit` ID `14033895065`.
+- The CI suite includes the new White/Black favourable-capture, poisoned-capture, legal-move preservation, prior normalisation and unknown-SEE fallback tests.
+- These are correctness/compatibility checks, not a real-checkpoint playing-strength experiment. No training, runtime benchmark, Elo result or strength gain is claimed.

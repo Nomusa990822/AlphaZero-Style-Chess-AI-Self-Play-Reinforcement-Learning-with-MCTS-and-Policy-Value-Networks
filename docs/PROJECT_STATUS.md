@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `274275f7f617cee4b5f55dc959661986426e34b7` (149 CPU tests passed in 3.82 seconds; CPU run 43418653846; Stockfish audit run 43418653867 passed). **Current unverified revision:** SEE-guided root-prior integration is pending CI.
-**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
+**Latest verified code revision:** `4fabc4562de186955f909059997ac23b15a0493e` (152 CPU tests passed in 2.56 seconds; CPU run 43419431349; Stockfish audit run 43419439546 passed).
+**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator, and its conservative root-prior integration are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -39,7 +39,7 @@
 
 ### Search and tactical safeguards
 - PUCT-based MCTS with optional Dirichlet root noise.
-- Bounded static-exchange scores now adjust root priors for captures/promotions using a conservative multiplier; this is pending CI and is not yet verified.
+- Bounded static-exchange scores adjust root priors for captures/promotions using a conservative multiplier; verified on `4fabc4562de186955f909059997ac23b15a0493e`.
 - Correct side-to-move value perspective during tree backup/selection.
 - Deterministic evaluation mode without root Dirichlet noise.
 - Exact legal-move mate-in-one discovery and root-level one-ply mate-avoidance filtering.
@@ -146,11 +146,14 @@ For every meaningful development batch:
 - Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653867): **passed**; 13/13 tactical corpus positions supported, 0 flagged for human review; artifact ID 14032962642.
 
 
-## Current unverified batch — SEE-guided root prior adjustment
+## Verified — SEE-guided root prior adjustment
 
 - Integrated bounded static exchange evaluation into root expansion as a modest policy-prior adjustment for captures and promotions.
 - The neural policy remains the base prior; the SEE multiplier is capped at exp(+/-0.5), then priors are renormalised.
 - No move is removed. Unknown SEE results (budget exhaustion) leave the neural prior unchanged.
 - Added regression coverage for favourable captures by White and Black, poisoned-capture de-prioritisation, legal-move preservation, prior normalisation and unknown-result fallback.
 - This changes root exploration priorities only; no deeper-node SEE calculation, checkpoint experiment, runtime benchmark, playing-strength gain or Elo result is claimed.
-- CI is pending on the new branch revision. The latest verified baseline remains `274275f7f617cee4b5f55dc959661986426e34b7` until CPU tests and the tactical audit complete successfully.
+- CPU workflow [43419431349](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419431349): **passed; 152 tests passed in 2.56 seconds** on Python 3.11.
+- Stockfish tactical audit [43419439546](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419439546): **passed**; 13/13 corpus positions supported, 0 flagged for human review; artifact ID `14033895065`.
+- Duplicate CPU run [43419439368](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419439368) also passed. An earlier duplicate audit run [43419431278](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43419431278) remained in progress when checked; the successful audit run above completed the same code SHA.
+- The integration is CI-verified. No checkpoint experiment, training run, runtime comparison, measured playing-strength gain or Elo result is claimed.
