@@ -153,3 +153,7 @@ def test_missing_checkpoint_fails_before_loading_positions(monkeypatch, tmp_path
     )
     with pytest.raises(FileNotFoundError, match="Checkpoint not found"):
         benchmark.run_benchmark(_args(tmp_path / "missing.pt"))
+
+
+def test_float_parser_accepts_small_finite_positive_values():
+    assert parse_floats("0.000000000001", "--c-puct") == [0.000000000001]
