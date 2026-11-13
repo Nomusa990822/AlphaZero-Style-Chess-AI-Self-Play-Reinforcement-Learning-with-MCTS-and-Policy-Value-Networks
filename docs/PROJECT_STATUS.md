@@ -489,3 +489,13 @@ For every meaningful development batch:
 - Added overloaded-defender and trapped-piece examples for both colours, with source annotations and semantic line-replay tests.
 - The CPU test suite and Stockfish tactical audit must pass before these positions are treated as validated or used in checkpoint comparisons.
 - No training, checkpoint evaluation, or promotion occurred.
+
+
+## Tactical corpus expansion — verified (2026-11-13)
+
+- Verified feature-branch revision: `1808a23a2b94ac442b37b2f9ba5a70100604e99a`.
+- CPU tests: **174 passed in 3.15 seconds** ([run 43504822887](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43504822887)).
+- Stockfish 17.1 depth-16/MultiPV-5 review: **26/26 positions, 5/5 sequences and 19/19 annotated plies supported; zero flags** ([run 43504822942](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43504822942), artifact `14075917276`).
+- Corpus: **26 positions (White 14 / Black 12)**. Both overloaded-defender and trapped-piece motifs now have White and Black examples, with semantic line-replay tests.
+- This finite-depth audit does not prove all possible defences or validate every human motif label. No training, checkpoint evaluation, checkpoint promotion, Elo estimate or playing-strength claim was made. The baseline remains selected.
+- Earlier superseded workflow attempts were cancelled, not failed; the final CPU and Stockfish runs above both succeeded on the same commit.
