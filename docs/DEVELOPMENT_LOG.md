@@ -1,3 +1,26 @@
+## 2026-11-13 — Repair tactical benchmark validation and add colour-balanced scoring
+
+**Implementation:** `9e3e4f397e3da11de75cdef7b79e7bedd1113ba8`  
+**Core regression tests:** `dbf3494b15402c9a37973770086eb6f9ce05c88d`  
+**CLI/report tests:** `35c97c6188371d19944b277e91e2a2e30a105f41`  
+**Additional colour tests:** `69749f5f1d2d99ffb6a806ca71cc0dc2dca833a9`  
+**Documentation:** `48468a527c522396e84b630ce697f91be5d097eb`
+
+### Changes
+- Fixed literal newline escape sequences introduced in the previous annotation-validation patch. The failed CI run [43397911821](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43397911821) identified Python syntax errors during test collection; no test assertions ran in that attempt.
+- Tactical benchmark results now include separate White-to-move and Black-to-move totals, correct counts, illegal counts, and accuracy.
+- The JSON CLI report includes these colour-specific metrics.
+- Added regression coverage for multiple acceptable moves and separate colour scoring; the existing corpus test checks both sides to move.
+- Updated benchmark documentation. No new FEN positions were added in this repair/evaluation batch.
+
+### Verification
+- CI for the corrected branch revision is pending.
+- The five-position corpus remains a small starter set. Side-specific reporting makes imbalance visible; it does not itself create broad tactical coverage.
+- No real-checkpoint tactical benchmark or playing-strength improvement is claimed.
+
+### Follow-up
+- Wait for CI; then extend the corpus only with positions whose tactical idea and acceptable moves have been independently checked.
+
 ## 2026-11-13 — Require tactical rationales and add a reviewed pin example
 
 **Corpus revision:** `580d95901d8670eb5387fc77ede0874a218b9d01`  
