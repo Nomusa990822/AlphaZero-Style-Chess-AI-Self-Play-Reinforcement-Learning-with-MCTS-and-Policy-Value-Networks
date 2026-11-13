@@ -30,10 +30,11 @@ The loader validates FENs, terminal positions, duplicate IDs, move legality,\nco
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
-The committed `tactical_positions.jsonl` is only a small five-position starter
-corpus. It covers a mating net, knight forks for both sides to move, a
-hanging-piece capture, and a pinned-rook capture. It is not large or diverse
-enough to support a general tactical-strength claim.
+The committed `tactical_positions.jsonl` is still a small starter corpus. It
+now includes a mating net, knight and queen forks, hanging-piece captures,
+pins, and rook skewers, with examples for both sides to move. Its nine
+positions are not large or diverse enough to support a general
+tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
@@ -52,7 +53,7 @@ The runner uses the same 20-plane, 64-filter, 3-residual-block network
 configuration as `train_pipeline.py`, loads the checkpoint, disables
 Dirichlet noise, and selects deterministically at temperature zero. The JSON
 report records checkpoint path/epoch, device, simulation count, overall
-accuracy, per-motif results, and missed positions.
+accuracy, per-motif, per-colour, and per-phase results, and missed positions.
 
 For meaningful comparisons, keep checkpoint, corpus, simulation count,
 search configuration, and hardware fixed. A larger simulation count can
