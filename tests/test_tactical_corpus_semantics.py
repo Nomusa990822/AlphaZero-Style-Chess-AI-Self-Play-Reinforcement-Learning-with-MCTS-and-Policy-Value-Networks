@@ -404,3 +404,48 @@ def test_white_knight_deflection_wins_the_black_queen():
     board.push(queen_capture)
     assert board.piece_at(chess.E4) == chess.Piece(chess.QUEEN, chess.WHITE)
     assert board.piece_at(chess.D7) == chess.Piece(chess.KNIGHT, chess.BLACK)
+
+
+def test_overloaded_defender_examples_cover_both_colours_and_the_tactical_follow_up():
+    cases = {case.position_id: case for case in load_tactical_positions(CORPUS_PATH)}
+
+    white = chess.Board(cases["white-overloads-back-rank-rook-before-queen-mate-001"].fen)
+    assert white.turn == chess.WHITE
+    white.push_uci("e4e7")
+    assert chess.Move.from_uci("e8e7") in white.legal_moves
+    white.push_uci("e8e7")
+    white.push_uci("b2b8")
+    assert white.is_check()
+    white.push_uci("e7e8")
+    white.push_uci("b8e8")
+    assert white.is_checkmate()
+
+    black = chess.Board(cases["black-overloads-white-queen-with-rook-capture-001"].fen)
+    assert black.turn == chess.BLACK
+    black.push_uci("c8c2")
+    assert chess.Move.from_uci("f2c2") in black.legal_moves
+    black.push_uci("f2c2")
+    black.push_uci("b4e1")
+    assert black.is_checkmate()
+
+
+def test_trapped_piece_examples_cover_both_colours_and_escape_blocking():
+    cases = {case.position_id: case for case in load_tactical_positions(CORPUS_PATH)}
+
+    white = chess.Board(cases["white-pawn-traps-corner-bishop-by-blocking-check-001"].fen)
+    assert white.turn == chess.WHITE and white.is_check()
+    white.push_uci("g6g7")
+    assert not white.is_check()
+    assert chess.Move.from_uci("h8g7") in white.legal_moves
+    white.push_uci("h8g7")
+    white.push_uci("h6g7")
+    assert white.piece_at(chess.G7) == chess.Piece(chess.PAWN, chess.WHITE)
+
+    black = chess.Board(cases["black-pawn-traps-corner-bishop-by-blocking-check-001"].fen)
+    assert black.turn == chess.BLACK and black.is_check()
+    black.push_uci("g3g2")
+    assert not black.is_check()
+    assert chess.Move.from_uci("h1g2") in black.legal_moves
+    black.push_uci("h1g2")
+    black.push_uci("h3g2")
+    assert black.piece_at(chess.G2) == chess.Piece(chess.PAWN, chess.BLACK)
