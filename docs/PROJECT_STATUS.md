@@ -481,3 +481,11 @@ For every meaningful development batch:
 - Stockfish: **22/22 positions, 5/5 sequences and 19/19 annotated plies supported; zero flags** ([43490761420](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761420)).
 - Two duplicate push-triggered runs were cancelled and replaced by the passing PR-triggered runs; they were not failures.
 - The pilot was not run. GitHub requires manual-dispatch workflows to exist on the default branch; because `main` is intentionally unchanged, the new workflow cannot be dispatched until it is merged or otherwise installed on the default branch. The PR remains unmerged.
+
+
+## Tactical corpus expansion — validation pending (2026-11-13)
+
+- Candidate corpus: **26 positions**, 14 White to move and 12 Black to move.
+- Added overloaded-defender and trapped-piece examples for both colours, with source annotations and semantic line-replay tests.
+- The CPU test suite and Stockfish tactical audit must pass before these positions are treated as validated or used in checkpoint comparisons.
+- No training, checkpoint evaluation, or promotion occurred.
