@@ -240,6 +240,7 @@ class AlphaZeroPipeline:
                 elapsed_seconds=elapsed_seconds,
                 ended_by_resignation=game_result.ended_by_resignation,
                 ended_by_adjudication=game_result.ended_by_adjudication,
+                ended_by_move_limit=game_result.ended_by_move_limit,
             )
             if game_result.result == "1-0":
                 completed_record["white_wins"] += 1
