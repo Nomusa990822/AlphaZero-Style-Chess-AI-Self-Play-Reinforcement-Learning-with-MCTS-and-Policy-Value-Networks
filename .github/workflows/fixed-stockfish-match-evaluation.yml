@@ -1,0 +1,88 @@
+name: Fixed-opponent Stockfish match evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_match_evaluation:
+        description: "Runs 72 CPU chess games (2 checkpoints × 3 Stockfish levels × 12 games). No training or checkpoint writes."
+        required: true
+        type: choice
+        options:
+          - "NO"
+          - "YES"
+        default: "NO"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fixed-stockfish-match-evaluation
+  cancel-in-progress: false
+
+jobs:
+  matches:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_match_evaluation == 'YES' }}
+    name: 72-game colour-balanced match evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - name: Check out evaluation code from feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: chess-strength-training-upgrade
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CPU PyTorch and project dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2.0"
+          python -m pip install -r requirements.txt
+
+      - name: Install Stockfish
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes stockfish
+          stockfish --version || /usr/games/stockfish --version
+
+      - name: Download the immutable fresh-start pilot checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p data/checkpoints/match_eval
+          gh release download fresh-pilot-checkpoint-43497298757-1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir data/checkpoints/match_eval \
+            --pattern "*.pt"
+
+      - name: Verify checkpoint identities before evaluation
+        run: |
+          cd data/checkpoints/match_eval
+          echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  best_model.pt" | sha256sum --check -
+          echo "3b471702e89659307f11ec95b3f83316ccae7c29a4d7c9d6faa7afaa4f7231a7  latest_candidate.pt" | sha256sum --check -
+
+      - name: Run fixed-opponent match evaluation
+        run: |
+          python evaluate_vs_stockfish.py \
+            --baseline data/checkpoints/match_eval/best_model.pt \
+            --candidate data/checkpoints/match_eval/latest_candidate.pt \
+            --stockfish "$(command -v stockfish || echo /usr/games/stockfish)" \
+            --elo-levels 1320 1600 1900 \
+            --games-per-level 12 \
+            --simulations 16 \
+            --max-plies 120 \
+            --stockfish-move-time 0.05 \
+            --output reports/fixed-stockfish-match-evaluation.json
+
+      - name: Upload match report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixed-stockfish-match-evaluation-${{ github.run_id }}
+          path: reports/fixed-stockfish-match-evaluation.json
+          if-no-files-found: warn
+          retention-days: 90
