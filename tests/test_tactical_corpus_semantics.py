@@ -38,8 +38,8 @@ def test_both_fork_moves_attack_the_king_and_queen():
         mover = board.turn
         move = chess.Move.from_uci(uci)
         board.push(move)
-        assert board.is_attacked_by(mover, king_square)
-        assert board.is_attacked_by(mover, queen_square)
+        assert move.to_square in board.attackers(mover, king_square)
+        assert move.to_square in board.attackers(mover, queen_square)
         assert board.piece_at(move.to_square).piece_type == chess.KNIGHT
         assert victim_color != mover
 
@@ -103,9 +103,9 @@ def test_discovered_attack_move_uncovers_rook_check_and_attacks_queen():
     assert move == chess.Move.from_uci("e4f6")
     assert board.is_check()
     assert board.piece_at(chess.E1) == chess.Piece(chess.ROOK, mover)
-    assert board.is_attacked_by(mover, king_square)
+    assert chess.E1 in board.attackers(mover, king_square)
     assert board.piece_at(move.to_square) == chess.Piece(chess.KNIGHT, mover)
-    assert board.is_attacked_by(mover, queen_square)
+    assert move.to_square in board.attackers(mover, queen_square)
     assert board.piece_at(queen_square) == chess.Piece(chess.QUEEN, not mover)
 
 
