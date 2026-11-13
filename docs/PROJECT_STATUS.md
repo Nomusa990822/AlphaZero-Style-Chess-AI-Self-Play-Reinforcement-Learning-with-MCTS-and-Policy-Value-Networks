@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `4fabc4562de186955f909059997ac23b15a0493e` (152 CPU tests passed in 2.56 seconds; CPU run 43419431349; Stockfish audit run 43419439546 passed).
+**Latest verified code revision:** `816c4593a7a8ab158dcbe246ed32a388c736b206` (153 CPU tests passed in 3.53 seconds; CPU run 43420960017; Stockfish audit run 43420959887 passed).
 **Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, and the bounded static exchange evaluator, and its conservative root-prior integration are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
@@ -159,16 +159,28 @@ For every meaningful development batch:
 - The integration is CI-verified. No checkpoint experiment, training run, runtime comparison, measured playing-strength gain or Elo result is claimed.
 
 
-## Current unverified batch — SEE root-expansion overhead benchmark
+## Verified — SEE root-expansion overhead benchmark
 
 - Added a deterministic CPU microbenchmark comparing root expansion with SEE ordering disabled and enabled across the starting position, simple capture, poisoned queen capture and promotion positions.
 - Uses uniform synthetic inference to isolate policy conversion, SEE adjustment and child expansion; neural inference, simulations and tactical root filters are excluded.
 - Paired measurements alternate order, include warmups, and report per-position plus aggregate median/p95 latency and overhead percentage.
 - The CPU workflow now runs the benchmark and uploads `see-root-overhead-benchmark` as an artifact.
 - This is not an end-to-end engine speed or playing-strength measurement. No trained checkpoint is required or used.
-- Current branch head before this batch: `8e0d2c79c0c0b3c43aee243a972c92a03fe8cce3`. New revision is pending CI and benchmark artifact.
+- Verified revision: `816c4593a7a8ab158dcbe246ed32a388c736b206`.
+- CPU workflow [43420960017](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420960017): 153 tests passed in 3.53 seconds; benchmark step and artifact upload succeeded.
+- Aggregate microbenchmark: SEE disabled median 0.150311 ms, enabled median 0.245393 ms, nominal +63.26%; pooled p95 0.268644 ms disabled and 0.365839 ms enabled. Artifact ID `14033642158`.
+- These sub-millisecond measurements are runner-specific and likely sensitive to timer/scheduler noise; the percentage is preliminary, not an end-to-end speed penalty. A batched timing pass is needed before drawing firm performance conclusions.
+- Stockfish audit [43420959887](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420959887) passed; 13/13 positions supported, 0 flagged for human review; artifact ID `14033706954`.
 
 
 ### Benchmark invocation repair — 2026-11-13
 - First run on `58f460d443fc5619ba4240af43a3c0d21b80cf37` passed all 153 pytest tests but the benchmark step failed because direct script execution placed `scripts/`, not the repository root, on Python's import path (`ModuleNotFoundError: src`). The artifact upload was consequently skipped.
 - Updated the workflow to invoke the script as a module (`python -m scripts.benchmark_see_overhead`), which keeps the repository root on the import path. Fresh CPU CI and benchmark artifact are required.
+
+
+### CI history and benchmark measurement interpretation
+
+- The first benchmark launch failed on `58f460d443fc5619ba4240af43a3c0d21b80cf37` because direct script invocation could not import `src`. Both CPU runs `43420810604` and `43420817142` failed at the benchmark step after their test suites passed. The audit runs on that revision passed.
+- The workflow repair uses module invocation. On `816c4593a7a8ab158dcbe246ed32a388c736b206`, CPU run `43420960017` passed (153 tests in 3.53 seconds) and uploaded the benchmark artifact; Stockfish audit `43420959887` passed. Duplicate runs `43420967360` and `43420967336` also passed.
+- Initial aggregate measurements: disabled median 0.150311 ms, enabled median 0.245393 ms (+63.26% nominal); p95 0.268644 ms disabled and 0.365839 ms enabled.
+- Because individual root expansions take only fractions of a millisecond, these measurements are sensitive to scheduling/timer noise. Treat the percentage as preliminary; batch multiple expansions per timed sample before using it to tune the default.
