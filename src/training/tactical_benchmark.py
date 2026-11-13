@@ -56,7 +56,9 @@ class TacticalPosition:
         annotation = str(data["annotation"]).strip()
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
-        if not annotation:\n            raise ValueError(f"Position {position_id!r} must include a non-empty tactical annotation.")\n        if motif not in TACTICAL_MOTIFS:
+        if not annotation:
+            raise ValueError(f"Position {position_id!r} must include a non-empty tactical annotation.")
+        if motif not in TACTICAL_MOTIFS:
             raise ValueError(
                 f"Position {position_id!r} has unknown motif {motif!r}; "
                 f"expected one of {sorted(TACTICAL_MOTIFS)}."
@@ -90,6 +92,7 @@ class TacticalBenchmarkResult:
     illegal: int
     accuracy: float
     by_motif: dict[str, dict[str, int | float]]
+    by_color: dict[str, dict[str, int | float]]
     failures: tuple[dict[str, str], ...]
 
 
@@ -130,11 +133,17 @@ def evaluate_tactical_selector(
         lambda: {"total": 0, "correct": 0, "illegal": 0}
     )
     failures: list[dict[str, str]] = []
+    color_groups: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"total": 0, "correct": 0, "illegal": 0}
+    )
 
     for case in cases:
         board = chess.Board(case.fen)
         group = grouped[case.motif]
+        color = "white" if board.turn == chess.WHITE else "black"
+        color_group = color_groups[color]
         group["total"] += 1
+        color_group["total"] += 1
         try:
             selected = select_move(board.copy(stack=True))
             move = selected if isinstance(selected, chess.Move) else chess.Move.from_uci(str(selected))
@@ -144,12 +153,14 @@ def evaluate_tactical_selector(
         except (ValueError, TypeError):
             illegal += 1
             group["illegal"] += 1
+            color_group["illegal"] += 1
             failures.append({"id": case.position_id, "motif": case.motif, "selected": "ILLEGAL"})
             continue
 
         if selected_uci in case.acceptable_moves:
             correct += 1
             group["correct"] += 1
+            color_group["correct"] += 1
         else:
             failures.append({
                 "id": case.position_id,
@@ -165,11 +176,19 @@ def evaluate_tactical_selector(
         }
         for motif, counts in sorted(grouped.items())
     }
+    by_color = {
+        color: {
+            **counts,
+            "accuracy": counts["correct"] / counts["total"],
+        }
+        for color, counts in sorted(color_groups.items())
+    }
     return TacticalBenchmarkResult(
         total=total,
         correct=correct,
         illegal=illegal,
         accuracy=correct / total,
         by_motif=by_motif,
+        by_color=by_color,
         failures=tuple(failures),
     )
