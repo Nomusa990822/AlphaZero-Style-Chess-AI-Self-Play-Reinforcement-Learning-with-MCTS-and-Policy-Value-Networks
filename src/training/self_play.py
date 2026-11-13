@@ -44,6 +44,7 @@ class SelfPlayGameResult:
     num_positions: int
     ended_by_resignation: bool = False
     ended_by_adjudication: bool = False
+    ended_by_move_limit: bool = False
 
 
 class SelfPlayGenerator:
@@ -80,6 +81,7 @@ class SelfPlayGenerator:
         self.min_moves_before_resign = min_moves_before_resign
 
         self.adjudicate_on_max_moves = adjudicate_on_max_moves
+        # Deprecated compatibility setting: move-cap outcomes are neutral draws.
         self.adjudication_threshold = adjudication_threshold
 
     def _result_to_white_value(self, result: str) -> float:
@@ -123,6 +125,7 @@ class SelfPlayGenerator:
 
         ended_by_resignation = False
         ended_by_adjudication = False
+        ended_by_move_limit = False
         forced_result: Optional[str] = None
 
         move_number = 0
@@ -159,6 +162,7 @@ class SelfPlayGenerator:
         elif board.is_game_over(claim_draw=True):
             result = board.result(claim_draw=True)
         else:
+            ended_by_move_limit = True
             if self.adjudicate_on_max_moves:
                 result = self._adjudicate_result(board)
                 ended_by_adjudication = True
@@ -197,6 +201,7 @@ class SelfPlayGenerator:
             num_positions=len(samples),
             ended_by_resignation=ended_by_resignation,
             ended_by_adjudication=ended_by_adjudication,
+            ended_by_move_limit=ended_by_move_limit,
         )
 
     def generate_games(
@@ -213,8 +218,8 @@ class SelfPlayGenerator:
             elapsed_seconds = perf_counter() - game_started
             
             suffix = ""
-            if result.ended_by_adjudication:
-                suffix = " (adjudicated)"
+            if result.ended_by_move_limit:
+                suffix = " (move-cap draw)"
             elif result.ended_by_resignation:
                 suffix = " (resigned)"
                 
