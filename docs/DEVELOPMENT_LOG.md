@@ -768,3 +768,9 @@ Copy this section for each future engineering batch.
 - Added `evaluate_tactical_sequences.py` to run the same deterministic MCTS/checkpoint evaluation path on the sequence corpus. Its report explicitly states that this is principal-variation line-following, not proof that the line is forced against every defence.
 - Added tests for legal line replay, full sequence success, first-missed-ply reporting and invalid sequence data.
 - No model training, checkpoint evaluation, Elo claim or strength improvement is asserted. CI verification is pending.
+
+
+### First CI verification attempt for multi-ply tactical-combination benchmark
+- Implementation commit `cda8fb2e4a2b0a37e4a31d7e0f68460b42fff622` CPU run [43426943254](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943254): **2 failed, 158 passed**. The failures were test-fixture expectation mistakes: one intended a legal but unaccepted move but supplied an illegal move; the other intended to test an illegal annotation but used an invalid starting board. The other 158 tests passed.
+- Stockfish audit [43426943127](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943127): original corpus **13/13 supported, 0 flagged**, artifact `14038596188`. The original corpus was not changed.
+- Corrected the test fixtures in commit `b10ce6b6faefc2a5ae6351817dc9afc639b81755`. The failed run remains part of the record; re-verification is pending.
