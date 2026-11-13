@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest implementation/test revision:** `b2dfa830d6100c900e5c944b4bb1c7b3e6361059` (phase-reporting work is being committed)  
+**Latest implementation/test revision:** `97612a11740521b821f017e27126488259af429a`  
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -46,7 +46,7 @@
 - CPU GitHub Actions test workflow.
 - Tactical benchmark loader/scorer with strict FEN validity checks, a controlled motif taxonomy and checkpoint evaluation CLI:
   `evaluate_tactics.py`.
-- JSON benchmark output includes checkpoint metadata, device, simulation count, overall, per-motif and per-colour (White/Black to move) scores, and missed positions.
+- JSON benchmark output includes checkpoint metadata, device, simulation count, overall, per-motif, per-colour (White/Black to move), and explicitly labelled per-phase scores, plus missed positions.
 
 ## Current limitations and evidence boundaries
 
@@ -60,7 +60,7 @@
 ## Prioritised next work
 
 1. Expand the tactical corpus with independently checked positions across the validated motif taxonomy, phase and side-to-move groups.
-2. Run and record the tactical benchmark against an actual checkpoint when one is available.
+3. Run and record the tactical benchmark against an actual checkpoint when one is available.
 4. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
 5. Improve search quality and efficiency only with tests and measured comparisons; avoid hard-coded piece-specific move tricks.
 6. Keep this status file, development log and experiment log updated in the same change as each meaningful implementation batch.
