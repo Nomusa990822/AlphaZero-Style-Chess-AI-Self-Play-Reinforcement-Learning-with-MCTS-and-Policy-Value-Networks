@@ -85,6 +85,7 @@ def test_benchmark_loader_validates_jsonl_and_duplicate_ids(tmp_path):
         "motif": "fork",
         "fen": chess.STARTING_FEN,
         "acceptable_moves": ["e2e4"],
+        "annotation": "The accepted move demonstrates the labelled motif.",
     }
     path.write_text(
         json.dumps(record) + "\n" + json.dumps(record) + "\n",
