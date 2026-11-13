@@ -1,3 +1,21 @@
+## 2026-11-13 — Add black-to-move tactical coverage
+
+**Corpus revision:** `2e18f4d35b12fce02d6777d0afb4f1d0d0390e94`  
+**Test revision:** `8fc932a848484765f9037079cf49288adbddbc4f`
+
+### Changes
+- Added a reviewed black-to-move knight fork in which the move checks the white king while attacking the white queen.
+- Strengthened the corpus test to require positions with both White and Black to move, alongside validity, non-terminal-state and legal-move checks.
+- Increased the starter corpus from three to four positions. This is a small coverage improvement, not evidence of broad tactical competence.
+
+### Verification
+- The prior strict-validation revision passed GitHub Actions run [43395789548](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43395789548).
+- CI for this corpus/test update is pending.
+- No real-checkpoint tactical benchmark was run; no playing-strength improvement is claimed.
+
+### Follow-up
+- Add more independently reviewed motifs and test the checkpoint evaluation CLI without requiring an actual checkpoint or accelerator.
+
 # Development Log
 
 ## 2026-11-13 — Strict tactical-position legality validation
