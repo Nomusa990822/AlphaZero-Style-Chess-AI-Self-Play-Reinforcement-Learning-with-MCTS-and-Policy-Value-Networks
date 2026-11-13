@@ -6,6 +6,7 @@ It does not automatically validate a human motif annotation.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -16,9 +17,14 @@ import chess
 import chess.engine
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPOSITORY_ROOT))
-
-from src.training.tactical_benchmark import load_tactical_positions
+BENCHMARK_MODULE_PATH = REPOSITORY_ROOT / "src" / "training" / "tactical_benchmark.py"
+MODULE_SPEC = importlib.util.spec_from_file_location("tactical_benchmark_for_audit", BENCHMARK_MODULE_PATH)
+if MODULE_SPEC is None or MODULE_SPEC.loader is None:
+    raise ImportError(f"Cannot load tactical benchmark module from {BENCHMARK_MODULE_PATH}")
+BENCHMARK_MODULE = importlib.util.module_from_spec(MODULE_SPEC)
+sys.modules[MODULE_SPEC.name] = BENCHMARK_MODULE
+MODULE_SPEC.loader.exec_module(BENCHMARK_MODULE)
+load_tactical_positions = BENCHMARK_MODULE.load_tactical_positions
 
 
 MATE_SCORE = 100_000
