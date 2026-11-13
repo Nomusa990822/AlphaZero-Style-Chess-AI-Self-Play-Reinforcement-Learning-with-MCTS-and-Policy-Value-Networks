@@ -40,6 +40,7 @@ class TacticalPosition:
     motif: str
     fen: str
     acceptable_moves: frozenset[str]
+    annotation: str
 
     @classmethod
     def from_dict(cls, data: dict) -> "TacticalPosition":
@@ -51,7 +52,8 @@ class TacticalPosition:
         position_id = str(data["id"]).strip()
         motif = str(data["motif"]).strip().lower()
         fen = str(data["fen"]).strip()
-        moves = frozenset(str(move).strip() for move in data["acceptable_moves"])\n        annotation = str(data["annotation"]).strip()
+        moves = frozenset(str(move).strip() for move in data["acceptable_moves"])
+        annotation = str(data["annotation"]).strip()
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
         if motif not in TACTICAL_MOTIFS:
