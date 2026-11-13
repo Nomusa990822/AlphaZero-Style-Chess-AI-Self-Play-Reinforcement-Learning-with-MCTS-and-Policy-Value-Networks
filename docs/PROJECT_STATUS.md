@@ -480,12 +480,62 @@ For every meaningful development batch:
 - CPU CI: **172 passed in 4.01 seconds** ([43490761455](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761455)).
 - Stockfish: **22/22 positions, 5/5 sequences and 19/19 annotated plies supported; zero flags** ([43490761420](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43490761420)).
 - Two duplicate push-triggered runs were cancelled and replaced by the passing PR-triggered runs; they were not failures.
-- The pilot was not run. GitHub requires manual-dispatch workflows to exist on the default branch; because `main` is intentionally unchanged, the new workflow cannot be dispatched until it is merged or otherwise installed on the default branch. The PR remains unmerged.
+- The pilot was not run. The workflow has since been merged into `main` and is available for manual dispatch. Select `chess-strength-training-upgrade` as the run branch and keep the confirmation input at `NO` unless the fresh-start pilot is explicitly authorised.
+
+
+## Post-merge fresh-start pilot status — 2026-11-13
+
+- PR #1 is merged into `main` at
+  `cb8ddd0ee3ae332dfeda500bbf961fc80451a07f`.
+- `.github/workflows/fresh-start-pilot.yml` is now on the default branch and
+  available in GitHub Actions. Select `chess-strength-training-upgrade` as
+  the run branch. The job is restricted to that branch and requires the
+  explicit `YES` input (default `NO`).
+- Post-merge CPU workflow [43491543336](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43491543336)
+  passed on the merge commit. The final PR-head verification recorded 172
+  passing CPU tests and a clean Stockfish audit of 22 positions, five
+  sequences and nineteen annotated plies.
+- The fresh-start pilot has not been launched. No new checkpoint or training
+  output exists. The pilot is a bounded pipeline smoke test, not an Elo or
+  playing-strength evaluation.
+
+
+
+## Fresh-start pilot — executed and backed up (2026-11-13)
+
+- Workflow [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) completed with SUCCESS on feature revision dbba702569372370a3488a02a4d84024f63e2aac.
+- One iteration completed: 4 self-play games, 274 positions, one training epoch, final total loss 8.0742 (policy 7.8813; value 0.1929).
+- Two colour-swapped candidate evaluation games both drew. Candidate score 0.50; candidate NOT promoted. Baseline best_model.pt remains selected; latest_candidate.pt is separately preserved.
+- Durable backup prerelease: [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1). It contains baseline and candidate checkpoints plus SHA-256 manifest. Actions artifact [14071428532](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) contains the replay buffer and detailed logs as well.
+- This is a successful pipeline smoke test, not evidence of playing strength or an Elo rating. The two-game evaluation is too small to support a strength conclusion.
+- Full experiment details and hashes are in docs/EXPERIMENT_LOG.md.
+
+
+## Checkpoint tactical evaluation dispatch repair — 2026-11-13
+
+- Select **Main** under **Use workflow from**. The workflow then checks out
+  `chess-strength-training-upgrade` internally for evaluator code and corpora.
+- Confirmation remains default `NO`; evaluation requires explicit `YES`.
+  No evaluation has been launched by this repair.
+- Corrected the release manifest filename and confirmed evaluator script paths
+  and CLI arguments against the feature branch.
+- Workflow repair is pending GitHub Actions verification. Both checkpoints
+  remain unchanged and separately backed up.
+
+
+## Checkpoint tactical evaluation — completed (2026-11-13)
+
+- Workflow [43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826): **SUCCESS**, all evaluation and artifact-upload steps passed.
+- Baseline vs candidate on 22 individual tactical positions: **4/22 (18.2%) vs 5/22 (22.7%)**.
+- Baseline vs candidate on five combined sequences: **3/7 annotated plies (42.9%) vs 3/7 (42.9%)**; each completed 1/5 sequences. Zero illegal moves for either checkpoint in either benchmark.
+- Candidate's small improvement on individual positions did not carry over to the sequence benchmark. This is a limited curated diagnostic, not an overall chess-strength or Elo measurement.
+- Evaluation reports artifact ID `14074627894` is attached to the workflow run. Both original checkpoints remain backed up and unchanged; no promotion or training occurred.
+- Detailed results, checkpoint hashes, settings and limitations are in `docs/EXPERIMENT_LOG.md`.
 
 
 ## Tactical corpus expansion — validation pending (2026-11-13)
 
 - Proposed corpus size: **26 positions** (previously 22), with **14 White-to-move / 12 Black-to-move**.
 - Added two motif families not previously represented by actual positions: `overloaded_defender` and `trapped_piece`, with examples for both colours.
-- Added move-sequence semantic tests and source annotations. The PR's Python test workflow and Stockfish tactical audit must pass before these positions are considered validated or included in checkpoint comparisons.
+- Added move-sequence semantic tests and source annotations. The Python test workflow and Stockfish tactical audit must pass before these positions are considered validated or included in checkpoint comparisons.
 - No model training, checkpoint evaluation, or promotion occurred in this step.
