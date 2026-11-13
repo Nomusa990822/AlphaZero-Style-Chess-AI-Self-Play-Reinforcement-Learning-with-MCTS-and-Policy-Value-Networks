@@ -577,3 +577,36 @@ def test_root_see_budget_exhaustion_preserves_neural_capture_prior(monkeypatch):
             if move_uci != capture_uci and not board.is_capture(child.move)
         ),
     )
+
+
+def test_root_see_bias_fast_path_skips_copy_and_scoring_without_tactics(monkeypatch):
+    import src.mcts.search as search_module
+
+    board = chess.Board()
+    priors = {
+        move.uci(): 1.0 / board.legal_moves.count()
+        for move in board.legal_moves
+    }
+    encoding = MoveEncoding()
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=0,
+            add_dirichlet_noise=False,
+            use_tactical_root_filter=False,
+        ),
+    )
+
+    def unexpected_see_call(*args, **kwargs):
+        raise AssertionError("SEE must not run when no captures/promotions exist")
+
+    monkeypatch.setattr(
+        search_module, "static_exchange_evaluation", unexpected_see_call
+    )
+
+    result = search._apply_static_exchange_prior_bias(board, priors)
+
+    assert result is priors
+    assert len(result) == board.legal_moves.count()
+    assert np.isclose(sum(result.values()), 1.0)

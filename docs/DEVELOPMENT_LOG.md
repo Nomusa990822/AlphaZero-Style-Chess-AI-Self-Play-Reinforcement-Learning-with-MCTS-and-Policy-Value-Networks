@@ -662,3 +662,19 @@ Copy this section for each future engineering batch.
 - Aggregate median per expansion: disabled 0.158494 ms; enabled 0.267257 ms; nominal +68.62%. Pooled p95: disabled 0.321696 ms; enabled 0.414722 ms.
 - Position median overhead: starting position +10.19% (zero tactical candidates), simple capture +27.80%, poisoned queen capture +50.10%, promotion choices +68.04%.
 - This confirms measurable added work in the synthetic root-expansion path, but does not establish end-to-end slowdown or a reason to disable SEE. Keep default unchanged pending profiling/optimisation and, later, real-checkpoint tests. No training, playing-strength gain or Elo result is claimed.
+
+
+## 2026-11-13 — Add a no-tactics fast path to SEE root-prior adjustment
+
+### Motivation and change
+- The batched benchmark showed a nominal +10.19% median cost even in the starting position, which has no capture or promotion candidates. That cost came from copying and renormalizing the policy-prior dictionary despite there being nothing for SEE to score.
+- The root SEE helper now first gathers capture/promotion candidates. If none exist, it returns the already-normalized neural prior dictionary unchanged, avoiding the copy, SEE scoring loop and second normalization.
+- Positions with tactical candidates retain the same bounded SEE multipliers, fallback handling, legal-move set and normalization behaviour.
+- Added a regression test that forbids any SEE call on a quiet starting position and verifies the original prior dictionary is returned unchanged and remains normalized.
+
+### Verification
+- Implementation revision: pending GitHub Actions.
+- CPU test suite and batched benchmark: pending.
+- Stockfish tactical audit: pending.
+- Previous implementation revision `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a`: 153 CPU tests passed in 2.78 seconds; benchmark artifact `14033619165`; Stockfish audit passed.
+- No default changed, no training/checkpoint experiment, no playing-strength result or Elo result claimed.

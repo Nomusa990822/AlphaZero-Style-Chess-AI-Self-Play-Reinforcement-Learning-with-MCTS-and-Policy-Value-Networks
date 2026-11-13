@@ -201,3 +201,9 @@ For every meaningful development batch:
 - Per-position nominal median overhead: starting position 10.19% (no SEE candidates), simple capture 27.80%, poisoned queen capture 50.10%, promotion choices 68.04%.
 - Batching provides longer timed intervals and a more informative comparison than the first single-expansion pass, but these remain runner-specific synthetic measurements. The starting-position overhead with no SEE candidates indicates a fixed integration/path cost, while the larger tactical-position costs reflect additional SEE work. Do not interpret the percentages as an end-to-end slowdown; model inference and simulations are excluded.
 - The first single-expansion measurements remain preserved above as preliminary data. No default was changed; no real checkpoint, training, playing-strength or Elo result is claimed.
+
+
+### In progress — SEE quiet-position fast path
+- The root SEE prior adjustment now returns existing normalized priors immediately when the position contains no captures or promotions. This avoids copying and renormalizing the dictionary in quiet positions.
+- A regression test verifies that the no-candidate path never calls SEE and preserves the original prior object/distribution.
+- CPU tests, the batched benchmark and Stockfish audit are pending on the new implementation revision. Tactical positions continue through the existing bounded SEE scoring path.

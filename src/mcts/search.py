@@ -141,10 +141,19 @@ class MCTS:
         limits the maximum influence to exp(+/-0.5), preserving the policy
         network as the primary source of move preference.
         """
+        tactical_moves = [
+            move
+            for move in board.legal_moves
+            if board.is_capture(move) or move.promotion is not None
+        ]
+        # Most positions have no root captures/promotions. In that common
+        # case, preserve the already-normalized neural priors without copying,
+        # rescoring or renormalizing the dictionary.
+        if not tactical_moves:
+            return priors
+
         adjusted = dict(priors)
-        for move in board.legal_moves:
-            if not board.is_capture(move) and move.promotion is None:
-                continue
+        for move in tactical_moves:
             score = static_exchange_evaluation(board, move)
             if score is None:
                 continue
