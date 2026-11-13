@@ -43,8 +43,7 @@ def build_tactical_policy_examples(
         })
         if not indices:
             raise ValueError(f"{case.position_id}: no acceptable policy actions")
-        probability = 1.0 / len(indices)
-        target[indices] = probability
+        target[indices] = 1.0 / len(indices)
         examples.append(TacticalPolicyExample(
             position_id=case.position_id,
             motif=case.motif,
@@ -74,6 +73,58 @@ def split_tactical_examples(
     train = [item for i, item in enumerate(examples) if i not in validation_indices]
     validation = [item for i, item in enumerate(examples) if i in validation_indices]
     return train, validation
+
+
+def configure_policy_head_only(model) -> list:
+    """Freeze the shared trunk and value head; return policy-head parameters.
+
+    Freezing the trunk is essential: freezing only the value head still changes
+    value predictions when shared representations are updated.
+    """
+    for parameter in model.parameters():
+        parameter.requires_grad_(False)
+    for parameter in model.policy_head.parameters():
+        parameter.requires_grad_(True)
+    return list(model.policy_head.parameters())
+
+
+def set_policy_head_training_mode(model) -> None:
+    """Train policy-head BatchNorm while keeping trunk/value BatchNorm in eval."""
+    model.eval()
+    model.policy_head.train()
+
+
+def value_predictions(model, examples, device: str = "cpu") -> np.ndarray:
+    """Return per-position side-to-move values in stable example order."""
+    import torch
+
+    if not examples:
+        raise ValueError("At least one evaluation example is required.")
+    states = torch.as_tensor(
+        np.stack([x.state for x in examples]), dtype=torch.float32, device=device
+    )
+    model.eval()
+    with torch.no_grad():
+        _, values = model(states)
+    return values.detach().cpu().numpy().reshape(-1).astype(np.float64)
+
+
+def value_drift_metrics(before: np.ndarray, after: np.ndarray) -> dict:
+    """Quantify per-position value changes between two checkpoint states."""
+    before = np.asarray(before, dtype=np.float64).reshape(-1)
+    after = np.asarray(after, dtype=np.float64).reshape(-1)
+    if before.shape != after.shape or before.size == 0:
+        raise ValueError("Before/after value predictions must be non-empty and aligned.")
+    delta = after - before
+    absolute = np.abs(delta)
+    return {
+        "positions": int(before.size),
+        "mean_absolute_change": float(absolute.mean()),
+        "maximum_absolute_change": float(absolute.max()),
+        "root_mean_square_change": float(np.sqrt(np.mean(np.square(delta)))),
+        "mean_before": float(before.mean()),
+        "mean_after": float(after.mean()),
+    }
 
 
 def policy_metrics(model, examples, device: str = "cpu") -> dict:
