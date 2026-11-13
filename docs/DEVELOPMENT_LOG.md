@@ -452,9 +452,16 @@ Copy this section for each future engineering batch.
 - No training or actual checkpoint search is performed by these tests.
 
 ### Verification
-- Implementation and test revision is being submitted; CPU CI and the tactical audit are **pending**. Do not mark this batch as passed until the workflows complete.
+- Implementation/test revision `0f12e052434a66f03499bd1f91abafa1afeeb2fa`: CPU CI and Stockfish audit both **passed** (details below).
 - Existing latest verified baseline remains \`040877a1ab822e7023a68b8f025eb17535eac073\`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
 - No compatible trained checkpoint is available; no search sweep, training run, playing-strength result or Elo claim is produced.
 
 ### Follow-up
 - Inspect the first CI run for this batch. Preserve any failure and repair it before updating the verified revision. Once CI passes, use the real checkpoint only when it has been recovered and independently backed up.
+
+
+### CI verification
+- CPU test workflow [43412113192](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113192): **passed; 142 tests passed in 3.20 seconds** on Python 3.11.
+- Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the \`tactical-engine-audit\` artifact uploaded successfully (artifact ID \`14030281382\`).
+- Both workflows tested the same revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
+- The benchmark has still **not** been run against a real checkpoint. No training, actual search experiment, playing-strength gain or Elo claim is made.

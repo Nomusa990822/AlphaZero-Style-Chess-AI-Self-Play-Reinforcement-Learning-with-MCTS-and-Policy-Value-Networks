@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Latest verified code revision:** `040877a1ab822e7023a68b8f025eb17535eac073` (135 CPU tests passed in 3.58 seconds; CPU run 43411211787; Stockfish audit run 43411211867 passed). **Current implementation revision:** pending CI.
-**Current state:** checkpoint recovery/manifest tooling and the resource-bounded MCTS configuration benchmark are CI-verified. The benchmark execution-path test expansion and non-finite PUCT input validation are implemented in the current unverified revision; CI is pending. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
+**Latest verified code revision:** `0f12e052434a66f03499bd1f91abafa1afeeb2fa` (142 CPU tests passed in 3.20 seconds; CPU run 43412113192; Stockfish audit run 43412113210 passed).
+**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, and its mocked execution-path/report tests are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -91,3 +91,6 @@ For every meaningful development batch:
 
 
 - **Current unverified benchmark-test expansion:** \`benchmark_search_configs.py\` now exposes a testable orchestration function; mocked tests exercise all eight default grid combinations, single network construction, deterministic settings, report persistence and checkpoint hashing. Additional tests check preflight budget rejection and missing-checkpoint ordering. PUCT values now reject NaN and infinity. CI is pending; do not treat these tests as passed until the current revision's workflow completes.
+
+
+- **Benchmark orchestration test verification:** revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\` passed CPU workflow [43412113192](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113192): **142 tests passed in 3.20 seconds**. Stockfish audit [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210) passed and uploaded artifact \`14030281382\`. Mocked tests cover all eight default grid configurations, shared network construction, deterministic search, checkpoint metadata/hash, JSON report persistence, budget preflight and missing-checkpoint ordering. No actual checkpoint search or training run was performed.
