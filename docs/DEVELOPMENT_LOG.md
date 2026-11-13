@@ -1,3 +1,19 @@
+## 2026-11-13 — Add reproducible Stockfish-assisted tactical review
+
+### Changes
+- Added `scripts/audit_tactical_corpus.py` to compare engine top lines with each curated acceptable move at a fixed search depth.
+- Added a dedicated GitHub Actions workflow that installs Stockfish, runs a depth-16/MultiPV-5 review, and uploads a JSON report artifact.
+- The report records engine identity, principal variations, per-accepted-move scores, score loss from the engine's best line, and positions flagged for human review.
+- Added unit tests for supported and flagged accepted-move scenarios using a deterministic fake engine.
+
+### Verification
+- The new audit is advisory: finite-depth engine analysis cannot prove a move is best or validate a human motif label.
+- The Stockfish workflow and full pytest suite are running for the current branch revision; results must be checked before this batch is called verified.
+- No real neural-network checkpoint benchmark or playing-strength gain is claimed.
+
+### Follow-up
+- Inspect the uploaded JSON artifact, manually review flagged positions and motif explanations, then update the corpus only when the rationale and accepted move set are supported.
+
 ## 2026-11-13 — Add discovered attack, defensive resource and promotion tactics
 
 ### Changes
