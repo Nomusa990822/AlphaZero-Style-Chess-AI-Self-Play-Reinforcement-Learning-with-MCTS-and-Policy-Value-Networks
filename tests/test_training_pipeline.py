@@ -220,3 +220,14 @@ def test_self_play_game_report_contains_pgn_and_termination(tmp_path):
     assert record["termination"] == "move-cap draw"
     assert record["move_count"] == 2
     assert "1. e4 e5" in record["pgn"]
+
+
+def test_value_targets_use_full_game_outcome_for_both_colours():
+    generator = SelfPlayGenerator(inference=None, move_encoding=MoveEncoding())
+
+    assert generator._value_for_player(1.0, chess.WHITE) == 1.0
+    assert generator._value_for_player(1.0, chess.BLACK) == -1.0
+    assert generator._value_for_player(-1.0, chess.WHITE) == -1.0
+    assert generator._value_for_player(-1.0, chess.BLACK) == 1.0
+    assert generator._value_for_player(0.0, chess.WHITE) == 0.0
+    assert generator._value_for_player(0.0, chess.BLACK) == 0.0
