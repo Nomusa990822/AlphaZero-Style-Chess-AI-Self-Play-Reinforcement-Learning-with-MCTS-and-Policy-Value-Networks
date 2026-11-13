@@ -167,3 +167,8 @@ For every meaningful development batch:
 - The CPU workflow now runs the benchmark and uploads `see-root-overhead-benchmark` as an artifact.
 - This is not an end-to-end engine speed or playing-strength measurement. No trained checkpoint is required or used.
 - Current branch head before this batch: `8e0d2c79c0c0b3c43aee243a972c92a03fe8cce3`. New revision is pending CI and benchmark artifact.
+
+
+### Benchmark invocation repair — 2026-11-13
+- First run on `58f460d443fc5619ba4240af43a3c0d21b80cf37` passed all 153 pytest tests but the benchmark step failed because direct script execution placed `scripts/`, not the repository root, on Python's import path (`ModuleNotFoundError: src`). The artifact upload was consequently skipped.
+- Updated the workflow to invoke the script as a module (`python -m scripts.benchmark_see_overhead`), which keeps the repository root on the import path. Fresh CPU CI and benchmark artifact are required.

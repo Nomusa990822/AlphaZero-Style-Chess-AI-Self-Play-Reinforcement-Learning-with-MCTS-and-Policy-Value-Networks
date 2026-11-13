@@ -610,3 +610,10 @@ Copy this section for each future engineering batch.
 - Benchmark artifact: pending.
 - Prior verified implementation remains `4fabc4562de186955f909059997ac23b15a0493e` (152 CPU tests passed; Stockfish audit passed). This new batch is not yet verified.
 - No training, checkpoint experiment, playing-strength gain or Elo result is claimed.
+
+
+### Failure and repair — benchmark module import
+
+- CPU workflow [43420810604](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43420810604) on revision `58f460d443fc5619ba4240af43a3c0d21b80cf37`: **153 tests passed in 3.61 seconds**, but the subsequent benchmark step failed with `ModuleNotFoundError: No module named 'src'` because the workflow executed the file path directly.
+- The benchmark artifact upload was skipped because the benchmark command failed. The failure is retained; it is not counted as a successful benchmark.
+- Repair: changed the workflow invocation to `python -m scripts.benchmark_see_overhead`, ensuring the repository root is on the module import path. This repair requires fresh CPU tests and benchmark artifact verification.
