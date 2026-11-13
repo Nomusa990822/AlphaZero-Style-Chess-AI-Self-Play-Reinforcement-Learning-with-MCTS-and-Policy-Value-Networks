@@ -458,3 +458,11 @@ For every meaningful development batch:
 - Historical JSONL training metrics are not model weights and cannot reconstruct `best_model.pt`.
 - Added fail-fast behaviour when `resume_best_model=True` but the configured checkpoint is missing. Added a workflow preflight before dependency installation and documented the restore/evaluation process in `docs/training_flow.md`.
 - Training remains unstarted. No checkpoint evaluation, Elo estimate or neural playing-strength claim has been made. CPU CI verification is pending.
+
+
+### Checkpoint safety gate — latest CI result (2026-11-13)
+- Verified revision: `837a0b44c8ec2144d1da32e97b4a29f2af192fe2`.
+- CPU suite: **171 passed** ([43439201868](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201868)); includes missing-checkpoint resume guard coverage.
+- Stockfish: **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged** ([43439201743](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201743), artifact `14045506585`).
+- The training workflow now fails before dependency installation if the configured best checkpoint is absent. No training workflow was dispatched.
+- No checkpoint was found in the current tracked tree or release listing; no model tactical evaluation, Elo estimate or playing-strength claim has been made.

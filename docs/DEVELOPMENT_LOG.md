@@ -987,3 +987,11 @@ Copy this section for each future engineering batch.
 - Added an early checkpoint-presence gate to `.github/workflows/train-and-backup.yml`, before Python or PyTorch installation, so an accidental manual dispatch cannot spend runner time on a fresh random model.
 - Documented checkpoint recovery, hash-manifest generation, durable backup expectations and post-recovery tactical evaluation in `docs/training_flow.md`.
 - No checkpoint was recovered, no training workflow was dispatched, and no model evaluation was run. CPU CI verification is pending.
+
+
+### Missing-checkpoint safety gate — CI verified (2026-11-13)
+- Verified revision: `837a0b44c8ec2144d1da32e97b4a29f2af192fe2`.
+- CPU workflow [43439201868](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201868): **171 passed in 3.50 seconds**, including the regression test that proves resume mode refuses to start without a checkpoint.
+- Stockfish audit [43439201743](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43439201743): **22/22 positions supported, 0 flagged; 5/5 sequences and 19/19 annotated plies supported, 0 flagged**. Artifact `14045506585`.
+- The manual training workflow now checks for a non-empty `data/checkpoints/best_model.pt` before installing Python/PyTorch. This workflow was not dispatched.
+- The missing checkpoint remains unresolved. No training or neural tactical evaluation was run.
