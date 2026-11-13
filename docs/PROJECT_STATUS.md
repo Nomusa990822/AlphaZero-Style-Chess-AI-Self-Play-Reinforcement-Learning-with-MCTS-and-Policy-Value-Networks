@@ -302,3 +302,10 @@ For every meaningful development batch:
 - The 15-position corpus now includes one additional Black-to-move deflection example (White 8 / Black 7). The one-position addition is verified; the broader eight-position expansion remains outstanding.
 - Earlier cancelled runs are retained in the development history. The cancelled runs are not counted as failures.
 - Stockfish finite-depth support is a review signal, not exhaustive proof of forcedness or motif-label correctness. No checkpoint evaluation or training was run; no playing-strength or Elo claim is made.
+
+
+### Decoy motif expansion — verification pending (2026-11-13)
+- Added one White-to-move queen-sacrifice decoy candidate: `Qxh7+`, `...Kxh7`, `Rh5#` (16 total positions; expected White 9 / Black 7).
+- Added semantic checks for the king attraction and mating continuation. CPU and Stockfish verification are pending on the new revision.
+- The previously verified baseline remains 15/15 positions supported on `7bdf9bb`; do not count the new decoy as verified until its own audit passes.
+- No model training or checkpoint evaluation was run.

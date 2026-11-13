@@ -175,3 +175,27 @@ def test_black_bishop_deflection_draws_white_queen_off_mating_square():
     assert mating_move in board.legal_moves
     board.push(mating_move)
     assert board.is_checkmate()
+
+
+
+def test_white_queen_decoy_lures_king_into_rook_mate():
+    case = cases_by_id()["white-queen-decoy-draws-king-into-rook-mate-001"]
+    board = chess.Board(case.fen)
+    sacrifice = chess.Move.from_uci("c2h7")
+
+    assert case.motif == "decoy"
+    assert board.turn == chess.WHITE
+    assert sacrifice in board.legal_moves
+    board.push(sacrifice)
+    assert board.is_check()
+    assert board.piece_at(chess.H7) == chess.Piece(chess.QUEEN, chess.WHITE)
+
+    king_capture = chess.Move.from_uci("h8h7")
+    assert king_capture in board.legal_moves
+    board.push(king_capture)
+    assert board.piece_at(chess.H7) == chess.Piece(chess.KING, chess.BLACK)
+
+    mating_rook_move = chess.Move.from_uci("d5h5")
+    assert mating_rook_move in board.legal_moves
+    board.push(mating_rook_move)
+    assert board.is_checkmate()

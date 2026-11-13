@@ -809,3 +809,11 @@ Copy this section for each future engineering batch.
 - Corrected-head Stockfish audit [43429806151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429806151): **15/15 individual positions supported, 0 flagged; 2/2 sequences supported, 6/6 annotated plies supported, 0 flagged**. Audit artifact `14038701315`.
 - Earlier cancelled attempts [43429753749](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429753749), [43429753847](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429753847), [43429795529](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429795529), and [43429795629](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429795629) remain recorded as cancelled/superseded, not test failures.
 - The Stockfish audit is finite-depth support for at least one accepted move per position; it is not proof that all alternatives or every defence have been exhaustively validated. No model training or checkpoint evaluation was run; no Elo or playing-strength improvement is claimed.
+
+
+### Decoy motif corpus expansion — verification pending (2026-11-13)
+- Added one White-to-move queen-sacrifice decoy candidate based on the published Chess Tempo motif example: `Qxh7+` attracts the black king to h7, followed by `Rh5#`.
+- Added semantic regression for the queen sacrifice, king capture and mating rook continuation; expanded the expected corpus to 16 positions (White 9 / Black 7) and required motifs to include `decoy`.
+- CPU tests and Stockfish audit are pending for this candidate. It is not counted as verified until both workflows complete on the same revision.
+- The prior Black deflection addition remains verified on `7bdf9bb`: 163 CPU tests passed and Stockfish supported all 15 positions.
+- No training or checkpoint evaluation was run.
