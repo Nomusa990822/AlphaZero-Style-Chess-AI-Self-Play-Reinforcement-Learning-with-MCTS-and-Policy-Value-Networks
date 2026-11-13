@@ -1,5 +1,5 @@
 """
-Replay buffer for AlphaZero-style training data.
+Replay buffer with atomic snapshots and an append-only per-game recovery journal.
 """
 
 from __future__ import annotations
@@ -8,24 +8,25 @@ import os
 import pickle
 import random
 import tempfile
+from collections import deque
+from pathlib import Path
+from typing import Deque, Iterable, List
+from uuid import uuid4
 
 import numpy as np
-from collections import deque
-from collections.abc import Iterable
-from pathlib import Path
-from typing import Deque, List
 
 from src.training.self_play import SelfPlaySample
 
 
 class ReplayBuffer:
-    """Fixed-size replay buffer with atomic on-disk persistence."""
+    """Fixed-size replay storage with crash-safe incremental game persistence."""
 
     def __init__(self, capacity: int = 50000) -> None:
         if capacity < 1:
             raise ValueError("Replay buffer capacity must be positive.")
         self.capacity = capacity
         self.buffer: Deque[SelfPlaySample] = deque(maxlen=capacity)
+        self._pending_journal_files: set[str] = set()
 
     def __len__(self) -> int:
         return len(self.buffer)
@@ -45,50 +46,69 @@ class ReplayBuffer:
             )
         return random.sample(list(self.buffer), batch_size)
 
-    def save(self, path: str | Path) -> None:
-        """Write a complete snapshot then atomically replace the previous one."""
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
+    @staticmethod
+    def _journal_directory(path: Path) -> Path:
+        return path.parent / f"{path.stem}_journal"
+
+    @staticmethod
+    def _atomic_pickle(payload: object, destination: Path) -> None:
+        destination.parent.mkdir(parents=True, exist_ok=True)
         temp_name = None
         try:
             with tempfile.NamedTemporaryFile(
-                mode="wb", dir=path.parent, prefix=f".{path.name}.",
-                suffix=".tmp", delete=False
+                mode="wb", dir=destination.parent,
+                prefix=f".{destination.name}.", suffix=".tmp", delete=False
             ) as handle:
                 temp_name = handle.name
-                pickle.dump(
-                    {"version": 1, "capacity": self.capacity, "samples": list(self.buffer)},
-                    handle,
-                    protocol=pickle.HIGHEST_PROTOCOL,
-                )
+                pickle.dump(payload, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 handle.flush()
                 os.fsync(handle.fileno())
-            os.replace(temp_name, path)
+            os.replace(temp_name, destination)
         finally:
             if temp_name and os.path.exists(temp_name):
                 os.unlink(temp_name)
 
-    def load(self, path: str | Path) -> None:
-        """Load current versioned snapshots and legacy list-based buffers."""
+    def save_game(
+        self,
+        samples: Iterable[SelfPlaySample],
+        snapshot_path: str | Path,
+        iteration: int,
+        game_number: int,
+    ) -> None:
+        """Persist only the new game's samples, not the entire replay buffer."""
+        path = Path(snapshot_path)
+        journal_dir = self._journal_directory(path)
+        filename = (
+            f"iteration_{iteration:04d}_game_{game_number:04d}_{uuid4().hex}.pkl"
+        )
+        self._atomic_pickle(list(samples), journal_dir / filename)
+        self._pending_journal_files.add(filename)
+
+    def save(self, path: str | Path) -> None:
+        """Atomically snapshot the buffer and acknowledge journal chunks."""
         path = Path(path)
-        with path.open("rb") as handle:
-            payload = pickle.load(handle)
+        payload = {
+            "version": 2,
+            "capacity": self.capacity,
+            "samples": list(self.buffer),
+            "journal_files": sorted(self._pending_journal_files),
+        }
+        self._atomic_pickle(payload, path)
 
-        if isinstance(payload, dict):
-            if payload.get("version") != 1 or not isinstance(payload.get("samples"), list):
-                raise ValueError(f"Unsupported replay buffer format: {path}")
-            items = payload["samples"]
-        elif isinstance(payload, list):
-            items = payload
-        else:
-            raise ValueError(f"Invalid replay buffer payload: {path}")
+        journal_dir = self._journal_directory(path)
+        for filename in self._pending_journal_files:
+            chunk = journal_dir / filename
+            if chunk.exists():
+                chunk.unlink()
+        self._pending_journal_files.clear()
 
+    @staticmethod
+    def _upgrade_samples(items: list[SelfPlaySample]) -> list[SelfPlaySample]:
         upgraded = []
         for sample in items:
             state = np.asarray(sample.state, dtype=np.float32)
             if state.shape == (19, 8, 8):
-                # Legacy samples retain the original 19 features. Add an empty
-                # en-passant plane because the old buffer did not store it.
+                # Legacy 19-plane samples keep their original fullmove plane.
                 state = np.concatenate(
                     [state, np.zeros((1, 8, 8), dtype=np.float32)], axis=0
                 )
@@ -99,5 +119,37 @@ class ReplayBuffer:
                     "expected (19, 8, 8) or (20, 8, 8)."
                 )
             upgraded.append(sample)
+        return upgraded
 
-        self.buffer = deque(upgraded, maxlen=self.capacity)
+    def load(self, path: str | Path) -> None:
+        """Restore a snapshot and replay every journal chunk not yet snapshotted."""
+        path = Path(path)
+        included_journal_files: set[str] = set()
+
+        if path.is_file():
+            with path.open("rb") as handle:
+                payload = pickle.load(handle)
+
+            if isinstance(payload, dict):
+                if payload.get("version") not in (1, 2) or not isinstance(payload.get("samples"), list):
+                    raise ValueError(f"Unsupported replay buffer format: {path}")
+                items = payload["samples"]
+                included_journal_files = set(payload.get("journal_files", []))
+            elif isinstance(payload, list):
+                # Legacy list-based snapshots.
+                items = payload
+            else:
+                raise ValueError(f"Invalid replay buffer payload: {path}")
+            self.buffer = deque(self._upgrade_samples(items), maxlen=self.capacity)
+
+        journal_dir = self._journal_directory(path)
+        if journal_dir.is_dir():
+            for chunk_path in sorted(journal_dir.glob("*.pkl")):
+                if chunk_path.name in included_journal_files:
+                    chunk_path.unlink(missing_ok=True)
+                    continue
+                with chunk_path.open("rb") as handle:
+                    chunk_samples = pickle.load(handle)
+                if not isinstance(chunk_samples, list):
+                    raise ValueError(f"Invalid replay journal chunk: {chunk_path}")
+                self.buffer.extend(self._upgrade_samples(chunk_samples))
