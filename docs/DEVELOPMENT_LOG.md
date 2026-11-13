@@ -1,8 +1,8 @@
 ## 2026-11-13 — Require tactical rationales and add a reviewed pin example
 
 **Corpus revision:** `580d95901d8670eb5387fc77ede0874a218b9d01`  
-**Validation implementation:** `1c38195b9e90ca21e713bad89f59835cf22d9197`  
-**Regression tests:** `353384b24a5ba332607ff729fc2d58e26478d02d`  
+**Validation implementation:** `b0f373afc1eb4398c8913e4669b8f63426c9e42b`  
+**Regression tests:** `69749f5f1d2d99ffb6a806ca71cc0dc2dca833a9`  
 **Benchmark documentation:** `abefc8d86345a90212712b5d1bfc2beaa75303fb`
 
 ### Changes
