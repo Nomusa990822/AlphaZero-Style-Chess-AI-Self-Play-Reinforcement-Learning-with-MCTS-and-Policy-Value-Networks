@@ -1,3 +1,15 @@
+## 2026-11-13 — Verify configurable tactical-root-filter ablation
+
+### Verification
+- Final branch head tested: `975783715abe5fa218fd6b9eec7c8c75be8f0e59`.
+- Earlier queued/superseded workflow attempts [43407141233](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407141233) and [43407141255](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407141255) were cancelled before completing. These are recorded as cancellations, not test failures.
+- Final CPU test workflow [43407151824](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407151824): **passed; 116 tests passed in 3.40 seconds** on Python 3.11.
+- Final Stockfish tactical audit workflow [43407151987](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43407151987): **passed**; finite-depth tactical review completed and the `tactical-engine-audit` JSON artifact was uploaded successfully (artifact ID `14027892081`).
+- Both final workflows tested the same PR head revision. The ablation implementation is therefore CI-verified. No real-checkpoint filter-on/filter-off comparison has been run; no playing-strength improvement or Elo claim is made.
+
+### Follow-up
+- Run the documented paired tactical benchmark with the same actual checkpoint, corpus, device and simulation budget when a compatible checkpoint is available. Record measured results in `EXPERIMENT_LOG.md`, not from CI.
+
 ## 2026-11-13 — Add tactical-root-filter ablation for reproducible comparisons
 
 ### Changes
