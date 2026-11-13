@@ -490,3 +490,8 @@ Copy this section for each future engineering batch.
 - Repeated CPU workflow [43414014065](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43414014065): **same failure**, not an independent test regression. Twelve modules could not be collected; no test assertions ran.
 - Root cause: the generated import string encoded newline escapes literally. Corrected the import to use real source line breaks.
 - These failed attempts remain recorded as failures. A new successful CI run is required before this code revision is considered verified.
+
+
+### Repair follow-up — 2026-11-13
+- The first repair commit 96a1d06e6cec6f93b2d1997cde0d5ff4b995b0d6 did not fully replace the literal escape sequences; the import remained syntactically invalid. This was caught by inspecting the committed source before relying on a new CI result.
+- Replaced the literal backslash-n characters with actual source newlines in the tactics import. A fresh CI run is required; both earlier failed runs remain recorded above.

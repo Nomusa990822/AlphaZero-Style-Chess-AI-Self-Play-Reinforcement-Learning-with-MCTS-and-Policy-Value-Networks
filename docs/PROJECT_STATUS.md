@@ -106,3 +106,8 @@ For every meaningful development batch:
 ### Verification failure and repair — bounded mate-in-two batch
 - CPU runs 43414004807 and 43414014065 failed during collection due to literal newline escape sequences in the tactics import in src/mcts/search.py. Twelve test modules failed to import; no assertions ran.
 - The import formatting has been corrected in the current unverified repair. Awaiting fresh CPU tests and tactical audit; the previous failures remain part of the history.
+
+
+### Repair follow-up
+- Initial repair attempt 96a1d06e6cec6f93b2d1997cde0d5ff4b995b0d6 retained literal newline escapes in the import. Source inspection caught this before verification.
+- Corrected the import to actual line breaks in the current unverified revision. Await fresh CI.

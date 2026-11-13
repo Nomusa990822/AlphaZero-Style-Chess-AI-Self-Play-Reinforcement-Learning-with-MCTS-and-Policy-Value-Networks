@@ -14,7 +14,11 @@ from src.engine.move_encoding import MoveEncoding
 from src.mcts.dirichlet_noise import apply_dirichlet_noise
 from src.mcts.node import MCTSNode
 from src.mcts.puct import select_best_child
-from src.mcts.tactics import (\n    find_forced_mate_in_two,\n    find_mate_in_one,\n    find_moves_avoiding_mate_in_one,\n)
+from src.mcts.tactics import (
+    find_forced_mate_in_two,
+    find_mate_in_one,
+    find_moves_avoiding_mate_in_one,
+)
 from src.model.inference import ModelInference
 
 
