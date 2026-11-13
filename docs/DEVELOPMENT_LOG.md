@@ -817,3 +817,13 @@ Copy this section for each future engineering batch.
 - CPU tests and Stockfish audit are pending for this candidate. It is not counted as verified until both workflows complete on the same revision.
 - The prior Black deflection addition remains verified on `7bdf9bb`: 163 CPU tests passed and Stockfish supported all 15 positions.
 - No training or checkpoint evaluation was run.
+
+
+### Decoy motif corpus addition — CI verified (2026-11-13)
+- Verified revision: `6598cf5d6f393926f53b6cf4e8880bc52bf3199d`.
+- CPU workflow [43431101691](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431101691): **164 passed in 4.95 seconds**. SEE benchmark artifact `14039587820`; aggregate synthetic root-expansion median overhead **+62.85%** (0.268979 ms disabled / 0.438032 ms enabled). This is a microbenchmark, not end-to-end search speed or playing strength.
+- Stockfish audit [43431101664](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431101664): **16/16 individual positions supported, 0 flagged; 2/2 sequences supported, 6/6 annotated plies supported, 0 flagged**. Audit artifact `14039627936`.
+- The decoy candidate `white-queen-decoy-draws-king-into-rook-mate-001` was supported: `Qxh7+` attracts the king to h7 and the annotated continuation ends with `Rh5#`.
+- Push-triggered runs [43431088106](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088106) and [43431088153](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088153) were cancelled in favour of the matching successful PR runs on the same SHA. These are cancelled, not failures.
+- Corpus total: **16 positions (White 9 / Black 7)**. The earlier deflection and new decoy are single-position additions; the planned eight-position motif batch remains incomplete.
+- Stockfish's finite-depth audit supports at least one acceptable move per position and checks the annotated sequence line; it does not prove every defence is forced or independently establish motif labels. No checkpoint evaluation or training was run; no Elo or playing-strength improvement is claimed.

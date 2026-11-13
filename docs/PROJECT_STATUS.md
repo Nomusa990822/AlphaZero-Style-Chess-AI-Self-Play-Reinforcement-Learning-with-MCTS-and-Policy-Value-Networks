@@ -309,3 +309,12 @@ For every meaningful development batch:
 - Added semantic checks for the king attraction and mating continuation. CPU and Stockfish verification are pending on the new revision.
 - The previously verified baseline remains 15/15 positions supported on `7bdf9bb`; do not count the new decoy as verified until its own audit passes.
 - No model training or checkpoint evaluation was run.
+
+
+### Decoy motif corpus expansion — verified (2026-11-13)
+- Verified branch revision: `6598cf5d6f393926f53b6cf4e8880bc52bf3199d`.
+- CPU workflow [43431101691](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431101691): **164 tests passed in 4.95 seconds**.
+- Stockfish audit [43431101664](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431101664): **16/16 individual positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**.
+- The verified addition is one White-to-move queen decoy: `Qxh7+`, `...Kxh7`, `Rh5#`. Corpus total is 16 (White 9 / Black 7).
+- Matching push runs [43431088106](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088106) and [43431088153](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43431088153) were cancelled; matching PR runs above completed successfully on the exact same commit.
+- Broader eight-position expansion is still incomplete. Finite-depth Stockfish support is not proof of forcedness against every defence. No training or checkpoint evaluation was run, and no playing-strength/Elo claim is made.
