@@ -1,3 +1,12 @@
+## 2026-11-13 — Semantic regression repair verified by CI
+
+### Verification
+- Repaired revision: `592671dc283ab86d0dc52a285c74da8204f0fc3b`.
+- CPU test workflow [43404899202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899202): **completed successfully** on the repaired revision.
+- Stockfish tactical audit workflow [43404899148](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404899148): **completed successfully** on the same revision.
+- These are the first successful follow-up runs after the fork-test coordinate failure [43404336724](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43404336724). The failed run remains in this history; it is not overwritten.
+- The CPU suite validates automated behavior, and the audit validates finite-depth engine agreement for the curated corpus. Neither result establishes neural-network playing strength or an Elo rating.
+
 ## 2026-11-13 — Add motif-specific tactical semantics tests; correct fork geometry
 
 ### Changes
