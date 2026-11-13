@@ -43,7 +43,7 @@ class TacticalPosition:
 
     @classmethod
     def from_dict(cls, data: dict) -> "TacticalPosition":
-        required = {"id", "motif", "fen", "acceptable_moves"}
+        required = {"id", "motif", "fen", "acceptable_moves", "annotation"}
         missing = required.difference(data)
         if missing:
             raise ValueError(f"Missing tactical-position fields: {sorted(missing)}")
@@ -51,7 +51,7 @@ class TacticalPosition:
         position_id = str(data["id"]).strip()
         motif = str(data["motif"]).strip().lower()
         fen = str(data["fen"]).strip()
-        moves = frozenset(str(move).strip() for move in data["acceptable_moves"])
+        moves = frozenset(str(move).strip() for move in data["acceptable_moves"])\n        annotation = str(data["annotation"]).strip()
         if not position_id or not motif or not moves or any(not move for move in moves):
             raise ValueError("Position id, motif, and acceptable moves must be non-empty.")
         if motif not in TACTICAL_MOTIFS:
@@ -78,7 +78,7 @@ class TacticalPosition:
             raise ValueError(
                 f"Position {position_id!r} has illegal acceptable moves: {sorted(illegal)}"
             )
-        return cls(position_id, motif, fen, moves)
+        return cls(position_id, motif, fen, moves, annotation)
 
 
 @dataclass(frozen=True)
