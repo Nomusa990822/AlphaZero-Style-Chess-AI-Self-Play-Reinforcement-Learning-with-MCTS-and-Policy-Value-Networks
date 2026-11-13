@@ -4,7 +4,7 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-**Last documented revision:** `f78fa3a18f0855fc4faa59761e932294298edaf0`  
+**Latest implementation/test revision:** `573a2b6360d28d7d1769019b4e1fdff25f32afcc`  
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -14,7 +14,7 @@
 - GitHub Actions test workflow passed for revision `f78fa3a18f0855fc4faa59761e932294298edaf0` (run [43389599997](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43389599997)).
 - Pull request #1 remains a draft and is not merged.
 - The documented base `main` revision is `42fecbd6767d53c1950d6bc484dd23bcf4914976`; branch work is isolated from main until the PR is reviewed and merged.
-- Tactical benchmark runner and a three-position starter corpus are present. The corpus is explicitly too small to establish general tactical strength.
+- Tactical benchmark runner and a three-position starter corpus are present. Corpus loading now rejects structurally invalid chess positions, terminal positions and illegal acceptable moves. The corpus remains explicitly too small to establish general tactical strength.
 - Existing historical training summaries cover five iterations of a six-game configuration each, plus three earlier three-game runs. See the experiment log and raw files under `data/logs/`.
 
 ## Implemented capabilities
@@ -44,7 +44,7 @@
 ### Evaluation and reproducibility
 - Paired colour-swapped candidate evaluation and a confidence-bound promotion gate.
 - CPU GitHub Actions test workflow.
-- Tactical benchmark loader/scorer and checkpoint evaluation CLI:
+- Tactical benchmark loader/scorer with strict FEN validity checks and checkpoint evaluation CLI:
   `evaluate_tactics.py`.
 - JSON benchmark output includes checkpoint metadata, device, simulation count, overall and per-motif scores, and missed positions.
 
@@ -59,8 +59,7 @@
 
 ## Prioritised next work
 
-1. Validate the tactical benchmark corpus more strictly, including full legal-position validity and tactical correctness review.
-2. Add more independently checked positions across both colours and a balanced range of motifs: forks, pins, skewers, discovered attacks, double attacks, deflections, decoys, overloaded defenders, trapped pieces, mating patterns, defensive resources and endgame tactics.
+1. Expand the tactical corpus with independently checked positions across both colours and a balanced range of motifs: forks, pins, skewers, discovered attacks, double attacks, deflections, decoys, overloaded defenders, trapped pieces, mating patterns, defensive resources and endgame tactics.
 3. Add robust CLI tests for checkpoint loading, device handling, deterministic search and JSON output without requiring a real training run.
 4. Run and record the tactical benchmark against an actual checkpoint when one is available.
 5. Establish repeatable playing-strength evaluation: fixed opponents, colour-swapped pairs, sufficient games, openings/starting positions, time or node controls, and uncertainty reporting.
