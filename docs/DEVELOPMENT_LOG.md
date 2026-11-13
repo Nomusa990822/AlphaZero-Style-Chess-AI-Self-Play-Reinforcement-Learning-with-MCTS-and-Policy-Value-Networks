@@ -7,9 +7,10 @@
 - Added unit tests for supported and flagged accepted-move scenarios using a deterministic fake engine.
 
 ### Verification
-- The new audit is advisory: finite-depth engine analysis cannot prove a move is best or validate a human motif label.
-- The Stockfish workflow and full pytest suite are running for the current branch revision; results must be checked before this batch is called verified.
-- No real neural-network checkpoint benchmark or playing-strength gain is claimed.
+- GitHub Actions Stockfish audit run [43403925496](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43403925496): **completed successfully** using Stockfish 17.1, depth 16, MultiPV 5, one thread, 256 MB hash and a 150-centipawn tolerance.
+- The engine reviewed all thirteen positions: **13/13 accepted moves were within tolerance; 0 positions were flagged**. The workflow uploaded the `tactical-engine-audit` JSON artifact, and its report was also printed to the workflow log for inspection.
+- CPU test workflow run [43403925592](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43403925592): **completed successfully**.
+- Finite-depth engine agreement supports the accepted moves but does not prove tactical optimality or validate every human motif label/annotation. No real neural-network checkpoint benchmark or playing-strength gain is claimed.
 
 ### Follow-up
 - Inspect the uploaded JSON artifact, manually review flagged positions and motif explanations, then update the corpus only when the rationale and accepted move set are supported.
