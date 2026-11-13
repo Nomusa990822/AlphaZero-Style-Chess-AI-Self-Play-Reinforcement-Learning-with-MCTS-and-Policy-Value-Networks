@@ -1,3 +1,20 @@
+## 2026-11-13 — Add explicit game-phase tactical reporting
+
+### Changes
+- Added a required curated `phase` field to tactical benchmark records: `opening`, `middlegame`, or `endgame`.
+- Deliberately avoided inferring phase from material count; composed tactical positions can make automatic phase heuristics misleading.
+- Added per-phase totals, correct/illegal counts, and accuracy to benchmark results and the checkpoint JSON report.
+- Labelled all five existing corpus positions and added tests for missing/unknown phases and phase aggregation.
+- This change adds diagnostic segmentation only; it does not add positions or establish tactical strength.
+
+### Verification
+- The preceding syntax-repair revision `b2dfa830d6100c900e5c944b4bb1c7b3e6361059` passed GitHub Actions run [43398823052](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43398823052).
+- CI for this phase-reporting change is pending until the new workflow run completes.
+- No real-checkpoint tactical benchmark was run.
+
+### Follow-up
+- Use the new phase/motif/colour breakdowns to identify actual coverage gaps before adding independently reviewed positions.
+
 ## 2026-11-13 — Repair tactical benchmark validation and add colour-balanced scoring
 
 **Implementation:** `9e3e4f397e3da11de75cdef7b79e7bedd1113ba8`  
