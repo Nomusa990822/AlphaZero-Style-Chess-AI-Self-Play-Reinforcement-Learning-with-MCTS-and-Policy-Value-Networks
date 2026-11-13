@@ -1,3 +1,20 @@
+## 2026-11-13 — Add tactical-root-filter ablation for reproducible comparisons
+
+### Changes
+- Added `MCTSConfig.use_tactical_root_filter`, enabled by default, to switch exact root mate-in-one priority and one-ply mate-safety filtering on or off for controlled experiments.
+- Applied the setting consistently during root simulation candidate selection, final move selection, and action-probability generation. Default behavior remains unchanged.
+- Added `evaluate_tactics.py --disable-tactical-root-filter` and included the active setting in the JSON report.
+- Added a regression test proving that disabling the filter restores ordinary visit-based root selection and includes all legal root actions in the policy target.
+- Documented paired on/off benchmark commands. Meaningful comparison requires the same checkpoint, corpus, device, and simulation budget.
+
+### Verification
+- Latest code/test changes: `4aa7ab0aa8bc075e59a07e3edfe0c47a22136fd2`; benchmark documentation subsequently updated in `85dc43e8801a35f62e9e465a34f32c3a24fe4489`.
+- CPU tests and Stockfish audit for this ablation change: **pending**.
+- No trained checkpoint comparison or playing-strength result has been produced. The ablation switch enables a future controlled measurement; it does not itself demonstrate improvement.
+
+### Follow-up
+- Inspect CI, preserve any failure and repair details, and record the first passing run. Then use the same real checkpoint and budget for filter-on/filter-off benchmark runs when a checkpoint is available.
+
 ## 2026-11-13 — Extend root tactical-search regression coverage to Black and forced-loss positions
 
 ### Changes
