@@ -12,9 +12,11 @@ Store one JSON object per line in a `.jsonl` file:
 ```
 
 - `id`: stable, unique position identifier.
-- `motif`: primary motif label, such as `fork`, `pin`, `skewer`,
-  `hanging_piece`, `discovered_attack`, `defensive_resource`, or
-  `mating_net`.
+- `motif`: one of the validated labels: `mating_net`, `fork`,
+  `hanging_piece`, `pin`, `skewer`, `discovered_attack`,
+  `double_attack`, `deflection`, `decoy`, `overloaded_defender`,
+  `trapped_piece`, `defensive_resource`, or `endgame_tactic`.
+  Unknown labels are rejected to prevent inconsistent per-motif reporting.
 - `fen`: position before the engine moves.
 - `acceptable_moves`: one or more acceptable first moves in UCI notation.
   Multiple moves are supported where more than one continuation is sound.
