@@ -26,15 +26,15 @@ Store one JSON object per line in a `.jsonl` file:
   The loader does not infer phase from material; composed tactical positions
   can make automatic phase heuristics misleading.
 
-The loader validates FENs, terminal positions, duplicate IDs, move legality,\ncontrolled motif labels, and the presence of a non-empty tactical annotation.
+The loader validates FENs, terminal positions, duplicate IDs, move legality,
+controlled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
 The committed `tactical_positions.jsonl` is still a small starter corpus. It
-now includes a mating net, knight and queen forks, hanging-piece captures,
-pins, and rook skewers, with examples for both sides to move. Its nine
-positions are not large or diverse enough to support a general
-tactical-strength claim.
+now includes a mating net, knight forks, hanging-piece captures, pins, and
+rook skewers, with examples for both sides to move. Its nine positions are
+not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
