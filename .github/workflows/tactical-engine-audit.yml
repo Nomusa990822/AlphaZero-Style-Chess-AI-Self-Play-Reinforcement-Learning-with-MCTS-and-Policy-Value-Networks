@@ -47,6 +47,9 @@ jobs:
             --max-loss-cp 150 \
             --output reports/tactical-engine-audit.json
 
+      - name: Print audit report for review
+        run: cat reports/tactical-engine-audit.json
+
       - name: Upload engine review report
         uses: actions/upload-artifact@v4
         with:
