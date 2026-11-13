@@ -404,3 +404,37 @@ def test_white_knight_deflection_wins_the_black_queen():
     board.push(queen_capture)
     assert board.piece_at(chess.E4) == chess.Piece(chess.QUEEN, chess.WHITE)
     assert board.piece_at(chess.D7) == chess.Piece(chess.KNIGHT, chess.BLACK)
+
+def test_counterchecks_resolve_the_original_check_and_check_the_opponent():
+    cases = cases_by_id()
+    expected = {
+        "white-bishop-counterchecks-while-interposing-001": ("b5e2", chess.WHITE, chess.H5),
+        "black-bishop-counterchecks-while-interposing-001": ("b4e7", chess.BLACK, chess.H4),
+    }
+    for position_id, (uci, mover, opposing_king_square) in expected.items():
+        board = chess.Board(cases[position_id].fen)
+        assert board.turn == mover
+        assert board.is_check()
+        move = chess.Move.from_uci(uci)
+        assert move in board.legal_moves
+        board.push(move)
+        assert board.is_check()
+        assert board.king(not mover) == opposing_king_square
+        assert opposing_king_square in board.checkers()
+
+
+def test_capturing_the_attacker_removes_the_queen_threat_for_both_colours():
+    cases = cases_by_id()
+    expected = {
+        "white-knight-removes-bishop-attacking-queen-001": ("c4e5", chess.WHITE, chess.D4, chess.E5),
+        "black-knight-removes-bishop-attacking-queen-001": ("f6e4", chess.BLACK, chess.D5, chess.E4),
+    }
+    for position_id, (uci, mover, queen_square, bishop_square) in expected.items():
+        board = chess.Board(cases[position_id].fen)
+        assert board.turn == mover
+        assert queen_square in board.attacks(bishop_square)
+        move = chess.Move.from_uci(uci)
+        assert move in board.legal_moves
+        board.push(move)
+        assert board.piece_at(bishop_square) == chess.Piece(chess.KNIGHT, mover)
+        assert not board.is_attacked_by(not mover, queen_square)
