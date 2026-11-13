@@ -103,6 +103,7 @@ def main() -> None:
         "illegal": result.illegal,
         "accuracy": result.accuracy,
         "by_motif": result.by_motif,
+        "by_color": result.by_color,
         "failures": list(result.failures),
     }
     rendered = json.dumps(report, indent=2, sort_keys=True)
