@@ -268,3 +268,45 @@ def test_white_rook_interference_blocks_queen_and_creates_back_rank_mate():
     alternative.push(bishop_recapture)
     assert alternative.piece_at(chess.D8) == chess.Piece(chess.BISHOP, chess.WHITE)
     assert alternative.piece_at(chess.D8).color == chess.WHITE
+
+def test_black_rook_interference_wins_queen_or_delivers_mate():
+    case = cases_by_id()["black-rook-interference-diverts-rook-from-queen-defence-001"]
+    board = chess.Board(case.fen)
+    interference = chess.Move.from_uci("d8d1")
+
+    assert case.motif == "interference"
+    assert board.turn == chess.BLACK
+    assert board.piece_at(chess.H7) == chess.Piece(chess.KING, chess.BLACK)
+    assert board.piece_at(chess.D8) == chess.Piece(chess.ROOK, chess.BLACK)
+    assert board.piece_at(chess.B4) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.B1) == chess.Piece(chess.ROOK, chess.WHITE)
+    assert board.piece_at(chess.B2) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert board.piece_at(chess.F3) == chess.Piece(chess.BISHOP, chess.WHITE)
+    assert interference in board.legal_moves
+
+    # The checking rook occupies d1 and forces White to choose which line
+    # of defence to compromise.
+    board.push(interference)
+    assert board.is_check()
+
+    # Capturing with the rook vacates b1, allowing ...Qxb2 to take the queen.
+    rook_capture = chess.Move.from_uci("b1d1")
+    assert rook_capture in board.legal_moves
+    board.push(rook_capture)
+    queen_capture = chess.Move.from_uci("b4b2")
+    assert queen_capture in board.legal_moves
+    board.push(queen_capture)
+    assert board.piece_at(chess.B2) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert board.piece_at(chess.B1) is None
+
+    # Capturing with the bishop leaves it on d1, blocking White's rook
+    # from interposing on e1; ...Qe1# is mate.
+    mate_line = chess.Board(case.fen)
+    mate_line.push(interference)
+    bishop_capture = chess.Move.from_uci("f3d1")
+    assert bishop_capture in mate_line.legal_moves
+    mate_line.push(bishop_capture)
+    queen_mate = chess.Move.from_uci("b4e1")
+    assert queen_mate in mate_line.legal_moves
+    mate_line.push(queen_mate)
+    assert mate_line.is_checkmate()

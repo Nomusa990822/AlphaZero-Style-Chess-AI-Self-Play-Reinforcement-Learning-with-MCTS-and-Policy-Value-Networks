@@ -874,3 +874,10 @@ Copy this section for each future engineering batch.
 - The previous candidate's duplicate CPU failure [43434076143](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434076143), its duplicate Stockfish pass [43434076184](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43434076184), and all cancelled attempts remain separately recorded above. The rejected position is not counted.
 - CPU SEE microbenchmark artifact `14042991249`: aggregate medians 0.160956 ms (SEE disabled) and 0.272008 ms (enabled), approximately **+69.0%** for this synthetic root-expansion scope. This excludes neural inference, full MCTS simulations, tactical root filters and trained checkpoints; it is not end-to-end search speed or playing strength.
 - The verified corpus now has **18 positions (White 10 / Black 8)**. The planned eight-position batch remains incomplete. Stockfish finite-depth support is a review signal, not proof of every defence or every label. No training or checkpoint evaluation was run; no Elo/playing-strength claim is made.
+
+
+### Second interference example — Black-to-move candidate (2026-11-13)
+- Added a second, Black-to-move interference position from Cor van Wijgerden, *Step 4*, reminder “Elimination of the defence: interfering,” position 6. The source gives `...Rd1+` and the two branches `Rxd1 Qxb2` or `Bxd1 Qe1#` ([source PDF, page content lines 91–103](https://www.stappenmethode.nl/lesmateriaal/memos/en_gs_4.pdf)).
+- Added semantic coverage for the checking rook, the rook-capture branch that abandons b1 and loses the queen, and the bishop-capture branch ending in checkmate.
+- Candidate corpus total: **19 positions (White 10 / Black 9)**. This new position is pending CPU and Stockfish checks on the same revision; do not count it as verified until both pass.
+- The first interference example remains verified on `932d105`. No training or checkpoint evaluation was run.

@@ -360,3 +360,10 @@ For every meaningful development batch:
 - Verified interference line: `1.Rd8+!`; after `...Nxd8`, `2.Qc8#`; if `...Qxd8`, `2.Bxd8`. The rejected first candidate is excluded.
 - The first workflow pair on this revision was cancelled and replaced by the successful pair above. The earlier duplicate CPU failure and Stockfish pass on the rejected candidate remain documented in the development log.
 - Corpus total: **18 positions (White 10 / Black 8)**. The broader balanced eight-position motif batch is still incomplete. Finite-depth Stockfish review is not exhaustive proof of all defences. No training, checkpoint evaluation or Elo claim was made.
+
+
+### Interference motif — Black-to-move example pending verification (2026-11-13)
+- Added a second example from Cor van Wijgerden, *Step 4*, “Elimination of the defence: interfering,” position 6: `...Rd1+`; `Rxd1 Qxb2` loses White's queen, while `Bxd1 Qe1#` is mate. Source: [Step 4 PDF](https://www.stappenmethode.nl/lesmateriaal/memos/en_gs_4.pdf), lines 91–103.
+- Semantic tests cover both defensive branches. Candidate corpus: **19 positions (White 10 / Black 9)**.
+- This addition is pending CPU and Stockfish checks. The first White interference example remains verified; this candidate is not yet counted as verified.
+- No training, checkpoint evaluation or Elo claim was made.
