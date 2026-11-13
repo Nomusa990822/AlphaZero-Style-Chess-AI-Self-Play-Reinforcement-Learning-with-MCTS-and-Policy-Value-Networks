@@ -65,3 +65,42 @@ The CI workflow tests the benchmark code and corpus loading. It does not execute
 - **Artifacts:** raw JSON/JSONL/PGN/report paths.
 - **Interpretation:**
 - **Limitations and next experiment:**
+
+
+
+### 2026-11-13 — Fresh-start CPU pipeline pilot (run 43497298757)
+
+- Purpose: validate fresh random initialisation, one bounded self-play/training iteration, candidate evaluation, checkpoint persistence and backup. This is a pipeline smoke test, not a playing-strength experiment.
+- Code revision: dbba702569372370a3488a02a4d84024f63e2aac on chess-strength-training-upgrade. [Workflow run](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) completed successfully.
+- Device: GitHub-hosted Ubuntu runner, CPU PyTorch.
+- Configuration: 1 iteration; 4 self-play games; 80-move cap; 8 MCTS simulations; 1 training epoch; batch size 32; 2 colour-swapped candidate evaluation games.
+- Self-play: 274 positions; average game length 68.5 moves; results were 1 White win and 3 draws (one move-cap draw, three other games ended by chess rules).
+- Training: final total loss 8.0741975; policy loss 7.8813077; value loss 0.1928899. One epoch only.
+- Candidate evaluation: 0 wins, 0 losses, 2 draws; score 0.50; 90% lower confidence bound 0.50. Candidate NOT promoted. Two games are far too few to establish strength or Elo.
+- Baseline checkpoint best_model.pt: 3,404,943 bytes; SHA-256 7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471.
+- Candidate checkpoint latest_candidate.pt: 10,193,391 bytes; SHA-256 3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7.
+- Artifacts: Actions artifact [14071428532](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757) (12,562,511 bytes; contains checkpoints, replay buffer, logs and manifest). Durable prerelease [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1) contains both checkpoints and manifest.
+- Interpretation: fresh-start pipeline, training, evaluation, manifest, artifact upload and prerelease backup all completed. Baseline was retained because the candidate did not pass the promotion gate. This run is not evidence of competent chess play.
+- Next: preserve the backup; inspect checkpoint metadata and replay data, then design longer staged training with fixed opponents and substantially larger paired-game evaluation. Do not infer Elo from this pilot.
+
+
+### 2026-11-13 — Baseline/candidate tactical checkpoint evaluation (run 43503135826)
+
+- **Purpose:** Compare the fresh-start pilot's epoch-0 baseline and epoch-1 candidate on the individual tactical-position corpus and combined tactical-sequence corpus. This is a tactical diagnostic, not a playing-strength match.
+- **Workflow/code revision:** [GitHub Actions run 43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826), dispatched from `main` at `43a68cebd39271c687adf068859f29ca69462882`; evaluator code and corpora checked out from `chess-strength-training-upgrade`.
+- **Execution:** GitHub-hosted Ubuntu CPU; CPU-only PyTorch; deterministic evaluation; 100 MCTS simulations; tactical root filter enabled. Workflow completed successfully and both checkpoint hashes were verified against the release manifest before evaluation.
+- **Checkpoint identities:** baseline `best_model.pt`, epoch 0, SHA-256 `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`; candidate `latest_candidate.pt`, epoch 1, SHA-256 `3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7`.
+- **Individual positions (22 total):** baseline 4 correct / 22 = **18.18%**; candidate 5 / 22 = **22.73%**. Both had 0 illegal moves. Baseline by colour: White 2/12, Black 2/10. Candidate by colour: White 2/12, Black 3/10. Candidate's additional correct result is on a small curated corpus; motif-level counts are too small for broad conclusions.
+- **Combined sequences (5 total, 7 annotated plies):** both checkpoints matched 3/7 plies = **42.86%**, completed 1/5 sequences = **20%**, and had 0 illegal moves. Both completed the same three-ply removal-of-defender/mating-net sequence; neither completed the other four sequences.
+- **Raw report paths in uploaded artifact:** `reports/checkpoint_tactical_evaluation/baseline_positions.json`, `candidate_positions.json`, `baseline_sequences.json`, and `candidate_sequences.json`. Artifact: [checkpoint-tactical-evaluation-43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826), ID `14074627894`, 4,597 bytes, expiry 2027-02-11. The original immutable checkpoint release remains [fresh-pilot-checkpoint-43497298757-1](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1).
+- **Interpretation:** The candidate was one position better on the individual benchmark but tied the baseline on combined-sequence performance. The individual benchmark measures agreement with an annotated acceptable move, not tactical outcome across every defence. The sequence benchmark follows the curated principal variation; opponent replies are prescribed and alternative defences are not exhaustively searched. Twenty-two positions and five sequences are a small diagnostic sample. These scores do not establish overall playing strength or Elo.
+- **Checkpoint decision:** No training, checkpoint modification, or promotion occurred. Keep the baseline as the selected checkpoint and retain the candidate separately; do not promote based on this small benchmark difference.
+- **Next:** Expand the independently reviewed tactical corpus and add a larger fixed-opponent, colour-balanced match evaluation before making any playing-strength decision.
+
+
+### 2026-11-13 — Tactical corpus expansion (validation pending)
+
+- Added four candidate positions to the curated tactical corpus: overloaded-defender and trapped-piece motifs for both White and Black.
+- Corpus size is 26 positions (14 White to move, 12 Black to move). Semantic tests replay the tactical lines; source notes are included with each position.
+- These positions are **not yet engine-reviewed**. They must pass the Python suite and Stockfish audit before being included in future checkpoint comparisons.
+- No model was evaluated or trained in this corpus-authoring step.
