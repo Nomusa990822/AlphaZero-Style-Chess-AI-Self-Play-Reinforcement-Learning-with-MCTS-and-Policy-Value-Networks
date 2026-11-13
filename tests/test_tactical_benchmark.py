@@ -15,7 +15,7 @@ def position(position_id="fork-1", motif="fork", fen=None, moves=None):
         "id": position_id,
         "motif": motif,
         "fen": fen or chess.STARTING_FEN,
-        "acceptable_moves": moves or ["e2e4"],
+        "acceptable_moves": moves or ["e2e4"],\n        "annotation": "The accepted move demonstrates the labelled motif.",
     })
 
 
@@ -100,3 +100,25 @@ def test_benchmark_loader_rejects_empty_corpus(tmp_path):
 
     with pytest.raises(ValueError, match="No tactical positions"):
         load_tactical_positions(path)
+
+\n\ndef test_tactical_position_requires_non_empty_annotation():
+    data = {
+        "id": "unannotated",
+        "motif": "fork",
+        "fen": chess.STARTING_FEN,
+        "acceptable_moves": ["e2e4"],
+        "annotation": "   ",
+    }
+    with pytest.raises(ValueError, match="non-empty tactical annotation"):
+        TacticalPosition.from_dict(data)
+
+
+def test_tactical_position_requires_annotation_field():
+    data = {
+        "id": "missing-annotation",
+        "motif": "fork",
+        "fen": chess.STARTING_FEN,
+        "acceptable_moves": ["e2e4"],
+    }
+    with pytest.raises(ValueError, match="Missing tactical-position fields"):
+        TacticalPosition.from_dict(data)
