@@ -272,3 +272,11 @@ For every meaningful development batch:
 ### Multi-ply sequence benchmark — first verification attempt
 - Implementation commit `cda8fb2e4a2b0a37e4a31d7e0f68460b42fff622` CPU run [43426943254](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943254): **2 failed, 158 passed**. Both failures were test-fixture expectation mistakes in the newly added sequence tests; the fixtures were corrected in `b10ce6b6faefc2a5ae6351817dc9afc639b81755`. The failed run remains recorded.
 - Stockfish audit [43426943127](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43426943127): original single-position corpus **13/13 supported, 0 flagged**, artifact `14038596188`.
+
+
+### Multi-ply tactical-sequence benchmark — CI verified
+- Verified revision `d1f33d1920c2cb909dbad20405a296544acf9c54`.
+- CPU workflow [43427256968](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427256968): **160 passed in 3.30 seconds**; SEE benchmark artifact `14038486847` uploaded. Synthetic root-expansion SEE overhead was +67.96%, not an end-to-end speed or strength result.
+- Stockfish audit [43427256921](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427256921): original single-position corpus **13/13 supported, 0 flagged**, artifact `14038297049`.
+- The first CPU run's two test-fixture failures are preserved in the history and corrected in `b10ce6b6faefc2a5ae6351817dc9afc639b81755`; corrected suite passed.
+- Sequence evaluation is limited to annotated principal-variation line-following. It does not yet establish forcedness against every defence. Individual motif corpus expansion and tactical-search improvements remain outstanding. No model training or checkpoint/playing-strength evaluation was run.
