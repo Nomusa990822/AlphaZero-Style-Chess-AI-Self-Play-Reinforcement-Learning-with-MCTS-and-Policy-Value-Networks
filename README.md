@@ -612,7 +612,7 @@ $$
 L = L_{\mathrm{policy}} + L_{\mathrm{value}}
 $$
 
-The training loop records total loss, policy loss, value loss and batch count for each epoch. Completed self-play games are written immediately to `self_play_games.jsonl`, and the replay buffer is saved after every game using an atomic file replacement.
+The training loop records total loss, policy loss, value loss and batch count for each epoch. Completed self-play games are written immediately to `self_play_games.jsonl`. Their training samples are written as atomic per-game journal chunks; the complete replay buffer is snapshotted once per iteration, avoiding repeated full-buffer writes.
 
 ---
 
