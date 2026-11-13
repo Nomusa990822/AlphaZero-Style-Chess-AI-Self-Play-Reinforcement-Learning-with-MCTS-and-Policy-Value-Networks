@@ -465,3 +465,21 @@ Copy this section for each future engineering batch.
 - Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the \`tactical-engine-audit\` artifact uploaded successfully (artifact ID \`14030281382\`).
 - Both workflows tested the same revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
 - The benchmark has still **not** been run against a real checkpoint. No training, actual search experiment, playing-strength gain or Elo claim is made.
+
+
+## 2026-11-13 — Add bounded forced-mate-in-two root detection
+
+### Changes
+- Added find_forced_mate_in_two, which verifies every opponent reply for a candidate root move and checks whether the moving side then has a legal mate-in-one.
+- Added a strict reply-inspection budget (512 across the root position). If the budget interrupts a candidate, that candidate is discarded rather than treated as proven. This deliberately favours false negatives over false tactical claims in high-branching positions.
+- Integrated verified mate-in-two candidates into the root simulation/action candidate set, after immediate mate-in-one and before the existing one-ply mate-avoidance filter. MCTS, neural priors and PUCT remain the main search.
+- Added tests for the all-replies condition, board-state preservation and incomplete-candidate handling.
+- This is a tactical root extension, not a general quiescence search or full minimax engine.
+
+### Verification
+- Implementation revision: pending commit and GitHub Actions.
+- CPU tests and Stockfish audit: pending. Do not treat this change as verified until both workflows complete.
+- No checkpoint search, training, playing-strength measurement or Elo result was produced. The bounded detector may miss a genuine mate-in-two when the reply budget is exhausted.
+
+### Follow-up
+- Review runtime and test results. If the safeguard is too costly or causes regressions, narrow or disable it rather than weakening its correctness conditions.

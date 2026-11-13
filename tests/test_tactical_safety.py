@@ -62,3 +62,40 @@ def test_mcts_policy_falls_back_to_all_root_children_when_no_safe_move_exists():
     assert set(move_probs).issubset(legal_uci)
     assert np.isclose(float(full_probs.sum()), 1.0)
     assert all(prob > 0 for prob in move_probs.values())
+
+
+
+def test_forced_mate_in_two_requires_every_opponent_reply(monkeypatch):
+    import src.mcts.tactics as tactics
+
+    board = chess.Board()
+    original_fen = board.fen()
+    original_stack = list(board.move_stack)
+
+    def mocked_mate_in_one(position):
+        if (
+            len(position.move_stack) >= 2
+            and position.move_stack[0] == chess.Move.from_uci("e2e4")
+            and position.turn == chess.WHITE
+        ):
+            return [next(iter(position.legal_moves))]
+        return []
+
+    monkeypatch.setattr(tactics, "find_mate_in_one", mocked_mate_in_one)
+    forced = tactics.find_forced_mate_in_two(board)
+
+    assert forced == [chess.Move.from_uci("e2e4")]
+    assert board.fen() == original_fen
+    assert board.move_stack == original_stack
+
+
+def test_forced_mate_in_two_discards_incomplete_candidate(monkeypatch):
+    import src.mcts.tactics as tactics
+
+    board = chess.Board()
+    monkeypatch.setattr(
+        tactics,
+        "find_mate_in_one",
+        lambda position: [next(iter(position.legal_moves))],
+    )
+    assert tactics.find_forced_mate_in_two(board, max_reply_checks=1) == []

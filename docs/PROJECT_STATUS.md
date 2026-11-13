@@ -94,3 +94,10 @@ For every meaningful development batch:
 
 
 - **Benchmark orchestration test verification:** revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\` passed CPU workflow [43412113192](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113192): **142 tests passed in 3.20 seconds**. Stockfish audit [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210) passed and uploaded artifact \`14030281382\`. Mocked tests cover all eight default grid configurations, shared network construction, deterministic search, checkpoint metadata/hash, JSON report persistence, budget preflight and missing-checkpoint ordering. No actual checkpoint search or training run was performed.
+
+
+## Unverified work in progress — bounded mate-in-two detection
+- Added an exact all-opponent-replies check for root moves that force a mate-in-one on the following turn, with a 512-reply global inspection budget. An interrupted candidate is never reported as proven.
+- The new safeguard is wired into root candidate selection after immediate mate-in-one detection. Existing MCTS/PUCT and neural evaluation remain intact.
+- CPU CI and Stockfish audit are pending for this branch update. Until they pass, this is unverified and must not be described as a demonstrated strength improvement.
+- The bound can miss forced mates in high-branching positions; actual runtime overhead has not yet been measured.

@@ -14,7 +14,7 @@ from src.engine.move_encoding import MoveEncoding
 from src.mcts.dirichlet_noise import apply_dirichlet_noise
 from src.mcts.node import MCTSNode
 from src.mcts.puct import select_best_child
-from src.mcts.tactics import find_mate_in_one, find_moves_avoiding_mate_in_one
+from src.mcts.tactics import (\n    find_forced_mate_in_two,\n    find_mate_in_one,\n    find_moves_avoiding_mate_in_one,\n)
 from src.model.inference import ModelInference
 
 
@@ -198,7 +198,7 @@ class MCTS:
             ]
             return mating_children or children
 
-        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
+        forced_mates = find_forced_mate_in_two(root.board.copy(stack=True))\n        if forced_mates:\n            forced_uci = {move.uci() for move in forced_mates}\n            forced_children = [child for child in children if child.move.uci() in forced_uci]\n            if forced_children:\n                return forced_children\n\n        safe_moves = find_moves_avoiding_mate_in_one(root.board.copy(stack=True))
         if not safe_moves:
             return children
 
