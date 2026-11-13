@@ -252,3 +252,15 @@ def test_mcts_action_selection_prioritizes_forced_mate_and_policy_target():
     assert move_probs == {"f7g7": 1.0}
     assert np.isclose(float(full_probs.sum()), 1.0)
     assert np.count_nonzero(full_probs) == 1
+
+
+def test_one_ply_safety_filter_keeps_starting_position_moves_and_preserves_board():
+    from src.mcts.tactics import find_moves_avoiding_mate_in_one
+
+    board = chess.Board()
+    original_fen = board.fen()
+
+    safe_moves = find_moves_avoiding_mate_in_one(board)
+
+    assert set(safe_moves) == set(board.legal_moves)
+    assert board.fen() == original_fen
