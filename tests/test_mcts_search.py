@@ -368,3 +368,35 @@ def test_mcts_forced_loss_fallback_keeps_all_root_moves_eligible():
     }
     assert sum(child.visit_count for child in root.children.values()) == 5
     assert search.select_action(root, temperature=0.0) in board.legal_moves
+
+
+
+def test_disabling_tactical_root_filter_allows_normal_visit_based_selection():
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+    encoding = MoveEncoding()
+    root = MCTSNode(board=board)
+    root.expand({move.uci(): 1.0 / board.legal_moves.count() for move in board.legal_moves})
+    mating = {move.uci() for move in find_mate_in_one(board)}
+    non_mating = next(
+        child for move_uci, child in root.children.items()
+        if move_uci not in mating
+    )
+    non_mating.visit_count = 20
+
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=1,
+            add_dirichlet_noise=False,
+            use_tactical_root_filter=False,
+        ),
+    )
+
+    selected = search.select_action(root, temperature=0.0)
+    full_probs, move_probs = search.get_action_probs(root, temperature=0.0)
+
+    assert selected == non_mating.move
+    assert set(move_probs) == set(root.children)
+    assert np.isclose(float(full_probs.sum()), 1.0)
+    assert move_probs[selected.uci()] == 1.0
