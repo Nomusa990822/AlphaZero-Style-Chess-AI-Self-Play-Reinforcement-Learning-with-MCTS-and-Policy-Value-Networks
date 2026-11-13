@@ -8,7 +8,7 @@ measure move-selection quality independently of training and CI correctness.
 Store one JSON object per line in a `.jsonl` file:
 
 ```json
-{"id":"unique-id","motif":"fork","fen":"FEN position","acceptable_moves":["e2e4"],"annotation":"Explain the motif and accepted move."}
+{"id":"unique-id","motif":"fork","fen":"FEN position","acceptable_moves":["e2e4"],"annotation":"Explain the motif and accepted move.","phase":"middlegame"}
 ```
 
 - `id`: stable, unique position identifier.
@@ -22,6 +22,9 @@ Store one JSON object per line in a `.jsonl` file:
   Multiple moves are supported where more than one continuation is sound.
 - `annotation`: a non-empty human-written rationale connecting the position,
   motif, and accepted move. This is review metadata, not engine proof.
+- `phase`: an explicitly curated label: `opening`, `middlegame`, or `endgame`.
+  The loader does not infer phase from material; composed tactical positions
+  can make automatic phase heuristics misleading.
 
 The loader validates FENs, terminal positions, duplicate IDs, move legality,\ncontrolled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
@@ -62,7 +65,8 @@ corpus and `evaluate_tactical_selector` to score a callable that accepts a
 `python-chess` board and returns a `chess.Move` or UCI string.
 
 The result reports overall accuracy, per-motif accuracy, separate White-to-move
-and Black-to-move accuracy, illegal outputs, and the positions missed. Multiple
+and Black-to-move accuracy, and per-phase accuracy for explicitly labelled
+opening, middlegame, and endgame groups, plus illegal outputs and missed positions. Multiple
 acceptable moves are treated as a set: selecting any curated move is a success. This harness is intentionally separate from the CI
 suite: CI verifies the benchmark implementation, while benchmark scores
 measure playing decisions. Never treat an unreviewed or tiny corpus as
