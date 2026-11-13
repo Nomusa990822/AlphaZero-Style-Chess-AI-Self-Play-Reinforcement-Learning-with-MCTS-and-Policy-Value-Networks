@@ -306,9 +306,15 @@ class MCTS:
             raise ValueError("Root has no children; cannot select action.")
 
         children = self._root_children_for_action(root)
-        if self._cached_root_mating_moves:
-            return self._cached_root_mating_moves[0]
         temperature = self.config.temperature if temperature is None else temperature
+        if self._cached_root_mating_moves:
+            # Match the mating-move policy target: sample uniformly at
+            # positive temperature, and use its deterministic first move at
+            # zero temperature.
+            if temperature <= 1e-8:
+                return self._cached_root_mating_moves[0]
+            selected_idx = int(np.random.choice(len(self._cached_root_mating_moves)))
+            return self._cached_root_mating_moves[selected_idx]
         visits = np.array([child.visit_count for child in children], dtype=np.float64)
 
         if temperature <= 1e-8:
@@ -351,9 +357,12 @@ class MCTS:
         children = self._root_children_for_action(root)
         mating_moves = self._cached_root_mating_moves
         if mating_moves:
-            probability = 1.0 / len(mating_moves)
+            # Keep the policy target consistent with select_action: a
+            # uniform distribution when sampling, one-hot when deterministic.
+            target_moves = mating_moves if temperature > 1e-8 else mating_moves[:1]
+            probability = 1.0 / len(target_moves)
             move_probs: dict[str, float] = {}
-            for move in mating_moves:
+            for move in target_moves:
                 move_uci = move.uci()
                 move_probs[move_uci] = probability
                 idx = self.move_encoding.uci_to_index(move_uci, root.board)

@@ -660,3 +660,57 @@ def test_root_tactical_cache_invalidates_when_filter_configuration_changes(monke
     assert [child.move for child in filtered_again] == [mate_move]
     assert search._cached_root_mating_moves == [mate_move]
     assert detector_calls["mate_in_one"] == 2
+
+
+
+def test_mate_in_one_action_and_policy_target_share_temperature_distribution(monkeypatch):
+    import src.mcts.search as search_module
+
+    board = chess.Board("7k/5Q2/5K2/8/8/8/8/8 w - - 0 1")
+    encoding = MoveEncoding()
+    root = MCTSNode(board=board)
+    root.expand({
+        move.uci(): 1.0 / board.legal_moves.count()
+        for move in board.legal_moves
+    })
+    mating_moves = [
+        chess.Move.from_uci("f7g7"),
+        next(move for move in board.legal_moves if move.uci() != "f7g7"),
+    ]
+    monkeypatch.setattr(
+        search_module, "find_mate_in_one", lambda position: mating_moves
+    )
+    monkeypatch.setattr(search_module.np.random, "choice", lambda size: size - 1)
+
+    search = MCTS(
+        inference=None,
+        move_encoding=encoding,
+        config=MCTSConfig(
+            num_simulations=0,
+            add_dirichlet_noise=False,
+            temperature=1.0,
+        ),
+    )
+
+    sampled_move = search.select_action(root, temperature=1.0)
+    full_probs, move_probs = search.get_action_probs(root, temperature=1.0)
+
+    assert sampled_move == mating_moves[1]
+    assert move_probs == {
+        mating_moves[0].uci(): 0.5,
+        mating_moves[1].uci(): 0.5,
+    }
+    assert np.isclose(float(full_probs.sum()), 1.0)
+
+    deterministic_move = search.select_action(root, temperature=0.0)
+    deterministic_full_probs, deterministic_move_probs = search.get_action_probs(
+        root, temperature=0.0
+    )
+
+    assert deterministic_move == mating_moves[0]
+    assert deterministic_move_probs == {mating_moves[0].uci(): 1.0}
+    assert np.isclose(float(deterministic_full_probs.sum()), 1.0)
+    assert deterministic_full_probs[
+        encoding.uci_to_index(mating_moves[0].uci(), board)
+    ] == 1.0
+    assert np.count_nonzero(deterministic_full_probs) == 1

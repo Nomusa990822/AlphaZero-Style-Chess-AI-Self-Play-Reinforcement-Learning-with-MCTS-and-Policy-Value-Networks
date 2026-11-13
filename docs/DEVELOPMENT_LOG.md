@@ -737,3 +737,23 @@ Copy this section for each future engineering batch.
 - Added a regression test that enables, disables and re-enables the filter on the same root, checking both eligible-child sets and the mate-in-one cache.
 - This is a correctness/cache-invalidation fix only. No search-strength, speed, training or Elo improvement is claimed.
 - CPU tests and Stockfish audit are pending for the implementation revision. Preserve any failures and only mark it verified after completed successful workflows.
+
+
+
+## 2026-11-13 — Tactical-root cache verification and mate-policy consistency fix
+
+### Verified cache invalidation revision
+- Implementation revision: `1c2d4e472496c3080fd7df9e188bfa504b635d49`.
+- CPU workflow [43424484996](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424484996): **155 tests passed in 4.98 seconds** on Python 3.11. The batched SEE benchmark completed and artifact `see-root-overhead-benchmark` uploaded (ID `14036345110`).
+- Aggregate SEE benchmark: disabled median **0.297020 ms/expansion**, enabled median **0.486085 ms/expansion**, nominal overhead **+63.65%**. This is a synthetic root-expansion microbenchmark with uniform inference, not end-to-end search speed or playing strength.
+- Stockfish tactical audit [43424485735](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424485735): **13/13** curated positions supported, **0** flagged for human review; artifact ID `14036055893`.
+- Duplicate push-event runs [43424476585](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424476585) and [43424476487](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424476487) were cancelled by the shared concurrency groups; the pull-request runs above completed successfully.
+- This verifies the cache-key configuration fix. No training, checkpoint evaluation, Elo or playing-strength experiment was run.
+
+### New correctness issue — verification pending
+- Review found a mismatch in the immediate-mate override: `get_action_probs` assigned equal probability to every mate-in-one move, but `select_action` always chose the first mate, even at positive temperature. At zero temperature, the policy target also remained uniform although action selection was deterministic.
+- This made the recorded self-play policy target inconsistent with the actual move-selection distribution in positions with multiple mating moves.
+- Updated action selection to sample uniformly among cached mating moves at positive temperature and select the first move at effectively zero temperature. Updated policy-target generation to use the matching uniform or one-hot distribution.
+- Added a regression test covering positive-temperature sampling and zero-temperature deterministic selection against the corresponding full action-space targets.
+- This is a self-play/search-policy consistency correction. It does not establish a playing-strength improvement.
+- CPU tests and Stockfish audit are pending for the new implementation revision.

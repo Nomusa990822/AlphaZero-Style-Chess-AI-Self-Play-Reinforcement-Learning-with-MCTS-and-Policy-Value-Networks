@@ -246,3 +246,14 @@ For every meaningful development batch:
 - A regression test covers enabled → disabled → enabled transitions on the same root node.
 - **Verification pending** on the new code revision. The latest verified baseline remains `b06b5df954156620e9824c89cce3b152d8308a31` until its CPU and Stockfish workflows finish successfully.
 - No training, checkpoint evaluation, playing-strength result or Elo claim was produced.
+
+
+
+## Verified baseline and current change — 2026-11-13
+
+- Latest verified code revision: `1c2d4e472496c3080fd7df9e188bfa504b635d49`.
+- CPU workflow [43424484996](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424484996): **155 tests passed in 4.98 seconds**; SEE benchmark artifact ID `14036345110`. Aggregate synthetic root-expansion median overhead was **+63.65%** (0.297020 ms disabled / 0.486085 ms enabled); this is not an end-to-end speed or strength result.
+- Stockfish audit [43424485735](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43424485735): **13/13 positions supported, 0 flagged**, artifact ID `14036055893`.
+- Current unverified change: align immediate-mate action sampling with its self-play policy target. Positive temperature samples uniformly among all mate-in-one moves; zero temperature chooses the first and emits a matching one-hot target.
+- Added regression coverage for both temperature modes. **Verification pending** on the new revision.
+- No training, checkpoint evaluation, playing-strength result or Elo claim was produced.
