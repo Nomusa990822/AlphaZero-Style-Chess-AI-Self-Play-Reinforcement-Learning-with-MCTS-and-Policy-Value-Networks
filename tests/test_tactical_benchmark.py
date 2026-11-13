@@ -30,6 +30,11 @@ def test_tactical_position_rejects_illegal_acceptable_move():
         position(moves=["e2e5"])
 
 
+def test_tactical_position_rejects_unknown_motif():
+    with pytest.raises(ValueError, match="unknown motif"):
+        position(motif="forkish")
+
+
 def test_tactical_position_rejects_structurally_invalid_fen():
     # The kings are adjacent, which cannot occur in a legal chess position.
     invalid_fen = "8/8/8/8/8/8/4k3/4K3 w - - 0 1"
