@@ -4,8 +4,8 @@
 **Status:** Active research and engineering  
 **Tracking branch:** `chess-strength-training-upgrade`  
 **Base branch:** `main`  
-******Latest verified code revision:** `c780bd752ea49a04aa79e869f5df7cbcb1288847` (169 CPU tests passed; CPU run 43436850141; Stockfish review 21/21 positions, 2/2 sequences and 6/6 plies supported, 0 flagged; run 43436850163).n 43435423576; Stockfish tactical review 19/19 positions and 2/2 sequences / 6/6 plies supported, 0 flagged; run 43435423818).n 2.78 seconds; CPU run 43421598036; batched benchmark completed and artifact 14033619165 uploaded; Stockfish audit run 43421598059 passed, with duplicate audit 43421606287 also passed).
-**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, the bounded static exchange evaluator and conservative root-prior integration, and the expanded 21-position tactical corpus with two annotated combinations are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
+********Latest verified code revision:** `a7bb5785f7267f854a66eecd12e13feeb8da9d3e` (170 CPU tests passed; CPU run 43437190901; Stockfish review 22/22 positions, 2/2 sequences and 6/6 plies supported, 0 flagged; run 43437190817).n 43436850141; Stockfish review 21/21 positions, 2/2 sequences and 6/6 plies supported, 0 flagged; run 43436850163).n 43435423576; Stockfish tactical review 19/19 positions and 2/2 sequences / 6/6 plies supported, 0 flagged; run 43435423818).n 2.78 seconds; CPU run 43421598036; batched benchmark completed and artifact 14033619165 uploaded; Stockfish audit run 43421598059 passed, with duplicate audit 43421606287 also passed).
+**Current state:** checkpoint recovery/manifest tooling, the resource-bounded MCTS configuration benchmark, its mocked execution-path/report tests, the bounded forced-mate-in-two root safeguard, the bounded static exchange evaluator and conservative root-prior integration, and the expanded 22-position tactical corpus with two annotated combinations are CI-verified. PUCT parsing rejects non-finite values. No compatible trained checkpoint is currently available, so no real-checkpoint ablation or search-sweep experiment has been run. Training remains manual-only and has not been started. The current branch caches root tactical analysis to avoid repeating costly legal-move scans across search, action selection and policy-target generation; this change is CI-verified.
 **Pull request:** [#1 — Harden chess search, self-play and model evaluation](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/1) (draft; not merged)
 
 > This file is the current snapshot. The chronological engineering record is in [DEVELOPMENT_LOG.md](DEVELOPMENT_LOG.md), and measured training/benchmark results belong in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md).
@@ -408,7 +408,18 @@ For every meaningful development batch:
 - No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.
 
 
-### Final planned balanced-motif candidate — verification pending (2026-11-13)
+### Final planned balanced-motif candidate — verified (2026-11-13)
+- Verified revision: `a7bb5785f7267f854a66eecd12e13feeb8da9d3e`.
 - Added the White deflection line `Nd7+ Nxd7 Qxe4`, where the checking knight offer draws Black's f6-knight away from defending its queen on e4. Source: ChessFlame/Lichess puzzle 08lqs.
-- Candidate corpus: **22 positions (White 12 / Black 10)**. This completes the planned eight-position batch in source coverage; both CPU semantic tests and Stockfish audit are pending.
-- The last verified baseline is 21 positions on `c780bd7`. The previously proposed `Re8+` candidate was rejected and is not included.
+- CPU [43437190901](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190901): **170 passed**. Stockfish [43437190817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190817): **22/22 positions supported, 0 flagged; 2/2 sequences and 6/6 plies supported, 0 flagged**; artifact `14044385081`.
+- Corpus total: **22 positions (White 12 / Black 10)**. The eight planned motif additions are complete: two examples each of deflection, decoy, removal of defender and interference, with both colours represented. The previously proposed `Re8+` candidate was rejected and is not included.
+- No training, checkpoint evaluation or Elo claim was made.
+
+
+### Balanced tactical motif expansion — complete and CI-verified (2026-11-13)
+- Verified revision: `a7bb5785f7267f854a66eecd12e13feeb8da9d3e`.
+- CPU suite: **170 passed** ([43437190901](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190901)).
+- Stockfish finite-depth review: **22/22 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged** ([43437190817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190817), artifact `14044385081`).
+- The eight planned additions are complete: two examples each of deflection, decoy, removal of defender and interference, with White and Black represented for every motif.
+- Corpus total: **22 positions (White 12 / Black 10)**. The unsound proposed `Re8+` candidate was removed after engine review and is not included.
+- No training, checkpoint evaluation, Elo estimate or neural playing-strength claim has been produced.

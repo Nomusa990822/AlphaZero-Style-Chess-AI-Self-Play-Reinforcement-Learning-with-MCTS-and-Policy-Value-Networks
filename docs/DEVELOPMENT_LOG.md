@@ -934,3 +934,14 @@ Copy this section for each future engineering batch.
 - Added semantic tests for the checking offer, knight capture and queen win. Candidate corpus: **22 positions (White 12 / Black 10)**.
 - This is the eighth planned addition across deflection, decoy, removal-of-defender and interference (two examples per motif, both colours). CPU and Stockfish checks are pending. The last verified baseline remains 21 positions on `c780bd7`.
 - The earlier unsound `Re8+` deflection candidate remains excluded. No training or checkpoint evaluation was run.
+
+
+### White deflection counterpart — verified; eight-position balanced batch complete (2026-11-13)
+- Verified feature-branch revision: `a7bb5785f7267f854a66eecd12e13feeb8da9d3e`.
+- CPU workflow [43437190901](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190901): **170 passed in 4.11 seconds**.
+- Stockfish audit [43437190817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190817): **22/22 positions supported, 0 flagged; 2/2 sequences and 6/6 annotated plies supported, 0 flagged**. Audit artifact `14044385081`.
+- Verified White deflection: `31.Nd7+ Nxd7 32.Qxe4`. The knight offer draws Black's f6-knight away from protecting the queen on e4.
+- Initial workflow attempts [43437181630](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437181630) (CPU) and [43437181752](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437181752) (Stockfish) were cancelled; replacement CPU [43437190901](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190901) and Stockfish [43437190817](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43437190817) passed on the same revision. The cancellations are not failures.
+- The planned eight-position motif expansion is now complete and balanced across both colours: deflection (White/Black), decoy (White/Black), removal of defender (White/Black), and interference (White/Black). The rejected `Re8+` candidate is excluded.
+- Corpus total: **22 positions (White 12 / Black 10)**. The Stockfish audit is finite-depth support, not proof of every possible defence or of neural-network strength.
+- No training or checkpoint evaluation was run. No Elo or playing-strength claim is made.
