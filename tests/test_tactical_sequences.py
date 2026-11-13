@@ -41,7 +41,7 @@ def test_sequence_evaluator_scores_complete_combinations():
     result = evaluate_tactical_sequences(sequences, lambda board: next(selected))
 
     assert result.total_sequences == 7
-    assert result.completed_sequences == 5
+    assert result.completed_sequences == 7
     assert result.attempted_plies == 25
     assert result.correct_plies == 25
     assert result.illegal_moves == 0
