@@ -8,7 +8,7 @@ measure move-selection quality independently of training and CI correctness.
 Store one JSON object per line in a `.jsonl` file:
 
 ```json
-{"id":"unique-id","motif":"fork","fen":"FEN position","acceptable_moves":["e2e4"]}
+{"id":"unique-id","motif":"fork","fen":"FEN position","acceptable_moves":["e2e4"],"annotation":"Explain the motif and accepted move."}
 ```
 
 - `id`: stable, unique position identifier.
@@ -21,7 +21,7 @@ Store one JSON object per line in a `.jsonl` file:
 - `acceptable_moves`: one or more acceptable first moves in UCI notation.
   Multiple moves are supported where more than one continuation is sound.
 
-The loader validates FENs, terminal positions, duplicate IDs, and move legality.
+The loader validates FENs, terminal positions, duplicate IDs, move legality,\ncontrolled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
