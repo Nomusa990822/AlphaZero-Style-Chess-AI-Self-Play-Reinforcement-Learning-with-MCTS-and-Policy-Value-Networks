@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 24
+    assert len(positions) >= 28
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
@@ -36,8 +36,8 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
         sides_to_move.add(board.turn)
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
-    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 13
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 11
+    assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 15
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 13
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
@@ -99,6 +99,26 @@ def test_trapped_corner_bishops_are_annotated_for_both_colours():
         case = positions[position_id]
         board = chess.Board(case.fen)
         assert case.motif == "trapped_piece"
+        assert board.turn == turn
+        assert move in case.acceptable_moves
+        assert chess.Move.from_uci(move) in board.legal_moves
+
+
+def test_defensive_interpositions_and_checker_captures_cover_both_colours():
+    path = Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl"
+    positions = {case.position_id: case for case in load_tactical_positions(path)}
+
+    expected = {
+        "white-bishop-interposes-against-rook-check-001": (chess.WHITE, "d3e2"),
+        "black-bishop-interposes-against-rook-check-001": (chess.BLACK, "d6e7"),
+        "white-bishop-captures-checking-rook-001": (chess.WHITE, "c6e8"),
+        "black-bishop-captures-checking-rook-001": (chess.BLACK, "c3e1"),
+    }
+    for position_id, (turn, move) in expected.items():
+        case = positions[position_id]
+        board = chess.Board(case.fen)
+        assert case.motif == "defensive_resource"
+        assert board.is_check()
         assert board.turn == turn
         assert move in case.acceptable_moves
         assert chess.Move.from_uci(move) in board.legal_moves
