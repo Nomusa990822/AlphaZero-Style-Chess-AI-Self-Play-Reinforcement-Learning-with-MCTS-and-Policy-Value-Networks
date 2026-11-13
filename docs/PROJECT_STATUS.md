@@ -280,3 +280,10 @@ For every meaningful development batch:
 - Stockfish audit [43427256921](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427256921): original single-position corpus **13/13 supported, 0 flagged**, artifact `14038297049`.
 - The first CPU run's two test-fixture failures are preserved in the history and corrected in `b10ce6b6faefc2a5ae6351817dc9afc639b81755`; corrected suite passed.
 - Sequence evaluation is limited to annotated principal-variation line-following. It does not yet establish forcedness against every defence. Individual motif corpus expansion and tactical-search improvements remain outstanding. No model training or checkpoint/playing-strength evaluation was run.
+
+
+### Latest tactical-combination audit — CI verified
+- Revision `2944ad7326880e7a020219c2652b33525df20c5a` adds Stockfish review of every annotated ply in the two sequence examples.
+- CPU workflow [43427628807](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427628807): **161 passed in 3.99 seconds**; SEE benchmark completed. Synthetic root-expansion SEE overhead: +67.25%, not a full-search or strength result.
+- Stockfish audit [43427628961](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43427628961): original corpus **13/13 supported, 0 flagged**; combination corpus **2/2 sequences and 6/6 plies supported, 0 flagged**; artifact `14037203389`.
+- The sequence audit follows the annotated principal variation and is not a proof of forcedness against all defences. Individual motif corpus expansion and direct search improvements remain outstanding. No training or checkpoint strength evaluation was run.
