@@ -213,7 +213,7 @@ def test_self_play_game_report_contains_pgn_and_termination(tmp_path):
         moves=["e2e4", "e7e5"],
         samples=2,
         elapsed_seconds=1.25,
-        ended_by_adjudication=True,
+        ended_by_move_limit=True,
     )
 
     record = json.loads((tmp_path / "self_play_games.jsonl").read_text().strip())
