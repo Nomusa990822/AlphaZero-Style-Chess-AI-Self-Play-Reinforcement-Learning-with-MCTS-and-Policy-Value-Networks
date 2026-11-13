@@ -293,3 +293,12 @@ For every meaningful development batch:
 - The semantic regression checks the bishop check on d4, queen capture on d4, and ...Qf1# continuation.
 - CPU CI and Stockfish audit have not yet confirmed this addition. Until both complete, the last verified corpus remains 14/14 supported.
 - Planned broader motif expansion remains in progress; do not count this single candidate as completion of the eight-position batch.
+
+
+### Deflection corpus expansion — verified on corrected revision (2026-11-13)
+- Verified branch revision: `7bdf9bb25b96ae003a8c3f75f5f4d67a6c97db3e`.
+- CPU workflow [43429806549](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429806549): **163 tests passed in 4.29 seconds**; SEE microbenchmark artifact `14039481148`, aggregate synthetic root-expansion median overhead +63.24%.
+- Stockfish audit [43429806151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43429806151): **15/15 positions supported, 0 flagged**; both tactical sequences and all six annotated plies supported, 0 flagged; artifact `14038701315`.
+- The 15-position corpus now includes one additional Black-to-move deflection example (White 8 / Black 7). The one-position addition is verified; the broader eight-position expansion remains outstanding.
+- Earlier cancelled runs are retained in the development history. The cancelled runs are not counted as failures.
+- Stockfish finite-depth support is a review signal, not exhaustive proof of forcedness or motif-label correctness. No checkpoint evaluation or training was run; no playing-strength or Elo claim is made.
