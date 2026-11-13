@@ -220,3 +220,19 @@ For every meaningful development batch:
 ### In progress — CI concurrency deduplication
 - CPU-test and Stockfish-audit workflows now share concurrency groups between push and pull-request events for the same source branch, preventing duplicate simultaneous runs and reducing runner contention.
 - This should make the benchmark environment less noisy and avoid unnecessary CI usage. The workflow configuration awaits Actions verification.
+
+
+## Latest verified branch state — 2026-11-13
+
+- Branch head: `223b2423eb8980c9d5d080384685cceaf395d735` (CI concurrency deduplication; no chess search code changed).
+- Latest verified search implementation: `8124b000aef61645b57fd3f686ef81a13174530d`; the quiet-position SEE fast path remains in place.
+- CPU workflow [43423663811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423663811): **154 passed in 3.87 seconds**; SEE benchmark completed and artifact ID `14035332107` uploaded.
+- Stockfish audit [43423663646](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423663646): **13/13 positions supported, 0 flagged**, artifact ID `14035351972`.
+- CI deduplication verified: duplicate push runs [43423653700](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423653700) and [43423653471](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423653471) were cancelled in favour of the matching pull-request runs. This is expected concurrency behaviour, not a failed check.
+- Latest isolated-run SEE benchmark medians: starting position 0.395490 ms disabled / 0.422475 ms enabled (+6.82%); simple capture +28.76%; poisoned queen capture +48.78%; promotion +70.50%; aggregate +67.29%. These remain synthetic microbenchmark results, not full-search speed or playing strength. Keep the current SEE configuration unchanged.
+- No compatible trained checkpoint is available in the repository; no new training or checkpoint evaluation has occurred. No Elo or neural playing-strength claim is established.
+
+### Next work
+- Prioritise correctness/strength evaluation infrastructure and search improvements that can be validated without training or paid compute.
+- Preserve the existing experiment protocol. Do not run training or claim strength gains until a compatible checkpoint exists and paired evaluation has actually completed.
+- Avoid redundant CI-triggering documentation commits; bundle tracking updates with the next implementation batch.

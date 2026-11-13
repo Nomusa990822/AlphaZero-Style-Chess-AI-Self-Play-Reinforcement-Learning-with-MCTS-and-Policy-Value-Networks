@@ -702,3 +702,22 @@ Copy this section for each future engineering batch.
 - Workflow configuration change: pending GitHub Actions.
 - Previous verified code revision `8124b000aef61645b57fd3f686ef81a13174530d`: 154 CPU tests passed on both CPU runs; both Stockfish audit runs passed.
 - Previous benchmark artifacts `14034344758` and `14034629057` were produced by concurrent jobs and are recorded as noisy, not as proof of a performance improvement.
+
+
+## 2026-11-13 — Verify CI concurrency deduplication and isolated SEE benchmark
+
+### Verification
+- Workflow configuration revision: `223b2423eb8980c9d5d080384685cceaf395d735`.
+- Push-event CPU run [43423653700](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423653700) and push-event tactical audit [43423653471](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423653471) were automatically cancelled when the matching pull-request runs entered the shared branch concurrency groups. These are expected duplicate cancellations, not test failures.
+- Pull-request CPU run [43423663811](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423663811): **154 tests passed in 3.87 seconds** on Python 3.11. The batched SEE benchmark completed and artifact `see-root-overhead-benchmark` uploaded (artifact ID `14035332107`).
+- Pull-request Stockfish audit [43423663646](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423663646): **passed**; all **13/13** curated positions were supported and **0** were flagged for human review. The audit artifact uploaded (ID `14035351972`).
+- The concurrency change therefore prevented the same-commit push and pull-request events from consuming two complete sets of runners. The surviving pull-request workflows verified the branch revision; the push-run cancellations are recorded as part of the history.
+
+### Latest SEE benchmark observations
+- With one surviving CPU workflow, the starting-position median was 0.395490 ms/expansion with SEE disabled and 0.422475 ms enabled (**+6.82%** nominal).
+- Other per-position nominal overheads were simple capture **+28.76%**, poisoned queen capture **+48.78%**, and promotion **+70.50%**. The aggregate median was 0.220435 ms disabled versus 0.368765 ms enabled (**+67.29%**).
+- These are synthetic CPU root-expansion microbenchmarks with uniform inference, not full MCTS throughput or end-to-end move latency. A single isolated run is useful diagnostic evidence but is not sufficient to tune the default. The quiet-position fast path reduces the no-candidate overhead, while tactical candidates still incur SEE work. Keep SEE behavior/defaults unchanged until repeated controlled profiling establishes a robust benefit/cost.
+- No real checkpoint, training run, playing-strength improvement or Elo result is claimed.
+
+### Follow-up
+- Continue engine correctness and search-quality work; do not spend further CI cycles repeating the same benchmark unless a code change or a controlled profiling question justifies it.
