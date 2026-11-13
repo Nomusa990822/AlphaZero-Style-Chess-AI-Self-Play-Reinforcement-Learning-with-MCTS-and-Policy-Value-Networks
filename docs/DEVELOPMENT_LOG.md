@@ -1,3 +1,19 @@
+## 2026-11-13 — Extend root tactical-search regression coverage to Black and forced-loss positions
+
+### Changes
+- Added a Black-to-move MCTS simulation regression proving that all root simulations are allocated to immediate mating moves when available.
+- Added a forced-loss MCTS regression proving that, when every legal move permits an immediate opponent mate, the search candidate set retains every legal root move rather than collapsing to an empty set.
+- These tests cover both colours and the forced-loss fallback in the actual simulation path, complementing the existing White mate-in-one simulation test.
+
+### Verification
+- Test-only revision: `187ad05954a70f28c7c3576f4d70139f4c1dbdc5`.
+- CPU test workflow for this revision: **pending**.
+- Stockfish audit workflow for this test-only revision: **pending**; no corpus or engine-audit implementation changed.
+- No real-checkpoint benchmark, training run, or playing-strength measurement was produced.
+
+### Follow-up
+- Inspect CI. Preserve any failure with the exact failing assertion and repair; record the first successful run for this revision.
+
 ## 2026-11-13 — Apply root tactical constraints during MCTS simulation
 
 ### Changes
