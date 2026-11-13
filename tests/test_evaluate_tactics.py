@@ -98,6 +98,7 @@ def test_main_runs_deterministic_search_and_writes_json_report(
             illegal=0,
             accuracy=1.0,
             by_motif={"fork": {"total": 1, "correct": 1, "accuracy": 1.0}},
+            by_color={"white": {"total": 1, "correct": 1, "illegal": 0, "accuracy": 1.0}},
             failures=(),
         )
 
@@ -115,6 +116,7 @@ def test_main_runs_deterministic_search_and_writes_json_report(
     assert report["device"] == "cpu"
     assert report["simulations"] == 17
     assert report["accuracy"] == 1.0
+    assert report["by_color"]["white"]["accuracy"] == 1.0
     assert report["failures"] == []
     assert captured["config"] == {
         "num_simulations": 17,
