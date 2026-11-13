@@ -6,13 +6,14 @@
 - These tests cover both colours and the forced-loss fallback in the actual simulation path, complementing the existing White mate-in-one simulation test.
 
 ### Verification
-- Test-only revision: `187ad05954a70f28c7c3576f4d70139f4c1dbdc5`.
-- CPU test workflow for this revision: **pending**.
-- Stockfish audit workflow for this test-only revision: **pending**; no corpus or engine-audit implementation changed.
+- Test-only code revision: `187ad05954a70f28c7c3576f4d70139f4c1dbdc5`; the final workflow-triggering branch head also included the documentation-only tracking update `c1720e7b70ee4d48f78e7c79af565f7576444dcb`.
+- CPU test workflow [43406633328](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406633328): **passed**; all **115 tests passed** in 3.52 seconds on Python 3.11.
+- Stockfish tactical audit workflow [43406633323](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406633323): **passed**; finite-depth review and report upload completed successfully. No tactical corpus or audit implementation changed in this test-only batch.
+- Superseded runs [43406629168](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406629168) and [43406629166](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43406629166) also completed successfully on the same final branch head.
 - No real-checkpoint benchmark, training run, or playing-strength measurement was produced.
 
 ### Follow-up
-- Inspect CI. Preserve any failure with the exact failing assertion and repair; record the first successful run for this revision.
+- Continue with a reproducible, resource-bounded search-quality benchmark. Preserve every future failure and successful CI run in this log.
 
 ## 2026-11-13 — Apply root tactical constraints during MCTS simulation
 
