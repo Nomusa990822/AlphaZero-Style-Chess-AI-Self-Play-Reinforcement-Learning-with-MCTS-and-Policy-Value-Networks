@@ -239,7 +239,18 @@ remain annotated principal variations, not forced-line proofs.
 The position corpus now includes a matched pair of knight double attacks:
 White's knight attacks a queen and rook in one move, and Black's knight does
 the same against White. Both examples are non-checking, so the motif is
-distinguished from a checking fork. The corpus now contains thirty-four
-positions, balanced at eighteen White-to-move and sixteen Black-to-move. The
+distinguished from a checking fork. The corpus now contains thirty-six
+positions, balanced at nineteen White-to-move and seventeen Black-to-move. The
 paired examples improve colour coverage but do not make the corpus large
 enough for a general tactical-strength claim.
+
+
+## Overloaded defenders
+
+The position corpus now includes a colour-balanced overloaded-defender pair.
+In the White-to-move example, a checking rook capture forces a black knight
+to abandon its defence of the queen; the Black-to-move example mirrors the
+same idea against White. The semantic tests verify that the same knight is
+the sole defender of both major pieces before the forcing check, that it
+captures the checking rook, and that the queen can then be taken. These are
+curated motif demonstrations, not a broad estimate of tactical strength.
