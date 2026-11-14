@@ -408,8 +408,8 @@ def test_white_knight_deflection_wins_the_black_queen():
 def test_counterchecks_resolve_the_original_check_and_check_the_opponent():
     cases = cases_by_id()
     expected = {
-        "white-bishop-counterchecks-while-interposing-001": ("b5e2", chess.WHITE, chess.H5),
-        "black-bishop-counterchecks-while-interposing-001": ("b4e7", chess.BLACK, chess.H4),
+        "white-bishop-counterchecks-while-interposing-001": ("b5e2", chess.WHITE, chess.E2),
+        "black-bishop-counterchecks-while-interposing-001": ("b4e7", chess.BLACK, chess.E7),
     }
     for position_id, (uci, mover, opposing_king_square) in expected.items():
         board = chess.Board(cases[position_id].fen)
