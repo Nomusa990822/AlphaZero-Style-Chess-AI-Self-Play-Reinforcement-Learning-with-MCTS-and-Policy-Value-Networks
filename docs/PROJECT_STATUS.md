@@ -584,3 +584,11 @@ For every meaningful development batch:
 - The finite-depth audit is not proof of tactical correctness, a unique best move, or that every annotated reply is forced.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
 - No Elo assessment was performed.
+
+
+## Defensive countercheck semantic regression tests — pending CI (2026-11-14)
+
+- Regression coverage now checks the actual defensive mechanism for both colours: initial check, legal bishop interposition, resolution of the original check, countercheck of the opposing king, and a legal king response.
+- No benchmark positions or annotated sequences were added; corpus counts remain 35 positions and 11 sequences / 37 annotated plies.
+- The CPU suite and Stockfish audit must pass before this test/documentation-only upgrade is accepted.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
