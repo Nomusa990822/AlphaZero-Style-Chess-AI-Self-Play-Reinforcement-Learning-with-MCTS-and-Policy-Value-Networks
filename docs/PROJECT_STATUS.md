@@ -581,3 +581,5 @@ For every meaningful development batch:
 - The third iteration was rejected because the added g8-rook enabled a forced mating attack. The latest FEN removes that rook but retains the Black queen defending d4; both checks must be rerun.
 
 - The latest candidate changes the fork geometry: `...Ne4` attacks the White queen on c3 and rook on f6. A diagonal queen defence of the rook creates the overload; pawns protect the knight and its two possible capture squares. Both branches are covered by semantic tests. Stockfish review remains pending.
+
+- The fourth candidate was refuted because Black could capture the queen immediately with `...bxc3`. The current iteration removes the pawns so the intended knight fork is the tactical mechanism under review; both required checks remain pending.
