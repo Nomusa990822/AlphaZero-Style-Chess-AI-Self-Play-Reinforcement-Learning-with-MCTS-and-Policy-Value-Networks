@@ -161,7 +161,7 @@ def test_counterchecking_interpositions_and_attacker_removal_cover_both_colours(
         assert board.piece_at(queen_square) == chess.Piece(chess.QUEEN, turn)
         assert not board.is_attacked_by(attacker_color, queen_square)
 
-def test_non_checking_double_attacks_cover_both_colours():
+def test_white_non_checking_double_attack_has_valid_targets():
     path = Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl"
     positions = {case.position_id: case for case in load_tactical_positions(path)}
     expected = {
