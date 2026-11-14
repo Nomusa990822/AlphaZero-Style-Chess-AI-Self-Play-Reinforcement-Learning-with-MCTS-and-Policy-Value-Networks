@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 35
+    assert len(positions) == 35
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
