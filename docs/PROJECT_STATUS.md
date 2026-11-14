@@ -568,5 +568,7 @@ For every meaningful development batch:
 - Each line demonstrates the checking rook capture, the knight's forced recapture away from its second defensive duty, and the resulting queen capture.
 - Sequence corpus increases from **7 combinations / 25 annotated plies** to **9 combinations / 31 annotated plies**. The position corpus remains **35 positions** (19 White-to-move, 16 Black-to-move).
 - Added sequence-loader/evaluator regression expectations for both colours and the expanded motif coverage.
-- CPU and Stockfish verification are pending. The new lines are not considered engine-supported until both required checks pass.
+- CPU workflow [43638890941](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890941): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43638890935](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890935): **SUCCESS; 35/35 positions supported, 0 flagged; 9/9 sequences and 31/31 annotated plies supported**. Audit artifact `14131357745`.
+- Finite-depth engine support does not prove the motif labels or show that every illustrative reply is forced. The new lines reuse the already curated overloaded-defender positions.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
