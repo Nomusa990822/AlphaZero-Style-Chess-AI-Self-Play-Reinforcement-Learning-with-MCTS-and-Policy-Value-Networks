@@ -193,7 +193,7 @@ def test_black_knight_double_attack_targets_queen_and_rook_without_check():
     assert board.turn == chess.BLACK
     assert board.piece_at(chess.F3) == chess.Piece(chess.QUEEN, chess.WHITE)
     assert board.piece_at(chess.F5) == chess.Piece(chess.ROOK, chess.WHITE)
-    assert chess.F5 in board.attackers(chess.WHITE, chess.F5) or chess.F3 in board.attackers(chess.WHITE, chess.F5)
+    assert chess.F3 in board.attackers(chess.WHITE, chess.F5)
     assert move in board.legal_moves
     board.push(move)
 
@@ -203,7 +203,7 @@ def test_black_knight_double_attack_targets_queen_and_rook_without_check():
     assert chess.D4 in board.attackers(chess.BLACK, chess.F5)
     assert not board.is_attacked_by(chess.WHITE, chess.D4)
 
-    queen_escape = chess.Move.from_uci("f3f2")
+    queen_escape = chess.Move.from_uci("f3b3")
     assert queen_escape in board.legal_moves
     board.push(queen_escape)
     rook_capture = chess.Move.from_uci("d4f5")
