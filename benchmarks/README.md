@@ -205,7 +205,13 @@ not run training or claim anything about playing strength.
 ## Multi-motif tactical combinations
 
 The separate `tactical_sequences.jsonl` corpus records annotated principal
-variations that combine motifs across several plies. It currently contains eleven annotated combinations, including checking forks, discovered attacks, decoys, removal of defenders, zwischenzugs, overloaded defenders and defensive counterchecks. The sequence evaluator reports complete-line
+variations that combine motifs across several plies. It currently contains eleven annotated combinations, including checking forks, discovered attacks, decoys, removal of defenders, zwischenzugs, overloaded defenders and defensive counterchecks. Dedicated regression tests also verify the defensive countercheck
+mechanism: the initial side is in check, the bishop interposition resolves
+that check while checking the opposing king, and the annotated king reply is
+legal. This supplements move-legality replay with motif-specific assertions;
+it still does not prove every reply is forced.
+
+The sequence evaluator reports complete-line
 success, per-ply accuracy, colour and phase breakdowns.
 
 Run the sequence evaluator with a compatible trained checkpoint:
