@@ -65,7 +65,7 @@ def test_defensive_countercheck_sequences_really_resolve_check_and_countercheck(
         assert board.is_check()
         assert board.is_attacked_by(not board.turn, details["attacked_king"])
 
-        king_move = chess.Move.from_uci(sequence.plies[1].acceptable_moves[0])
+        king_move = chess.Move.from_uci(sorted(sequence.plies[1].acceptable_moves)[0])
         assert king_move in board.legal_moves
         assert board.piece_at(details["king_square"]) == chess.Piece(chess.KING, not board.turn)
 
