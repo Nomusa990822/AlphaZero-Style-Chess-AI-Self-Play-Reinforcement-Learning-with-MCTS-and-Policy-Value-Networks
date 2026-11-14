@@ -1194,3 +1194,24 @@ Copy this section for each future engineering batch.
 - Existing non-empty best checkpoints are preserved and are never overwritten by this recovery step. A failed download/hash check stops before dependency installation.
 - Updated the training recovery guide, README and project status. No checkpoint was downloaded into Git, no checkpoint was committed, and no training/benchmark was run.
 - The manual `confirm_training=YES` gate and six-hour timeout remain unchanged. PR CPU tests and Stockfish audit are required before merge.
+
+
+## 2026-11-14 — Replace fixed candidate promotion cutoff with incumbent-relative evidence gate
+
+### Findings
+- The training entry point used a fixed required_promotion_score=0.55, while the pipeline default was 0.52 and the smoke pilot used 0.50.
+- Candidate scores are head-to-head match scores against the current champion, not absolute model-quality scores. A score below 0.50 means the candidate lost the comparison; scores from different opponents or protocols are not directly comparable.
+- The evaluator already calculated a one-sided 90% lower confidence bound, but promotion policy was split across configuration values and was not explicit about minimum sample size.
+
+### Changes
+- Removed the configurable fixed score cutoff. Promotion now requires a score strictly above 0.50 against the current champion and a one-sided 90% lower confidence bound strictly above 0.50.
+- Added a minimum of 24 colour-balanced games. The two-game smoke pilot can no longer promote a candidate.
+- Retained deterministic MCTS with no exploration noise and the evaluator's hard failure on illegal moves.
+- Added explicit rejection reasons to console output and the iteration JSON summary, including sample count, score and confidence-bound failures.
+- Added configuration validation for an even number of at least two gating games.
+- Added regression tests for incumbent wins, marginal scores, ties, insufficient samples and confidence-bound rejection.
+- Updated the root README, benchmark guide, training guide and project status. The baseline recovery change from PR #26 is recorded as merged at 560163afe1050a2a4fc18fd30b320d06969b2242.
+
+### Verification
+- This is an engineering/policy change only. No training run, checkpoint promotion, tactical benchmark or Elo assessment was performed.
+- CPU tests and Stockfish audit are required on the PR revision before merge.

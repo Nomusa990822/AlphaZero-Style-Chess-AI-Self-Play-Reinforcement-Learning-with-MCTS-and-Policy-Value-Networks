@@ -15,6 +15,12 @@ from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 
 
+# Promotion is deliberately evidence-based. A 24-game minimum prevents the
+# two-game smoke pilot from ever replacing a champion, even with a perfect score.
+MIN_PROMOTION_GAMES = 24
+INCUMBENT_SCORE = 0.50
+
+
 @dataclass
 class EvaluationResult:
     """Evaluation summary from the perspective of model A."""
@@ -116,14 +122,35 @@ class NetworkEvaluator:
 
         return EvaluationResult(wins, losses, draws, num_games)
 
+    @staticmethod
+    def promotion_rejection_reasons(result: EvaluationResult) -> list[str]:
+        """Explain which incumbent-relative promotion requirements were not met."""
+        reasons: list[str] = []
+        if result.games_played < MIN_PROMOTION_GAMES:
+            reasons.append(
+                f"only {result.games_played} evaluation games; "
+                f"at least {MIN_PROMOTION_GAMES} are required"
+            )
+        if result.score <= INCUMBENT_SCORE:
+            reasons.append(
+                f"candidate score {result.score:.3f} did not exceed the "
+                f"incumbent baseline of {INCUMBENT_SCORE:.2f}"
+            )
+        if result.lower_confidence_bound <= INCUMBENT_SCORE:
+            reasons.append(
+                f"one-sided 90% lower confidence bound "
+                f"({result.lower_confidence_bound:.3f}) did not exceed "
+                f"{INCUMBENT_SCORE:.2f}"
+            )
+        return reasons
+
     def should_promote_candidate(
         self,
         candidate_inference: ModelInference,
         best_inference: ModelInference,
-        num_games: int = 12,
-        required_score: float = 0.51,
+        num_games: int = MIN_PROMOTION_GAMES,
     ) -> tuple[bool, EvaluationResult]:
-        """Promote only when the candidate reaches the configured score."""
+        """Promote only on a sufficiently sampled, statistically supported win over the incumbent."""
         result = self.compare_models(candidate_inference, best_inference, num_games)
-        promoted = result.score >= required_score and result.lower_confidence_bound > 0.50
+        promoted = not self.promotion_rejection_reasons(result)
         return promoted, result

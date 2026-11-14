@@ -59,7 +59,6 @@ def main() -> None:
         eval_temperature=0.0,
 
         gating_games=24,
-        required_promotion_score=0.55,
 
         checkpoint_dir="data/checkpoints",
         log_dir="data/logs",
@@ -93,7 +92,6 @@ def main() -> None:
     print(f"  eval_dirichlet_epsilon={pipeline_config.eval_dirichlet_epsilon}")
     print(f"  eval_temperature={pipeline_config.eval_temperature}")
     print(f"  gating_games={pipeline_config.gating_games}")
-    print(f"  required_promotion_score={pipeline_config.required_promotion_score}")
     print(f"  resume_best_model={pipeline_config.resume_best_model}")
 
     pipeline = AlphaZeroPipeline(

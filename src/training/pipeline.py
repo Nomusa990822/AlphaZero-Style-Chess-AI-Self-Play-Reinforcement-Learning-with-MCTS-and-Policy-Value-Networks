@@ -17,7 +17,7 @@ from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.checkpoint import checkpoint_exists, load_checkpoint, save_checkpoint
-from src.training.evaluator import NetworkEvaluator
+from src.training.evaluator import INCUMBENT_SCORE, MIN_PROMOTION_GAMES, NetworkEvaluator
 from src.training.metrics import IterationMetrics, MetricsLogger
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGameResult, SelfPlayGenerator
@@ -61,8 +61,7 @@ class PipelineConfig:
     eval_dirichlet_epsilon: float = 0.25
     eval_temperature: float = 0.0
 
-    gating_games: int = 10
-    required_promotion_score: float = 0.52
+    gating_games: int = MIN_PROMOTION_GAMES
 
     checkpoint_dir: str = "data/checkpoints"
     log_dir: str = "data/logs"
@@ -71,6 +70,10 @@ class PipelineConfig:
     latest_candidate_checkpoint: str = "data/checkpoints/latest_candidate.pt"
 
     resume_best_model: bool = False
+
+    def __post_init__(self) -> None:
+        if self.gating_games < 2 or self.gating_games % 2 != 0:
+            raise ValueError("gating_games must be an even number of at least 2 for colour balance.")
 
 
 class AlphaZeroPipeline:
@@ -340,7 +343,6 @@ class AlphaZeroPipeline:
             candidate_inference=candidate_inference,
             best_inference=best_inference,
             num_games=self.config.gating_games,
-            required_score=self.config.required_promotion_score,
         )
 
         print(
@@ -351,6 +353,10 @@ class AlphaZeroPipeline:
         )
 
         if should_promote:
+            print(
+                "Promotion gate passed: candidate beat the current champion "
+                "with the required game count and 90% confidence."
+            )
             print("Candidate promoted to BEST model.")
             self.best_model.load_state_dict(candidate_model.state_dict())
             self.best_trainer.optimizer.load_state_dict(candidate_trainer.optimizer.state_dict())
@@ -363,6 +369,8 @@ class AlphaZeroPipeline:
             )
         else:
             print("Candidate rejected. Keeping current BEST model.")
+            for reason in evaluator.promotion_rejection_reasons(eval_result):
+                print(f"  Promotion gate: {reason}.")
 
         final_epoch = train_history[-1] if train_history else None
         metrics = IterationMetrics(
@@ -390,6 +398,16 @@ class AlphaZeroPipeline:
             {
                 "iteration": iteration,
                 "metrics": asdict(metrics),
+                "promotion_policy": {
+                    "minimum_games": MIN_PROMOTION_GAMES,
+                    "candidate_score_must_exceed": INCUMBENT_SCORE,
+                    "one_sided_confidence_level": 0.90,
+                    "lower_confidence_bound_must_exceed": INCUMBENT_SCORE,
+                    "colour_balanced": True,
+                    "deterministic_mcts": True,
+                    "illegal_move": "evaluation aborts",
+                    "rejection_reasons": evaluator.promotion_rejection_reasons(eval_result),
+                },
                 "evaluation_result": {
                     "wins": eval_result.wins,
                     "losses": eval_result.losses,

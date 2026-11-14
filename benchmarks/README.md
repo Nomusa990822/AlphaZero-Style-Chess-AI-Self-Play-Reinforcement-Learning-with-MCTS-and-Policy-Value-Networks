@@ -268,3 +268,31 @@ The corpus currently retains the validated White-to-move knight double-attack ex
 ## Latest tactical corpus verification — 2026-11-14
 
 The current corpus snapshot contains **35 tactical positions** (19 White-to-move, 16 Black-to-move) and **11 annotated combinations / 37 plies**. The latest semantic-regression revision passed CPU workflow [43641897416](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897416) with **189 tests passed**. Stockfish audit [43641897417](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417) supported **35/35 positions and 11/11 sequences / 37/37 annotated plies, zero flagged**; artifact [14132283194](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417). This finite-depth review is a consistency check, not a playing-strength or Elo result.
+
+
+## Incumbent-relative model promotion policy
+
+A candidate is evaluated directly against the currently promoted champion. Its
+match score is relative to that opponent: win = 1, draw = 0.5, loss = 0.
+It is not an absolute model-quality score and must not be compared with scores
+from unrelated opponents or separate evaluation protocols.
+
+Promotion has no arbitrary 0.55 cutoff. A candidate is promoted only when **all**
+of these checks pass:
+
+1. At least 24 games are completed.
+2. Games are colour-balanced (an even number, with each model playing both
+   colours equally) and use deterministic MCTS without exploration noise.
+3. The candidate's match score is strictly greater than 0.50, meaning it
+   outscored the current champion.
+4. The one-sided 90% lower confidence bound is also strictly greater than
+   0.50, providing evidence that the advantage is not just a small-sample
+   fluctuation.
+5. Every move returned by either evaluator agent is legal. An illegal move
+   aborts evaluation; it is never counted as a win or silently ignored.
+
+If any condition fails, the current champion and its checkpoint are preserved.
+The newly trained candidate remains separately available as latest_candidate.
+The two-game smoke pilot is therefore never eligible for promotion. Every new
+candidate is compared with whichever champion is currently selected at that
+iteration, so the standard is relative to the best model already retained.
