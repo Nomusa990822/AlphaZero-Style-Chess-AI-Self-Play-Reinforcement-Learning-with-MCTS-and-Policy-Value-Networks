@@ -11,4 +11,4 @@ Use these documents as the project's source of truth:
 
 ## How we keep the record current
 
-Every meaningful implementation batch should update the development log and project status in the same pull request. Only actual training or benchmark runs belong in the experiment log. Preserve raw outputs under `data/logs/` and link to them rather than replacing them with manually transcribed estimates.
+Every meaningful implementation batch should update the development log and project status in the same pull request. Changes to tactical data must also update `benchmarks/README.md`, the root `README.md`, affected regression tests, and any relevant technical notes. Only actual training or benchmark runs belong in the experiment log. Preserve raw outputs under `data/logs/` and link to them rather than replacing them with manually transcribed estimates.
