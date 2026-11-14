@@ -658,7 +658,7 @@ $$
 
 Where $W$ is candidate wins, $D$ is draws and $G$ is the total number of games. The candidate and current best alternate colours during evaluation.
 
-**The current configured promotion threshold is 0.55.**
+There is no fixed 0.55 promotion cutoff. The candidate must outperform the current champion (score strictly above 0.50) and pass the minimum-sample and confidence checks described below.
 
 ```mermaid
 flowchart TB
@@ -667,8 +667,8 @@ flowchart TB
     C["Head-to-Head Evaluation"]
     D["Alternate White and Black"]
     E["Record Wins, Losses and Draws"]
-    F["Calculate Candidate Score"]
-    G{"Score ≥ 0.55?"}
+    F["Calculate Score and 90% Lower Confidence Bound"]
+    G{"At least 24 games, score > 0.50, and 90% LCB > 0.50?"}
     H["Promote Candidate"]
     I["Save as Best Model"]
     J["Reject Candidate"]
@@ -678,8 +678,8 @@ flowchart TB
     A --> C
     B --> C
     C --> D --> E --> F --> G
-    G -->|Yes| H --> I --> L
-    G -->|No| J --> K --> L
+    G -->|All checks pass| H --> I --> L
+    G -->|Any check fails| J --> K --> L
 
     classDef evaluation fill:#172554,stroke:#60a5fa,color:#eff6ff
     classDef decision   fill:#3f2b13,stroke:#fbbf24,color:#fffbeb
@@ -720,7 +720,7 @@ The project has progressed beyond architecture design into actual training exper
 | Training MCTS simulations | 80 |
 | Evaluation MCTS simulations | 100 |
 | Evaluation games | 24 |
-| Promotion threshold | 0.55 |
+| Historical promotion threshold | 0.55 (superseded) |
 
 ### Observed results
 
@@ -744,10 +744,10 @@ xychart-beta
     x-axis ["Iteration 1", "Iteration 2"]
     y-axis "Score" 0 --> 0.60
     bar [0.312, 0.375]
-    line [0.55, 0.55]
+    line [0.50, 0.50]
 ```
 
-<sub>The horizontal line is the configured 0.55 promotion threshold.</sub>
+<sub>The horizontal line marks a 0.50 head-to-head tie; current promotion also requires at least 24 games and a one-sided 90% lower confidence bound above 0.50.</sub>
 
 ### Interpretation
 
@@ -755,7 +755,7 @@ The second iteration produced a higher candidate evaluation score than the first
 
 Neither observation independently establishes a reliable improvement in playing strength.
 
-Both candidates were rejected because their evaluation scores remained below the promotion threshold, so the existing best model was retained. This is an important outcome of the experiment: **the model-selection mechanism is functioning as a gate** rather than automatically promoting every newly trained candidate.
+Both candidates were rejected under the historical 0.55 policy. Their scores were also below the current 0.50 head-to-head tie point, so they would remain ineligible under the incumbent-relative policy; the current gate additionally requires at least 24 games and a one-sided 90% lower confidence bound above 0.50. This is an important outcome of the experiment: **the model-selection mechanism is functioning as a gate** rather than automatically promoting every newly trained candidate.
 
 ---
 
@@ -1067,9 +1067,9 @@ Model weights remain excluded from Git commits. To protect them from temporary C
 
 A bounded fresh-start CPU pilot was completed on 2026-11-13 (workflow [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757)). It produced an epoch-0 baseline and an epoch-1 candidate. The candidate was not promoted: its two colour-swapped evaluation games were both draws, which is a pipeline smoke test rather than a strength result.
 
-The selected baseline checkpoint and separate candidate are backed up in the durable [pilot checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1), together with a SHA-256 manifest. The baseline SHA-256 is `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`. Restore and verify this file as `data/checkpoints/best_model.pt` before resuming training; do not commit model weights.
+The selected baseline checkpoint and separate candidate are backed up in the durable [pilot checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1), together with a SHA-256 manifest. The baseline SHA-256 is `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`. The manual resume workflow restores and verifies this file as `data/checkpoints/best_model.pt` automatically when the path is missing or empty; it preserves any existing non-empty checkpoint. Do not commit model weights.
 
-**Important:** the regular `.github/workflows/train-and-backup.yml` workflow is resume-only. It fails before installing dependencies if `best_model.pt` is absent and requires the manual confirmation input `YES` (default `NO`). Do not dispatch it until the released baseline is restored and independently backed up. See [the checkpoint recovery guide](docs/training_flow.md) and [current project status](docs/PROJECT_STATUS.md).
+**Important:** the regular `.github/workflows/train-and-backup.yml` workflow is resume-only. It restores the released baseline if needed, verifies its SHA-256, and requires the manual confirmation input `YES` (default `NO`). Do not dispatch it until baseline diagnostics are complete and an independent backup is retained. See [the checkpoint recovery guide](docs/training_flow.md) and [current project status](docs/PROJECT_STATUS.md).
 
 
 ### Automatic safe baseline recovery
