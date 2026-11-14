@@ -186,43 +186,41 @@ def test_white_non_checking_double_attack_has_valid_targets():
 
 
 
+
 def test_black_knight_double_attack_targets_queen_and_rook_without_check():
     positions = {case.position_id: case for case in load_tactical_positions(Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl")}
     case = positions["black-knight-double-attack-queen-rook-candidate-001"]
     board = chess.Board(case.fen)
-    move = chess.Move.from_uci("c5e4")
+    move = chess.Move.from_uci("f4e2")
 
     assert case.motif == "double_attack"
     assert board.turn == chess.BLACK
     assert board.piece_at(chess.C3) == chess.Piece(chess.QUEEN, chess.WHITE)
-    assert board.piece_at(chess.F6) == chess.Piece(chess.ROOK, chess.WHITE)
-    assert board.piece_at(chess.D8) == chess.Piece(chess.QUEEN, chess.BLACK)
-    assert chess.C3 in board.attackers(chess.WHITE, chess.F6)
+    assert board.piece_at(chess.C1) == chess.Piece(chess.ROOK, chess.WHITE)
     assert move in board.legal_moves
     board.push(move)
 
     assert not board.is_check()
-    assert board.piece_at(chess.E4) == chess.Piece(chess.KNIGHT, chess.BLACK)
-    assert chess.E4 in board.attackers(chess.BLACK, chess.C3)
-    assert chess.E4 in board.attackers(chess.BLACK, chess.F6)
-    assert not board.is_attacked_by(chess.WHITE, chess.E4)
+    assert board.piece_at(chess.E2) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert chess.E2 in board.attackers(chess.BLACK, chess.C3)
+    assert chess.E2 in board.attackers(chess.BLACK, chess.C1)
+    assert not board.is_attacked_by(chess.WHITE, chess.E2)
 
-    queen_escape = chess.Move.from_uci("c3e3")
     queen_line = board.copy()
+    queen_escape = chess.Move.from_uci("c3b4")
     assert queen_escape in queen_line.legal_moves
     queen_line.push(queen_escape)
-    rook_capture = chess.Move.from_uci("e4f6")
+    rook_capture = chess.Move.from_uci("e2c1")
     assert rook_capture in queen_line.legal_moves
     queen_line.push(rook_capture)
-    assert queen_line.piece_at(chess.F6) == chess.Piece(chess.KNIGHT, chess.BLACK)
-    assert chess.D8 in queen_line.attackers(chess.BLACK, chess.F6)
-    assert not queen_line.is_attacked_by(chess.WHITE, chess.F6)
+    assert queen_line.piece_at(chess.C1) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert not queen_line.is_attacked_by(chess.WHITE, chess.C1)
 
-    rook_escape = chess.Move.from_uci("f6f7")
     rook_line = board.copy()
+    rook_escape = chess.Move.from_uci("c1b1")
     assert rook_escape in rook_line.legal_moves
     rook_line.push(rook_escape)
-    queen_capture = chess.Move.from_uci("e4c3")
+    queen_capture = chess.Move.from_uci("e2c3")
     assert queen_capture in rook_line.legal_moves
     rook_line.push(queen_capture)
     assert rook_line.piece_at(chess.C3) == chess.Piece(chess.KNIGHT, chess.BLACK)
