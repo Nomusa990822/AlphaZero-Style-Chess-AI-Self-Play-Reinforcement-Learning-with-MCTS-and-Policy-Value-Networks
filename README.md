@@ -1070,3 +1070,13 @@ A bounded fresh-start CPU pilot was completed on 2026-11-13 (workflow [434972987
 The selected baseline checkpoint and separate candidate are backed up in the durable [pilot checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1), together with a SHA-256 manifest. The baseline SHA-256 is `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`. Restore and verify this file as `data/checkpoints/best_model.pt` before resuming training; do not commit model weights.
 
 **Important:** the regular `.github/workflows/train-and-backup.yml` workflow is resume-only. It fails before installing dependencies if `best_model.pt` is absent and requires the manual confirmation input `YES` (default `NO`). Do not dispatch it until the released baseline is restored and independently backed up. See [the checkpoint recovery guide](docs/training_flow.md) and [current project status](docs/PROJECT_STATUS.md).
+
+
+### Automatic safe baseline recovery
+
+The manual resume workflow now restores the original epoch-0 pilot baseline
+from its durable prerelease only if `data/checkpoints/best_model.pt` is
+missing. It verifies the published SHA-256 before installing the file and
+never overwrites an existing non-empty best checkpoint. This recovery does not
+authorise training: dispatch still requires explicitly selecting
+`confirm_training=YES`. See [the recovery guide](docs/training_flow.md).
