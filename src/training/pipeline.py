@@ -61,7 +61,7 @@ class PipelineConfig:
     eval_dirichlet_epsilon: float = 0.25
     eval_temperature: float = 0.0
 
-    gating_games: int = 10
+    gating_games: int = 24
 
     checkpoint_dir: str = "data/checkpoints"
     log_dir: str = "data/logs"
