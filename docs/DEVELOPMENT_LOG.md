@@ -1122,5 +1122,6 @@ Copy this section for each future engineering batch.
 - Current corpus size is **35 positions**: 19 White-to-move and 16 Black-to-move. Colour-balanced double-attack coverage is explicitly not claimed.
 
 ### Verification
-- The current revision's CPU suite and Stockfish audit are pending.
+- CPU workflow [43635125191](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125191): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also succeeded.
+- Stockfish workflow [43635125225](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125225): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Audit artifact `14129428762`.
 - No training, checkpoint evaluation or promotion was performed.
