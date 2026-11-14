@@ -583,3 +583,5 @@ For every meaningful development batch:
 - The latest candidate changes the fork geometry: `...Ne4` attacks the White queen on c3 and rook on f6. A diagonal queen defence of the rook creates the overload; pawns protect the knight and its two possible capture squares. Both branches are covered by semantic tests. Stockfish review remains pending.
 
 - The fourth candidate was refuted because Black could capture the queen immediately with `...bxc3`. The current iteration removes the pawns so the intended knight fork is the tactical mechanism under review; both required checks remain pending.
+
+- The fifth candidate's annotated move tied the engine's best move, but the position itself was a forced mate for White; it is rejected as an unsuitable standalone example. The latest FEN adds a Black queen to defend f6 and places the White king on e1 to avoid the unrelated mating net. Verification is pending.
