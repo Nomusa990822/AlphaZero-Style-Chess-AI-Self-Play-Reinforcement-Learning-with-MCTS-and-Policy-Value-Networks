@@ -148,7 +148,7 @@ class NetworkEvaluator:
         self,
         candidate_inference: ModelInference,
         best_inference: ModelInference,
-        num_games: int = 24,
+        num_games: int = MIN_PROMOTION_GAMES,
     ) -> tuple[bool, EvaluationResult]:
         """Promote only on a sufficiently sampled, statistically supported win over the incumbent."""
         result = self.compare_models(candidate_inference, best_inference, num_games)
