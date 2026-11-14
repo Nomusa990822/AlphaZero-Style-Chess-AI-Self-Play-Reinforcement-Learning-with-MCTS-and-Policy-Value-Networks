@@ -237,13 +237,13 @@ remain annotated principal variations, not forced-line proofs.
 
 ## Balanced non-checking double attacks
 
-The position corpus now includes a matched pair of knight double attacks:
-White's knight attacks a queen and rook in one move, and Black's knight does
-the same against White. Both examples are non-checking, so the motif is
-distinguished from a checking fork. The corpus now contains thirty-five
-positions: nineteen White-to-move and sixteen Black-to-move. The
-paired examples improve colour coverage but do not make the corpus large
-enough for a general tactical-strength claim.
+The position corpus retains White-to-move knight double-attack examples.
+A Black-to-move counterpart was removed after the original and subsequent
+candidate positions failed the finite-depth Stockfish acceptance threshold.
+The corpus does not currently claim colour-balanced double-attack coverage.
+There are thirty-five positions overall: nineteen White-to-move and sixteen
+Black-to-move. The corpus remains a curated diagnostic set, not a general
+tactical-strength measure.
 
 
 ## Overloaded defenders
