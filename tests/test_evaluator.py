@@ -1,6 +1,8 @@
+import chess
 import pytest
 
 from src.engine.move_encoding import MoveEncoding
+from src.training.pipeline import PipelineConfig
 from src.training.evaluator import (
     MIN_PROMOTION_GAMES,
     EvaluationResult,
@@ -83,3 +85,23 @@ def test_insufficient_game_count_never_promotes_even_a_perfect_candidate(monkeyp
 
 def test_promotion_requires_at_least_24_games_for_pilot_safety():
     assert MIN_PROMOTION_GAMES == 24
+
+
+def test_pipeline_default_gating_games_meets_promotion_sample_minimum():
+    assert PipelineConfig().gating_games == MIN_PROMOTION_GAMES
+
+
+def test_pipeline_rejects_unbalanced_gating_configuration():
+    with pytest.raises(ValueError, match="even number"):
+        PipelineConfig(gating_games=3)
+
+
+def test_illegal_evaluator_move_aborts_the_match():
+    evaluator = NetworkEvaluator(MoveEncoding())
+
+    class IllegalMoveAgent:
+        def choose_move(self, board, temperature=0.0):
+            return chess.Move.from_uci("a1a8")
+
+    with pytest.raises(RuntimeError, match="illegal move"):
+        evaluator._play_single_game(IllegalMoveAgent(), IllegalMoveAgent())
