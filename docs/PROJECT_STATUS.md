@@ -541,3 +541,12 @@ For every meaningful development batch:
 - CPU workflow [43633713020](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713020): **SUCCESS; 188 tests passed**.
 - Stockfish workflow [43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013): **SUCCESS**. Both new positions supported; 35/36 total positions supported, with one pre-existing black knight double-attack position flagged for human review. All 7/7 sequences and 25/25 annotated plies supported. Artifact `14128664297`.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## Black knight double-attack repair — verification pending (2026-11-14)
+
+- Replaced the previously flagged Black-to-move fork. The old `...Nd2` was refuted by `Qf4`, which escaped the queen attack and attacked the knight.
+- The replacement adds a White pawn on f4 to prevent that counterattack; after `...Nd2`, White can save the queen but `...Nxf1` captures the undefended rook.
+- Added semantic regression coverage for the fork and its refutation guard.
+- CPU tests and Stockfish tactical engine audit are pending. Do not count the entry as engine-supported until both checks pass.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
