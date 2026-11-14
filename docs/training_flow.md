@@ -119,3 +119,23 @@ The successful pilot's selected baseline checkpoint is available as the `best_mo
 The separate candidate has SHA-256 `3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7`; do not substitute it for the baseline. Download both checkpoint assets and the manifest, verify the hashes, and keep an independent backup. Restore only the baseline to `data/checkpoints/best_model.pt` for the resume workflow. Do not commit either binary to Git.
 
 The standard `train-and-backup.yml` workflow remains resume-only, requires the baseline file before dependency installation, and requires `confirm_training=YES`. Its current `train_pipeline.py` configuration is substantially larger than the pilot: 2 iterations, 40 self-play games per iteration, 250-ply cap, 80 self-play MCTS simulations, 100 evaluation simulations, 10 training epochs and 24 candidate-gating games per iteration. This is a potentially long CPU job (workflow timeout: 6 hours); it must not be dispatched until the checkpoint is restored, diagnostics are complete and the user explicitly confirms the compute run.
+
+
+## Automated, hash-verified baseline recovery in the resume workflow
+
+The standard manual training workflow now restores the immutable epoch-0 pilot
+baseline from the durable prerelease **only when**
+`data/checkpoints/best_model.pt` is absent or empty. It downloads to a temporary
+file, verifies SHA-256
+`7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`, and only
+then installs it at the expected path. A pre-existing non-empty checkpoint is
+never overwritten. If download or verification fails, the job stops before
+dependency installation or training.
+
+This recovery step makes the workflow runnable from a clean checkout while
+preserving any later trained best checkpoint. It does not itself start training:
+the workflow still requires the manual `confirm_training=YES` input. A run
+with `NO` does not enter the training job. After an authorised run, the
+existing artifact and durable-release backup steps preserve resulting weights
+and the generated manifest. Keep an independent local copy of the original
+baseline release as well.
