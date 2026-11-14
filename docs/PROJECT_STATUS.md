@@ -562,7 +562,7 @@ For every meaningful development batch:
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
 
 
-## Overloaded-defender sequence expansion — verification pending (2026-11-14)
+## Overloaded-defender sequence expansion — verified (2026-11-14)
 
 - Added one White-to-move and one Black-to-move three-ply combination based on the already curated overloaded-knight positions.
 - Each line demonstrates the checking rook capture, the knight's forced recapture away from its second defensive duty, and the resulting queen capture.
