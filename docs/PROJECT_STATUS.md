@@ -593,3 +593,5 @@ For every meaningful development batch:
 - The eighth candidate allowed `Qb4+`, a checking queen escape. The latest FEN relocates the Black king to e8 to remove that check; the fork must pass a new audit before it can be accepted.
 
 - The current candidate is a 180-degree colour rotation of the existing White knight double-attack position: `...Ne2` attacks the White queen on c3 and rook on c1. Tests cover both possible captures after the opposing major piece moves. The candidate still requires the standard CPU and Stockfish checks.
+
+- The ninth rotated candidate was engine-supported but also began in a forced-mate setting, so it was not accepted. The latest iteration adds g7/h7 pawn shelter to the Black king while preserving the fork; the standard CPU and Stockfish checks must be rerun.
