@@ -1108,3 +1108,17 @@ The newly trained candidate remains separately available as latest_candidate.
 The two-game smoke pilot is therefore never eligible for promotion. Every new
 candidate is compared with whichever champion is currently selected at that
 iteration, so the standard is relative to the best model already retained.
+
+
+## Reproducible baseline diagnostic protocol
+
+The first full training run is gated on a reproducible evaluation of the
+immutable epoch-0 baseline. The manual Checkpoint tactical evaluation
+workflow runs from the current main commit, verifies both pilot checkpoint
+hashes against the published manifest, evaluates baseline and pilot candidate
+on the fixed 35-position / 11-sequence corpora at 100 deterministic CPU MCTS
+simulations per move, and preserves the raw checkpoint files, manifest, JSON
+reports and run provenance in one Actions artifact. This is a diagnostic
+benchmark, not an Elo or general playing-strength rating. Complete this run
+before dispatching Train and preserve model checkpoints with
+confirm_training=YES.
