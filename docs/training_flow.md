@@ -118,9 +118,9 @@ The successful pilot's selected baseline checkpoint is available as the `best_mo
 
 `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`
 
-The separate candidate has SHA-256 `3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7`; do not substitute it for the baseline. Download both checkpoint assets and the manifest, verify the hashes, and keep an independent backup. Restore only the baseline to `data/checkpoints/best_model.pt` for the resume workflow. Do not commit either binary to Git.
+The separate candidate has SHA-256 `3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7`; do not substitute it for the baseline. Keep an independent backup of the baseline and manifest. The resume workflow restores only the baseline to `data/checkpoints/best_model.pt` when no non-empty checkpoint is present. Do not commit either binary to Git.
 
-The standard `train-and-backup.yml` workflow remains resume-only, requires the baseline file before dependency installation, and requires `confirm_training=YES`. Its current `train_pipeline.py` configuration is substantially larger than the pilot: 2 iterations, 40 self-play games per iteration, 250-ply cap, 80 self-play MCTS simulations, 100 evaluation simulations, 10 training epochs and 24 candidate-gating games per iteration. This is a potentially long CPU job (workflow timeout: 6 hours); it must not be dispatched until the checkpoint is restored, diagnostics are complete and the user explicitly confirms the compute run.
+The standard `train-and-backup.yml` workflow remains resume-only, restores and verifies the baseline when needed, and requires `confirm_training=YES`. Its current `train_pipeline.py` configuration is substantially larger than the pilot: 2 iterations, 40 self-play games per iteration, 250-ply cap, 80 self-play MCTS simulations, 100 evaluation simulations, 10 training epochs and 24 candidate-gating games per iteration. This is a potentially long CPU job (workflow timeout: 6 hours); it must not be dispatched until baseline diagnostics are complete and the user explicitly confirms the compute run.
 
 
 ## Automated, hash-verified baseline recovery in the resume workflow
