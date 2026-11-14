@@ -535,7 +535,7 @@ For every meaningful development batch:
 
 ## Overloaded-defender corpus expansion — verification pending (2026-11-14)
 
-- Added a White-to-move and a Black-to-move overloaded-defender example. In both, a knight is the sole defender of a rook and queen; a checking rook capture forces it to abandon the queen.
+- Added a White-to-move and a Black-to-move overloaded-defender example. In both, a knight is the only non-king defender of a rook and the sole defender of a queen; a checking rook capture forces it to abandon the queen.
 - Added semantic tests for both complete tactical mechanisms, not merely FEN validity or move legality.
 - Tactical position corpus: **36 positions**, comprising **19 White-to-move** and **17 Black-to-move**.
 - Updated the root README and benchmark guide to reflect the new count and motif coverage.
