@@ -94,3 +94,31 @@ The newly trained candidate remains separately available as latest_candidate.
 The two-game smoke pilot is therefore never eligible for promotion. Every new
 candidate is compared with whichever champion is currently selected at that
 iteration, so the standard is relative to the best model already retained.
+
+
+## First full-run baseline diagnostics — prepared, awaiting dispatch
+
+The immutable epoch-0 baseline release asset is present and its published
+asset digest matches the pinned SHA-256:
+7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471
+(size 3,404,943 bytes). The separate epoch-1 pilot candidate remains
+preserved and is not the incumbent.
+
+The Checkpoint tactical evaluation workflow has been corrected to check
+out the exact dispatched main commit rather than the older
+chess-strength-training-upgrade branch. When manually dispatched with
+confirm_evaluation=YES and simulations=100, it verifies both checkpoint
+hashes, evaluates baseline and candidate on the current fixed 35-position /
+11-sequence / 37-ply corpora, and uploads the raw checkpoint files, release
+manifest, four JSON evaluation reports and run provenance. The workflow
+change must pass PR checks and be merged before dispatch.
+
+Not yet run: this diagnostic workflow has not yet produced a new baseline
+report artifact. The first full training workflow has also not been dispatched.
+After the diagnostic artifact is inspected and preserved, run
+.github/workflows/train-and-backup.yml from main with
+confirm_training=YES. Its current configuration is 2 iterations, 40
+self-play games per iteration, 250-ply cap, 80 self-play MCTS simulations,
+100 evaluation simulations, 10 training epochs and 24 balanced gating games
+per iteration; the workflow timeout is six hours. Candidate promotion remains
+subject to the incumbent-relative evidence gate.
