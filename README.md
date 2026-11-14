@@ -982,6 +982,15 @@ If no checkpoint exists at the specified path, the gameplay script reports that 
 
 The curated tactical-position corpus currently contains **35 positions**: 19 White-to-move and 16 Black-to-move. Its motif coverage includes a colour-balanced pair of overloaded-defender examples. The separate combination corpus contains **11 sequences and 37 annotated plies**, including overloaded-defender and defensive countercheck sequences for both colours. These positions and lines are validated diagnostic cases; corpus coverage and Stockfish audit success do not establish general playing strength or an Elo rating. The latest audit supported all 35 positions and all 11 sequences (37 annotated plies), with no flagged entries. An earlier Black-to-move knight double-attack example was removed after Stockfish rejected multiple candidate repairs; the corpus does not currently claim colour-balanced double-attack coverage.
 
+### Defensive-resource regression coverage
+
+The defensive countercheck combinations are checked for more than move
+legality: regression tests confirm that the side starts in check, the bishop
+interposition resolves that check, and the same move delivers check to the
+opponent. The annotated king reply must also be legal. These checks protect
+the specific defensive-resource mechanism without treating an illustrative
+principal variation as a forced-line proof.
+
 ## 16 · Current Development Priorities
 
 The project remains under active development.
