@@ -1152,3 +1152,5 @@ Copy this section for each future engineering batch.
 - The fourth FEN was rejected because Black's b4-pawn could simply capture the White queen on c3, making the knight fork unnecessary. The latest construction removes both pawns and retains the geometric fork: `...Ne4` attacks the queen on c3 and rook on f6, with no White recapture after either target is taken. The current candidate requires another full audit.
 
 - The fifth FEN technically passed the finite-depth move comparison (`...Ne4` was tied with the engine's best move), but Stockfish reported a forced mate for White from the starting position. It is rejected as a standalone tactical example despite the tolerance result. The current iteration adds a Black queen on d8 to protect the knight after `...Nxf6` and relocates the White king to e1 to avoid the unrelated mating net; this new FEN requires fresh verification.
+
+- The sixth candidate was rejected: after `...Ne4`, White could play `Rh6+` against the Black king on h8, creating a forced mating sequence. The latest iteration relocates the Black king to a8, away from that rook-checking line. The candidate still requires fresh Stockfish review.
