@@ -574,13 +574,13 @@ For every meaningful development batch:
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
 
 
-## Defensive countercheck sequences — verification pending (2026-11-14)
+## Defensive countercheck sequences — verified (2026-11-14)
 
 - Added one White-to-move and one Black-to-move three-ply line in which a bishop interposes against a rook check while delivering a countercheck.
 - The lines illustrate a defensive resource that answers the original check and creates a forcing tempo against the opposing king.
 - Sequence corpus increases from **9 combinations / 31 annotated plies** to **11 combinations / 37 annotated plies**. Position corpus remains **35 positions** (19 White-to-move, 16 Black-to-move).
-- CPU workflow [43639569253](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639569253): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
-- Stockfish workflow [43639569103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639569103): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported**. Audit artifact `14130753433`.
+- CPU workflow [43639690691](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639690691): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43639690662](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639690662): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported**. Audit artifact `14131054706`.
 - The finite-depth audit is not proof of tactical correctness, a unique best move, or that every annotated reply is forced.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
 - No Elo assessment was performed.
