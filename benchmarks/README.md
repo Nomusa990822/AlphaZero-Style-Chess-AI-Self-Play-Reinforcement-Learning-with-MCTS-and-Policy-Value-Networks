@@ -35,7 +35,7 @@ The committed `tactical_positions.jsonl` remains a small curated starter corpus.
 It includes mating nets, forks, hanging pieces, pins, skewers, discovered
 attacks, defensive resources, promotion tactics, double attacks, deflections,
 decoys, removal of defenders, interference, trapped pieces, zwischenzugs and
-overloaded defenders, with examples for both sides to move. Its thirty-six
+overloaded defenders, with examples for both sides to move. Its thirty-five
 positions are not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
@@ -237,13 +237,13 @@ remain annotated principal variations, not forced-line proofs.
 
 ## Balanced non-checking double attacks
 
-The position corpus now includes a matched pair of knight double attacks:
-White's knight attacks a queen and rook in one move, and Black's knight does
-the same against White. Both examples are non-checking, so the motif is
-distinguished from a checking fork. The corpus now contains thirty-six
-positions, balanced at nineteen White-to-move and seventeen Black-to-move. The
-paired examples improve colour coverage but do not make the corpus large
-enough for a general tactical-strength claim.
+The position corpus retains White-to-move knight double-attack examples.
+A Black-to-move counterpart was removed after the original and subsequent
+candidate positions failed the finite-depth Stockfish acceptance threshold.
+The corpus does not currently claim colour-balanced double-attack coverage.
+There are thirty-five positions overall: nineteen White-to-move and sixteen
+Black-to-move. The corpus remains a curated diagnostic set, not a general
+tactical-strength measure.
 
 
 ## Overloaded defenders
@@ -259,10 +259,9 @@ curated motif demonstrations, not a broad estimate of tactical strength.
 
 ## Latest corpus verification — 2026-11-14
 
-The current 36-position corpus passed the CPU suite (188 tests). The finite-depth
-Stockfish audit supported both new overloaded-defender positions, 35 of 36
-positions overall, all seven sequences and all twenty-five annotated plies.
-One pre-existing position, `black-knight-double-attack-queen-rook-001`, was
-flagged for human review. The audit report is available as Actions artifact
-`14128664297` from [workflow run 43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013).
-This is finite-depth tactical review, not evidence of general playing strength.
+The previous 36-position revision passed its CPU suite (188 tests), but Stockfish flagged the Black knight double-attack entry. The entry has since been removed rather than retaining an unsupported motif claim. The current 35-position revision is being revalidated; see the latest PR and workflow results. This is finite-depth tactical review, not evidence of general playing strength.
+
+
+## Black knight double-attack coverage
+
+The corpus currently retains the validated White-to-move knight double-attack examples only. A Black-to-move counterpart was removed after Stockfish rejected the original position and multiple repair attempts. Colour-balanced coverage will be restored only when a Black example passes the same semantic tests and engine audit.

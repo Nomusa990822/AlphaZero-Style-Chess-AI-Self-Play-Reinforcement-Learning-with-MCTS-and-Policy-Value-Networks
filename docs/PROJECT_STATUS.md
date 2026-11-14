@@ -541,3 +541,22 @@ For every meaningful development batch:
 - CPU workflow [43633713020](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713020): **SUCCESS; 188 tests passed**.
 - Stockfish workflow [43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013): **SUCCESS**. Both new positions supported; 35/36 total positions supported, with one pre-existing black knight double-attack position flagged for human review. All 7/7 sequences and 25/25 annotated plies supported. Artifact `14128664297`.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## Black knight double-attack repair — verification pending (2026-11-14)
+
+- Replaced the previously flagged Black-to-move fork. The old `...Nd2` was refuted by `Qf4`, which escaped the queen attack and attacked the knight.
+- The replacement adds a White pawn on f4 to block `Qf4` and a Black pawn on d4 to block `Qd5`; after `...Nd2`, White can save the queen but `...Nxf1` captures the undefended rook. The first trial was 189cp below the engine's best move; a second trial still allowed a forced-mate continuation with the Black king in the corner, so the latest candidate moves the Black king to g8.
+- Added semantic regression coverage for the fork and its refutation guard.
+- CPU tests and Stockfish tactical engine audit are pending. Do not count the entry as engine-supported until both checks pass.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## Black double-attack entry — removed pending a sound replacement (2026-11-14)
+
+- Removed the unsupported Black-to-move knight double-attack position after the original and multiple replacement candidates failed Stockfish review.
+- Kept the audit tolerance unchanged. No unsupported tactical annotation is retained merely to preserve colour balance.
+- Current tactical corpus: **35 positions**, 19 White-to-move and 16 Black-to-move. The current corpus does not claim colour-balanced double-attack coverage.
+- CPU workflow [43635125191](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125191): **SUCCESS; 188 tests passed**.
+- Stockfish workflow [43635125225](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125225): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Artifact `14129428762`.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.

@@ -151,6 +151,7 @@ def test_non_checking_double_attack_targets_queen_and_rook():
 
 
 
+
 def test_black_bishop_deflection_draws_white_queen_off_mating_square():
     case = cases_by_id()["black-bishop-deflects-queen-from-mating-square-001"]
     board = chess.Board(case.fen)

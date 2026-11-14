@@ -1096,3 +1096,32 @@ Copy this section for each future engineering batch.
 - CPU workflow [43633713020](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713020): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
 - Stockfish workflow [43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013): **SUCCESS**. Both new overloaded-defender positions were supported; the complete corpus had 35/36 positions supported and one existing entry flagged for human review: `black-knight-double-attack-queen-rook-001`. All 7/7 sequences and 25/25 annotated plies were supported. Audit artifact: `14128664297`.
 - The positions are curated motif demonstrations. Finite-depth engine support checks do not establish general playing strength or Elo. No training or checkpoint evaluation was run.
+
+
+## 2026-11-14 — Repair Black knight double-attack example
+
+### Findings
+- The previous Black-to-move FEN allowed White to answer `...Nd2` with `Qf4`, saving the queen while attacking the knight. The annotated fork therefore did not win the rook.
+- The prior position also gave Stockfish a forced-mate continuation, making it a poor standalone tactical example.
+
+### Changes
+- Replaced the position with a materially populated FEN and a White pawn on f4 that blocks the refuting `Qf4` response.
+- The Black knight still attacks the White queen on f3 and rook on f1. After the queen escapes to g4, `...Nxf1` wins the undefended rook.
+- Added a semantic regression test for the knight's two targets, non-checking status, blocked queen counterattack and rook capture.
+- Updated benchmark and root documentation in the same change.
+- CPU and Stockfish audit workflows are pending. The replacement is not considered verified until both pass.
+- No training, checkpoint evaluation or promotion was performed.
+
+
+## 2026-11-14 — Remove unsupported Black double-attack entry
+
+### Findings and decision
+- The original Black-to-move position was refuted by a queen counterattack and was already in a forced-mate setting.
+- Two subsequent candidate repairs also failed the engine acceptance threshold: one by 189cp and another by 356cp; a third, with the king moved to g8, was still 356cp below the best move at the audit depth.
+- Rather than weaken the 150cp audit tolerance or mislabel a move as a sound fork, removed the unsupported entry and its specific semantic test. The existing White-to-move double-attack examples remain.
+- Current corpus size is **35 positions**: 19 White-to-move and 16 Black-to-move. Colour-balanced double-attack coverage is explicitly not claimed.
+
+### Verification
+- CPU workflow [43635125191](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125191): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also succeeded.
+- Stockfish workflow [43635125225](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125225): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Audit artifact `14129428762`.
+- No training, checkpoint evaluation or promotion was performed.
