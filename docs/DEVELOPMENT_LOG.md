@@ -1166,3 +1166,22 @@ Copy this section for each future engineering batch.
 - CPU workflow [43641897416](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897416): **SUCCESS; 189 tests passed**. SEE overhead benchmark and artifact upload completed.
 - Stockfish workflow [43641897417](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported, 0 flagged**. Audit artifact `14132283194`.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## 2026-11-14 — Reconcile project status and baseline recovery guidance
+
+### Findings
+- The previous `PROJECT_STATUS.md` snapshot was stale and internally corrupted: it referred to an obsolete draft PR #1, an old feature-branch tracking state, historical tactical corpus counts and obsolete CI revisions.
+- The completed fresh-start pilot had been recorded in `EXPERIMENT_LOG.md`, but `docs/training_flow.md` still incorrectly said that the pilot had not been dispatched.
+- The durable release `fresh-pilot-checkpoint-43497298757-1` contains the selected baseline, separate candidate and SHA-256 manifest.
+
+### Changes
+- Replaced the project status snapshot with the current main revision, current tactical corpus counts, latest verified CI links, actual pilot/checkpoint state, limitations and ordered next steps.
+- Updated the root README with the completed pilot, baseline checkpoint identity and safe resume-only workflow instructions.
+- Updated benchmark documentation with the latest 35-position / 11-sequence audit record.
+- Corrected the training recovery guide so it reflects the completed pilot and documents the exact baseline/candidate hashes and the normal workflow's larger CPU budget.
+- No model weights, source code, training configuration or experiment results were changed. No training or benchmark was run by this documentation update.
+
+### Verification
+- Documentation consistency was checked against the current main revision `68cf3a4e2e40aa7b3f92fd5b5d430c6d7a6ddbf8`, the existing experiment record, the published checkpoint release and the latest CI workflow records.
+- PR CPU tests and Stockfish audit remain required before merge; no new training run is authorised by this documentation change.
