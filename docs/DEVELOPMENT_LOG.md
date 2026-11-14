@@ -1086,7 +1086,7 @@ Copy this section for each future engineering batch.
 
 ### Changes
 - Added two tactical positions demonstrating an overloaded knight defender, one for White to move and one for Black to move.
-- In each position, one knight is the sole defender of both a rook and a queen. A checking rook capture forces the knight to recapture, after which the queen is exposed.
+- In each position, one knight is the only non-king defender of a rook and the sole defender of a queen. A checking rook capture forces the knight to recapture, after which the queen is exposed.
 - Added semantic regression coverage for the defender's two duties, the forcing check, the forced recapture and the subsequent queen capture.
 - Updated corpus expectations and the benchmark documentation, root README, and project status so the counts and motif coverage remain synchronised.
 - Corpus size increases from 34 to 36 positions; side-to-move distribution changes from 18/16 to 19/17.
