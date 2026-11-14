@@ -546,7 +546,7 @@ For every meaningful development batch:
 ## Black knight double-attack repair — verification pending (2026-11-14)
 
 - Replaced the previously flagged Black-to-move fork. The old `...Nd2` was refuted by `Qf4`, which escaped the queen attack and attacked the knight.
-- The replacement adds a White pawn on f4 to prevent that counterattack; after `...Nd2`, White can save the queen but `...Nxf1` captures the undefended rook.
+- The replacement adds a White pawn on f4 to block `Qf4` and a Black pawn on d4 to block `Qd5`; after `...Nd2`, White can save the queen but `...Nxf1` captures the undefended rook. An initial trial was still 189cp below the engine's best move, so the d4 blocker was added.
 - Added semantic regression coverage for the fork and its refutation guard.
 - CPU tests and Stockfish tactical engine audit are pending. Do not count the entry as engine-supported until both checks pass.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
