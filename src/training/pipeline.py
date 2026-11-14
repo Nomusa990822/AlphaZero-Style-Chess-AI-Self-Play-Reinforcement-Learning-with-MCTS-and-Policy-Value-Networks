@@ -17,7 +17,7 @@ from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.checkpoint import checkpoint_exists, load_checkpoint, save_checkpoint
-from src.training.evaluator import MIN_PROMOTION_GAMES, NetworkEvaluator
+from src.training.evaluator import INCUMBENT_SCORE, MIN_PROMOTION_GAMES, NetworkEvaluator
 from src.training.metrics import IterationMetrics, MetricsLogger
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGameResult, SelfPlayGenerator
@@ -61,7 +61,7 @@ class PipelineConfig:
     eval_dirichlet_epsilon: float = 0.25
     eval_temperature: float = 0.0
 
-    gating_games: int = 24
+    gating_games: int = MIN_PROMOTION_GAMES
 
     checkpoint_dir: str = "data/checkpoints"
     log_dir: str = "data/logs"
@@ -400,9 +400,9 @@ class AlphaZeroPipeline:
                 "metrics": asdict(metrics),
                 "promotion_policy": {
                     "minimum_games": MIN_PROMOTION_GAMES,
-                    "candidate_score_must_exceed": 0.50,
+                    "candidate_score_must_exceed": INCUMBENT_SCORE,
                     "one_sided_confidence_level": 0.90,
-                    "lower_confidence_bound_must_exceed": 0.50,
+                    "lower_confidence_bound_must_exceed": INCUMBENT_SCORE,
                     "colour_balanced": True,
                     "deterministic_mcts": True,
                     "illegal_move": "evaluation aborts",
