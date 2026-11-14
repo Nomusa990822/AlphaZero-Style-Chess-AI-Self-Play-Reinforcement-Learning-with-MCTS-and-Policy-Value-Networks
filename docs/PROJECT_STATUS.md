@@ -591,3 +591,5 @@ For every meaningful development batch:
 - The seventh candidate was refuted by a checking rook escape (`Ra6+`) that neutralised the fork. The current FEN moves the Black king to b8 to remove that tempo resource; fresh CPU and Stockfish checks are pending.
 
 - The eighth candidate allowed `Qb4+`, a checking queen escape. The latest FEN relocates the Black king to e8 to remove that check; the fork must pass a new audit before it can be accepted.
+
+- The current candidate is a 180-degree colour rotation of the existing White knight double-attack position: `...Ne2` attacks the White queen on c3 and rook on c1. Tests cover both possible captures after the opposing major piece moves. The candidate still requires the standard CPU and Stockfish checks.
