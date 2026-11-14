@@ -575,3 +575,5 @@ For every meaningful development batch:
 
 - The first sparse FEN passed the CPU suite but Stockfish rejected its annotated move and found a forced-mate continuation. That candidate was not merged.
 - The current review-branch FEN adds a Black queen defending the knight's destination square and a Black rook to avoid the earlier extreme material imbalance. Both required checks must be rerun against this revised FEN.
+
+- The second FEN was also rejected: the added Black queen and rook formed an unrelated forced mating net against the White king. The latest iteration moves the White king to a1 to remove that mating motif; its checks are pending.
