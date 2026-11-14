@@ -31,11 +31,12 @@ controlled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
-The committed `tactical_positions.jsonl` is still a small starter corpus. It
-now includes a mating net, knight forks, hanging-piece captures, pins, and
-rook skewers, discovered attacks, defensive resources and promotion tactics,
-with examples for both sides to move. Its thirty-two positions are
-not large or diverse enough to support a general tactical-strength claim.
+The committed `tactical_positions.jsonl` remains a small curated starter corpus.
+It includes mating nets, forks, hanging pieces, pins, skewers, discovered
+attacks, defensive resources, promotion tactics, double attacks, deflections,
+decoys, removal of defenders, interference, trapped pieces, zwischenzugs and
+overloaded defenders, with examples for both sides to move. Its thirty-six
+positions are not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
