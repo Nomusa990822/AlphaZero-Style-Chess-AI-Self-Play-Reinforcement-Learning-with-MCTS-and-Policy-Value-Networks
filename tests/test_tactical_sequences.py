@@ -60,7 +60,7 @@ def test_defensive_countercheck_sequences_really_resolve_check_and_countercheck(
 
         # The interposition must end the original check and give check to the
         # opposing king; merely having a legal bishop move is not sufficient.
-        assert not board.is_check()
+        assert not board.is_attacked_by(board.turn, details["king_square"])
         assert board.piece_at(details["interposition_square"]) == bishop
         assert board.is_check()
         assert board.is_attacked_by(not board.turn, details["attacked_king"])
