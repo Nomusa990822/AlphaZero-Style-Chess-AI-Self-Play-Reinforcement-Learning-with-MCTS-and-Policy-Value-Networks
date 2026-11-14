@@ -151,6 +151,37 @@ def test_non_checking_double_attack_targets_queen_and_rook():
 
 
 
+
+def test_black_non_checking_double_attack_is_a_real_rook_fork():
+    case = cases_by_id()["black-knight-double-attack-queen-rook-001"]
+    board = chess.Board(case.fen)
+    move = chess.Move.from_uci("c4d2")
+
+    assert case.motif == "double_attack"
+    assert board.turn == chess.BLACK
+    assert move in board.legal_moves
+    assert board.piece_at(chess.F4) == chess.Piece(chess.PAWN, chess.WHITE)
+    board.push(move)
+
+    assert not board.is_check()
+    assert board.piece_at(chess.F3) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert board.piece_at(chess.F1) == chess.Piece(chess.ROOK, chess.WHITE)
+    assert move.to_square in board.attackers(chess.BLACK, chess.F3)
+    assert move.to_square in board.attackers(chess.BLACK, chess.F1)
+
+    # The pawn on f4 blocks Qf4, the counterattack that refuted the old case.
+    assert chess.Move.from_uci("f3f4") not in board.legal_moves
+    queen_escape = chess.Move.from_uci("f3g4")
+    assert queen_escape in board.legal_moves
+    board.push(queen_escape)
+
+    rook_capture = chess.Move.from_uci("d2f1")
+    assert rook_capture in board.legal_moves
+    board.push(rook_capture)
+    assert board.piece_at(chess.F1) == chess.Piece(chess.KNIGHT, chess.BLACK)
+
+
+
 def test_black_bishop_deflection_draws_white_queen_off_mating_square():
     case = cases_by_id()["black-bishop-deflects-queen-from-mating-square-001"]
     board = chess.Board(case.fen)
