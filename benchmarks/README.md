@@ -31,11 +31,12 @@ controlled motif labels, and the presence of a non-empty tactical annotation.
 Do not add a position until its motif and acceptable move set have been
 reviewed; a legal move is not necessarily a tactically good move.
 
-The committed `tactical_positions.jsonl` is still a small starter corpus. It
-now includes a mating net, knight forks, hanging-piece captures, pins, and
-rook skewers, discovered attacks, defensive resources and promotion tactics,
-with examples for both sides to move. Its thirty-two positions are
-not large or diverse enough to support a general tactical-strength claim.
+The committed `tactical_positions.jsonl` remains a small curated starter corpus.
+It includes mating nets, forks, hanging pieces, pins, skewers, discovered
+attacks, defensive resources, promotion tactics, double attacks, deflections,
+decoys, removal of defenders, interference, trapped pieces, zwischenzugs and
+overloaded defenders, with examples for both sides to move. Its thirty-six
+positions are not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
 
@@ -239,7 +240,29 @@ remain annotated principal variations, not forced-line proofs.
 The position corpus now includes a matched pair of knight double attacks:
 White's knight attacks a queen and rook in one move, and Black's knight does
 the same against White. Both examples are non-checking, so the motif is
-distinguished from a checking fork. The corpus now contains thirty-four
-positions, balanced at eighteen White-to-move and sixteen Black-to-move. The
+distinguished from a checking fork. The corpus now contains thirty-six
+positions, balanced at nineteen White-to-move and seventeen Black-to-move. The
 paired examples improve colour coverage but do not make the corpus large
 enough for a general tactical-strength claim.
+
+
+## Overloaded defenders
+
+The position corpus now includes a colour-balanced overloaded-defender pair.
+In the White-to-move example, a checking rook capture forces a black knight
+to abandon its defence of the queen; the Black-to-move example mirrors the
+same idea against White. The semantic tests verify that the same knight is the only non-king defender of the rook and the sole
+defender of the queen before the forcing check, that it
+captures the checking rook, and that the queen can then be taken. These are
+curated motif demonstrations, not a broad estimate of tactical strength.
+
+
+## Latest corpus verification — 2026-11-14
+
+The current 36-position corpus passed the CPU suite (188 tests). The finite-depth
+Stockfish audit supported both new overloaded-defender positions, 35 of 36
+positions overall, all seven sequences and all twenty-five annotated plies.
+One pre-existing position, `black-knight-double-attack-queen-rook-001`, was
+flagged for human review. The audit report is available as Actions artifact
+`14128664297` from [workflow run 43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013).
+This is finite-depth tactical review, not evidence of general playing strength.

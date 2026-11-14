@@ -437,3 +437,60 @@ def test_capturing_the_attacker_removes_the_queen_threat_for_both_colours():
         board.push(move)
         assert board.piece_at(bishop_square) == chess.Piece(chess.KNIGHT, mover)
         assert not board.is_attacked_by(not mover, queen_square)
+
+
+def test_overloaded_knight_defender_is_forced_away_for_both_colours():
+    cases = cases_by_id()
+    expected = {
+        "white-overloaded-knight-defends-rook-and-queen-001": {
+            "turn": chess.WHITE,
+            "forcing_move": "f1f8",
+            "defender": chess.D7,
+            "rook_square": chess.F8,
+            "queen_square": chess.E5,
+            "reply": "d7f8",
+            "queen_capture": "e1e5",
+        },
+        "black-overloaded-knight-defends-rook-and-queen-001": {
+            "turn": chess.BLACK,
+            "forcing_move": "f8f1",
+            "defender": chess.D2,
+            "rook_square": chess.F1,
+            "queen_square": chess.E4,
+            "reply": "d2f1",
+            "queen_capture": "e8e4",
+        },
+    }
+
+    for position_id, line in expected.items():
+        board = chess.Board(cases[position_id].fen)
+        assert board.turn == line["turn"]
+        assert cases[position_id].motif == "overloaded_defender"
+        defender = line["defender"]
+        rook_square = line["rook_square"]
+        queen_square = line["queen_square"]
+        mover = board.turn
+        enemy = not mover
+
+        # The knight is the only non-king defender of the rook and the sole defender of the queen.
+        assert board.piece_at(defender) == chess.Piece(chess.KNIGHT, enemy)
+        assert defender in board.attackers(enemy, rook_square)
+        assert defender in board.attackers(enemy, queen_square)
+        assert board.is_attacked_by(enemy, rook_square)
+        assert len(board.attackers(enemy, queen_square)) == 1
+
+        forcing_move = chess.Move.from_uci(line["forcing_move"])
+        assert forcing_move in board.legal_moves
+        board.push(forcing_move)
+        assert board.is_check()
+
+        defender_reply = chess.Move.from_uci(line["reply"])
+        assert defender_reply in board.legal_moves
+        board.push(defender_reply)
+        assert board.piece_at(rook_square) == chess.Piece(chess.KNIGHT, enemy)
+        assert not board.is_attacked_by(enemy, queen_square)
+
+        queen_capture = chess.Move.from_uci(line["queen_capture"])
+        assert queen_capture in board.legal_moves
+        board.push(queen_capture)
+        assert board.piece_at(queen_square) == chess.Piece(chess.QUEEN, mover)

@@ -978,6 +978,10 @@ If no checkpoint exists at the specified path, the gameplay script reports that 
 
 ---
 
+## Tactical benchmark coverage
+
+The curated tactical-position corpus currently contains **36 positions**: 19 White-to-move and 17 Black-to-move. Its motif coverage includes a colour-balanced pair of overloaded-defender examples. These positions are validated diagnostic cases; corpus coverage and Stockfish audit success do not establish general playing strength or an Elo rating. The latest audit supported both new overloaded-defender positions; one pre-existing position remains flagged for human review.
+
 ## 16 · Current Development Priorities
 
 The project remains under active development.

@@ -531,3 +531,13 @@ For every meaningful development batch:
 - Candidate's small improvement on individual positions did not carry over to the sequence benchmark. This is a limited curated diagnostic, not an overall chess-strength or Elo measurement.
 - Evaluation reports artifact ID `14074627894` is attached to the workflow run. Both original checkpoints remain backed up and unchanged; no promotion or training occurred.
 - Detailed results, checkpoint hashes, settings and limitations are in `docs/EXPERIMENT_LOG.md`.
+
+
+## Overloaded-defender corpus expansion — verified (2026-11-14)
+
+- Added a White-to-move and a Black-to-move overloaded-defender example. In both, a knight is the only non-king defender of a rook and the sole defender of a queen; a checking rook capture forces it to abandon the queen.
+- Added semantic tests for both complete tactical mechanisms, not merely FEN validity or move legality.
+- Tactical position corpus: **36 positions**, comprising **19 White-to-move** and **17 Black-to-move**.
+- CPU workflow [43633713020](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713020): **SUCCESS; 188 tests passed**.
+- Stockfish workflow [43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013): **SUCCESS**. Both new positions supported; 35/36 total positions supported, with one pre-existing black knight double-attack position flagged for human review. All 7/7 sequences and 25/25 annotated plies supported. Artifact `14128664297`.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
