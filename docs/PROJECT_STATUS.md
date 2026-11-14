@@ -589,3 +589,5 @@ For every meaningful development batch:
 - The sixth candidate also failed because `Rh6+` created a forced mating sequence against the Black king on h8. The current FEN moves the Black king to a8 to remove that checking line; CI review is pending.
 
 - The seventh candidate was refuted by a checking rook escape (`Ra6+`) that neutralised the fork. The current FEN moves the Black king to b8 to remove that tempo resource; fresh CPU and Stockfish checks are pending.
+
+- The eighth candidate allowed `Qb4+`, a checking queen escape. The latest FEN relocates the Black king to e8 to remove that check; the fork must pass a new audit before it can be accepted.
