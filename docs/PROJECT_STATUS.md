@@ -560,3 +560,15 @@ For every meaningful development batch:
 - CPU workflow [43635318202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318202): **SUCCESS; 188 tests passed**.
 - Stockfish workflow [43635318185](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318185): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Artifact `14129213299`.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## Overloaded-defender sequence expansion — verification pending (2026-11-14)
+
+- Added one White-to-move and one Black-to-move three-ply combination based on the already curated overloaded-knight positions.
+- Each line demonstrates the checking rook capture, the knight's forced recapture away from its second defensive duty, and the resulting queen capture.
+- Sequence corpus increases from **7 combinations / 25 annotated plies** to **9 combinations / 31 annotated plies**. The position corpus remains **35 positions** (19 White-to-move, 16 Black-to-move).
+- Added sequence-loader/evaluator regression expectations for both colours and the expanded motif coverage.
+- CPU workflow [43638890941](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890941): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43638890935](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890935): **SUCCESS; 35/35 positions supported, 0 flagged; 9/9 sequences and 31/31 annotated plies supported**. Audit artifact `14131357745`.
+- Finite-depth engine support does not prove the motif labels or show that every illustrative reply is forced. The new lines reuse the already curated overloaded-defender positions.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.

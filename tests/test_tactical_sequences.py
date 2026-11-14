@@ -14,9 +14,9 @@ CORPUS = Path(__file__).parents[1] / "benchmarks" / "tactical_sequences.jsonl"
 
 def test_curated_combinations_replay_as_legal_multi_ply_lines():
     sequences = load_tactical_sequences(CORPUS)
-    assert len(sequences) >= 7
+    assert len(sequences) >= 9
     assert {sequence.motifs[0] for sequence in sequences} >= {
-        "fork", "discovered_attack", "decoy", "removal_of_defender", "zwischenzug"
+        "fork", "discovered_attack", "decoy", "removal_of_defender", "zwischenzug", "overloaded_defender"
     }
     for sequence in sequences:
         board = chess.Board(sequence.fen)
@@ -37,19 +37,21 @@ def test_sequence_evaluator_scores_complete_combinations():
         "c8c4", "c2c4", "d6b5",
         "d1d8", "g8f7", "e1e4",
         "d8d1", "g1f2", "e8e5",
+        "f1f8", "d7f8", "e1e5",
+        "f8f1", "d2f1", "e8e4",
     ])
     result = evaluate_tactical_sequences(sequences, lambda board: next(selected))
 
-    assert result.total_sequences == 7
-    assert result.completed_sequences == 7
-    assert result.attempted_plies == 25
-    assert result.correct_plies == 25
+    assert result.total_sequences == 9
+    assert result.completed_sequences == 9
+    assert result.attempted_plies == 31
+    assert result.correct_plies == 31
     assert result.illegal_moves == 0
     assert result.sequence_completion_rate == 1.0
     assert result.ply_accuracy == 1.0
-    assert result.by_color["white"]["correct"] == 12
-    assert result.by_color["black"]["correct"] == 13
-    assert result.by_phase["middlegame"]["total"] == 25
+    assert result.by_color["white"]["correct"] == 15
+    assert result.by_color["black"]["correct"] == 16
+    assert result.by_phase["middlegame"]["total"] == 31
 
 
 def test_sequence_evaluator_stops_and_records_first_missed_tactical_ply():

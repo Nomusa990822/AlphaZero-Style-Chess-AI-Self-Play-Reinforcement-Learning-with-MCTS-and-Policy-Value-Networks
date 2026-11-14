@@ -228,12 +228,12 @@ defences. CI validates sequence legality and the evaluator; it does not run
 training or measure neural-network playing strength.
 
 
-The sequence corpus has since grown to seven combinations and twenty-five
-annotated plies. The two added removal-of-the-defender lines cover both
-colours: White removes a rook to win a knight, while Black removes a pawn
-defender to open a mating square. Two additional zwischenzug lines demonstrate
-a forcing check before capturing a loose bishop, one for each colour. These
-remain annotated principal variations, not forced-line proofs.
+The sequence corpus has since grown to nine combinations and thirty-one
+annotated plies. In addition to the removal-of-the-defender and zwischenzug
+lines, it now includes an overloaded-defender combination for each colour:
+a checking rook capture forces the sole knight defender away from a queen,
+which is then captured. These remain annotated principal variations, not
+forced-line proofs.
 
 ## Balanced non-checking double attacks
 
