@@ -27,6 +27,48 @@ def test_curated_combinations_replay_as_legal_multi_ply_lines():
             board.push(chess.Move.from_uci(sorted(ply.acceptable_moves)[0]))
 
 
+
+def test_defensive_countercheck_sequences_really_resolve_check_and_countercheck():
+    sequences = load_tactical_sequences(CORPUS)
+    expected = {
+        "white-countercheck-interposition-001": {
+            "first": "b5e2",
+            "interposition_square": chess.E2,
+            "king_square": chess.E1,
+            "attacked_king": chess.H5,
+        },
+        "black-countercheck-interposition-001": {
+            "first": "b4e7",
+            "interposition_square": chess.E7,
+            "king_square": chess.E8,
+            "attacked_king": chess.H4,
+        },
+    }
+    selected = {sequence.sequence_id: sequence for sequence in sequences}
+
+    assert set(expected) <= set(selected)
+    for sequence_id, details in expected.items():
+        sequence = selected[sequence_id]
+        board = chess.Board(sequence.fen)
+        assert board.is_check()
+
+        move = chess.Move.from_uci(details["first"])
+        assert move in board.legal_moves
+        bishop = board.piece_at(move.from_square)
+        assert bishop == chess.Piece(chess.BISHOP, board.turn)
+        board.push(move)
+
+        # The interposition must end the original check and give check to the
+        # opposing king; merely having a legal bishop move is not sufficient.
+        assert not board.is_check()
+        assert board.piece_at(details["interposition_square"]) == bishop
+        assert board.is_check()
+        assert board.is_attacked_by(not board.turn, details["attacked_king"])
+
+        king_move = chess.Move.from_uci(sequence.plies[1].acceptable_moves[0])
+        assert king_move in board.legal_moves
+        assert board.piece_at(details["king_square"]) == chess.Piece(chess.KING, not board.turn)
+
 def test_sequence_evaluator_scores_complete_combinations():
     sequences = load_tactical_sequences(CORPUS)
     selected = iter([
