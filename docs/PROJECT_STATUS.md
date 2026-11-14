@@ -577,3 +577,5 @@ For every meaningful development batch:
 - The current review-branch FEN adds a Black queen defending the knight's destination square and a Black rook to avoid the earlier extreme material imbalance. Both required checks must be rerun against this revised FEN.
 
 - The second FEN was also rejected: the added Black queen and rook formed an unrelated forced mating net against the White king. The latest iteration moves the White king to a1 to remove that mating motif; its checks are pending.
+
+- The third iteration was rejected because the added g8-rook enabled a forced mating attack. The latest FEN removes that rook but retains the Black queen defending d4; both checks must be rerun.
