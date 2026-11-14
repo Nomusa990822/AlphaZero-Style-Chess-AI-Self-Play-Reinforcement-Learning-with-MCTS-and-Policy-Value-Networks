@@ -250,7 +250,7 @@ enough for a general tactical-strength claim.
 The position corpus now includes a colour-balanced overloaded-defender pair.
 In the White-to-move example, a checking rook capture forces a black knight
 to abandon its defence of the queen; the Black-to-move example mirrors the
-same idea against White. The semantic tests verify that the same knight is
-the sole defender of both major pieces before the forcing check, that it
+same idea against White. The semantic tests verify that the same knight is the only non-king defender of the rook and the sole
+defender of the queen before the forcing check, that it
 captures the checking rook, and that the queen can then be taken. These are
 curated motif demonstrations, not a broad estimate of tactical strength.
