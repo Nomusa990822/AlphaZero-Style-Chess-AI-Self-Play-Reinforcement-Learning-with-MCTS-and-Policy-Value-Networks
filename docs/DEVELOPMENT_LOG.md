@@ -1080,3 +1080,18 @@ Copy this section for each future engineering batch.
 - Candidate's one-position increase is a small result on a curated 22-position set, not evidence of overall playing-strength improvement. Sequence performance was unchanged. Sequence scoring follows the annotated principal variation and does not exhaustively test alternative defences.
 - Reports artifact: [checkpoint-tactical-evaluation-43503135826](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43503135826) (artifact ID `14074627894`; expires 2027-02-11). It contains four JSON reports and the checkpoint manifest.
 - No training was run, no checkpoint was modified or promoted, and no Elo or general playing-strength claim is made. Full measured details are in `docs/EXPERIMENT_LOG.md`.
+
+
+## 2026-11-14 — Add colour-balanced overloaded-defender tactics
+
+### Changes
+- Added two tactical positions demonstrating an overloaded knight defender, one for White to move and one for Black to move.
+- In each position, one knight is the sole defender of both a rook and a queen. A checking rook capture forces the knight to recapture, after which the queen is exposed.
+- Added semantic regression coverage for the defender's two duties, the forcing check, the forced recapture and the subsequent queen capture.
+- Updated corpus expectations and the benchmark documentation, root README, and project status so the counts and motif coverage remain synchronised.
+- Corpus size increases from 34 to 36 positions; side-to-move distribution changes from 18/16 to 19/17.
+- No training or checkpoint evaluation was run. No checkpoint was changed or promoted.
+
+### Verification
+- CPU test suite and Stockfish tactical engine audit: pending pull-request workflows.
+- The positions are curated motif demonstrations. Passing finite-depth engine support checks will not establish general playing strength or Elo.
