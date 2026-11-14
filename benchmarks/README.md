@@ -35,7 +35,7 @@ The committed `tactical_positions.jsonl` remains a small curated starter corpus.
 It includes mating nets, forks, hanging pieces, pins, skewers, discovered
 attacks, defensive resources, promotion tactics, double attacks, deflections,
 decoys, removal of defenders, interference, trapped pieces, zwischenzugs and
-overloaded defenders, with examples for both sides to move. Its thirty-six
+overloaded defenders, with examples for both sides to move. Its thirty-five
 positions are not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
