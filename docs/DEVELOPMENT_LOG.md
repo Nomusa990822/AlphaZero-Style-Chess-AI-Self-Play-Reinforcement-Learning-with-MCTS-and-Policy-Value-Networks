@@ -1148,3 +1148,5 @@ Copy this section for each future engineering batch.
 - A third iteration showed that the added rook on g8 created a forced mating attack (`...Rg1+`) and caused the audit to reject the fork. Removed that rook while retaining the Black queen that protects the knight on d4; the current FEN now needs a fresh audit.
 
 - The fourth construction removes the mating rook and changes the geometry: Black's knight moves from c5 to e4, attacking the White queen on c3 and rook on f6. The queen defends the rook diagonally; the f5-pawn protects the knight, and the b4-pawn/e7-pawn support the two capture squares. The semantic test checks both escape branches. This FEN is provisional until the next audit.
+
+- The fourth FEN was rejected because Black's b4-pawn could simply capture the White queen on c3, making the knight fork unnecessary. The latest construction removes both pawns and retains the geometric fork: `...Ne4` attacks the queen on c3 and rook on f6, with no White recapture after either target is taken. The current candidate requires another full audit.
