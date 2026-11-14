@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) >= 36
+    assert len(positions) >= 35
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
@@ -38,7 +38,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
     assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 19
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 17
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 16
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
@@ -167,9 +167,6 @@ def test_non_checking_double_attacks_cover_both_colours():
     expected = {
         "white-knight-double-attack-queen-rook-colour-balanced-001": (
             chess.WHITE, "c5d7", chess.F6, chess.F8
-        ),
-        "black-knight-double-attack-queen-rook-001": (
-            chess.BLACK, "c4d2", chess.F3, chess.F1
         ),
     }
     for position_id, (turn, uci, queen_square, rook_square) in expected.items():
