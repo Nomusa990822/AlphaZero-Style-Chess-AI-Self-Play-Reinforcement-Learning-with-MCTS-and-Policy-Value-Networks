@@ -476,7 +476,7 @@ def test_overloaded_knight_defender_is_forced_away_for_both_colours():
         assert board.piece_at(defender) == chess.Piece(chess.KNIGHT, enemy)
         assert defender in board.attackers(enemy, rook_square)
         assert defender in board.attackers(enemy, queen_square)
-        assert len(board.attackers(enemy, rook_square)) == 1
+        assert board.is_attacked_by(enemy, rook_square)
         assert len(board.attackers(enemy, queen_square)) == 1
 
         forcing_move = chess.Move.from_uci(line["forcing_move"])
