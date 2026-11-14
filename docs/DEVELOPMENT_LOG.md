@@ -1215,3 +1215,32 @@ Copy this section for each future engineering batch.
 ### Verification
 - This is an engineering/policy change only. No training run, checkpoint promotion, tactical benchmark or Elo assessment was performed.
 - CPU tests and Stockfish audit are required on the PR revision before merge.
+
+
+## 2026-11-14 — Make first baseline diagnostics reproducible on current main
+
+### Changes
+- Corrected the manual checkpoint tactical-evaluation workflow to check out
+  the exact main commit selected at dispatch, instead of the older
+  chess-strength-training-upgrade feature branch.
+- Added provenance metadata containing source commit, workflow run/attempt,
+  CPU device, MCTS simulation budget, corpus identities/counts and both
+  checkpoint hashes.
+- Expanded the diagnostic artifact to preserve the raw baseline and candidate
+  checkpoint files alongside the original prerelease manifest and JSON
+  evaluation reports.
+- Updated the root README, benchmark guide and project status with the
+  reproducible first-baseline protocol and its training gate.
+
+### Verification and execution state
+- The epoch-0 release asset is present (3,404,943 bytes) and GitHub's asset
+  SHA-256 matches the pinned baseline digest
+  7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471.
+- The workflow change is awaiting PR CI and merge. No diagnostic run or full
+  training run has been dispatched by this documentation/automation change.
+- After merge, run checkpoint evaluation from main with
+  confirm_evaluation=YES, simulations=100; inspect and preserve its artifact
+  before launching the six-hour resume-training workflow with
+  confirm_training=YES.
+- No new entry is added to EXPERIMENT_LOG.md until the actual benchmark
+  executes and its measured results are available.
