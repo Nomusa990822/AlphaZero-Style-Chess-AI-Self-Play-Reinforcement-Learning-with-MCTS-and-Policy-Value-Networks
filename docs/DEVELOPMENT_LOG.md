@@ -1093,5 +1093,6 @@ Copy this section for each future engineering batch.
 - No training or checkpoint evaluation was run. No checkpoint was changed or promoted.
 
 ### Verification
-- CPU test suite and Stockfish tactical engine audit: pending pull-request workflows.
-- The positions are curated motif demonstrations. Passing finite-depth engine support checks will not establish general playing strength or Elo.
+- CPU workflow [43633713020](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713020): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013): **SUCCESS**. Both new overloaded-defender positions were supported; the complete corpus had 35/36 positions supported and one existing entry flagged for human review: `black-knight-double-attack-queen-rook-001`. All 7/7 sequences and 25/25 annotated plies were supported. Audit artifact: `14128664297`.
+- The positions are curated motif demonstrations. Finite-depth engine support checks do not establish general playing strength or Elo. No training or checkpoint evaluation was run.
