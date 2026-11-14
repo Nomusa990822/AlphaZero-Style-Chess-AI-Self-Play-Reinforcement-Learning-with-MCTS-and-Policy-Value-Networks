@@ -1142,3 +1142,5 @@ Copy this section for each future engineering batch.
 - The first sparse candidate passed all 189 CPU tests but Stockfish rejected `...Nd4` by a very large margin and found a forced-mate continuation. It was not merged.
 - Revised the candidate by adding a Black queen on d8 to defend the forked knight and a rook on g8 to avoid an artificially material-lopsided position. The semantic test now explicitly verifies the queen's protection of d4.
 - The revised candidate requires a fresh run of both CI checks; no conclusion is drawn from the first audit for this new FEN.
+
+- The second construction also failed Stockfish review: its added Black queen and rook created an immediate mating net against the White king, so the engine preferred mate rather than the fork. The current iteration relocates the White king to a1 to remove that unrelated mating motif; the full audit must be rerun.
