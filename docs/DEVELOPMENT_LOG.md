@@ -1151,7 +1151,7 @@ Copy this section for each future engineering batch.
 - Updated benchmark and root documentation. The 35-position tactical-position corpus remains unchanged.
 
 ### Verification
-- CPU workflow [43639569253](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639569253): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
-- Stockfish workflow [43639569103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639569103): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported**. Audit artifact `14130753433`.
+- CPU workflow [43639690691](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639690691): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43639690662](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639690662): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported**. Audit artifact `14131054706`.
 - The finite-depth audit is not proof of tactical correctness, a unique best move, or that every annotated reply is forced.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
