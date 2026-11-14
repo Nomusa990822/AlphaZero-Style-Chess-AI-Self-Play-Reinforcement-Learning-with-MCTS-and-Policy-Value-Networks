@@ -49,7 +49,6 @@ def build_pilot_config() -> tuple[MoveEncoding, BoardEncoder, NetworkConfig, Pip
         eval_add_dirichlet_noise=False,
         eval_temperature=0.0,
         gating_games=2,
-        required_promotion_score=0.50,
         checkpoint_dir="data/checkpoints/fresh_pilot",
         log_dir="data/logs/fresh_pilot",
         replay_buffer_path="data/replay_buffer/fresh_pilot/replay.pkl",
