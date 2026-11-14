@@ -1061,3 +1061,12 @@ Built by [**Nomusa Shongwe**](https://github.com/Nomusa990822)
 ## Model checkpoint preservation
 
 Model weights remain excluded from Git commits. To protect them from temporary Codespace deletion, use the manual **Train and preserve model checkpoints** GitHub Actions workflow on the development branch. It requires explicitly selecting `YES` before consuming Actions time. The workflow uploads generated checkpoints as a 90-day Actions artifact, including when training fails after producing a checkpoint. Successful training also publishes the checkpoint files and SHA-256 manifest as a durable, non-latest GitHub prerelease asset. Download release assets to keep an independent local copy.
+
+
+## Current baseline checkpoint and safe training procedure
+
+A bounded fresh-start CPU pilot was completed on 2026-11-13 (workflow [43497298757](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43497298757)). It produced an epoch-0 baseline and an epoch-1 candidate. The candidate was not promoted: its two colour-swapped evaluation games were both draws, which is a pipeline smoke test rather than a strength result.
+
+The selected baseline checkpoint and separate candidate are backed up in the durable [pilot checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/fresh-pilot-checkpoint-43497298757-1), together with a SHA-256 manifest. The baseline SHA-256 is `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`. Restore and verify this file as `data/checkpoints/best_model.pt` before resuming training; do not commit model weights.
+
+**Important:** the regular `.github/workflows/train-and-backup.yml` workflow is resume-only. It fails before installing dependencies if `best_model.pt` is absent and requires the manual confirmation input `YES` (default `NO`). Do not dispatch it until the released baseline is restored and independently backed up. See [the checkpoint recovery guide](docs/training_flow.md) and [current project status](docs/PROJECT_STATUS.md).
