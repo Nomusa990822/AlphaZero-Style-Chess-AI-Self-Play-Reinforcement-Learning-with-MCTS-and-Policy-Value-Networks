@@ -270,3 +270,8 @@ The corpus currently retains the validated White-to-move knight double-attack ex
 ## Black knight double-attack candidate under review
 
 The review branch adds a minimal Black-to-move fork in which `...Nd4` attacks a White queen on f3 and rook on f5. The semantic regression test checks both targets, the non-checking move, that the knight is not capturable, and the illustrative queen-escape/rook-capture continuation. This construction is still provisional until the full CPU suite and the standard depth-16 Stockfish audit (MultiPV 5, 150cp tolerance) support it. No audit threshold is being relaxed.
+
+
+### Symmetric Black double-attack candidate
+
+The current review candidate is a 180-degree colour rotation of the retained White knight double-attack motif. Black's `...Ne2` attacks the White queen on c3 and rook on c1; the semantic test checks the non-checking fork and both major-piece escape branches. This candidate remains provisional until the CPU suite and Stockfish audit pass.
