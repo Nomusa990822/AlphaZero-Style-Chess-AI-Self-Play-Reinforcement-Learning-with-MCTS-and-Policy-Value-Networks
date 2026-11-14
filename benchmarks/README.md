@@ -255,3 +255,14 @@ same idea against White. The semantic tests verify that the same knight is the o
 defender of the queen before the forcing check, that it
 captures the checking rook, and that the queen can then be taken. These are
 curated motif demonstrations, not a broad estimate of tactical strength.
+
+
+## Latest corpus verification — 2026-11-14
+
+The current 36-position corpus passed the CPU suite (188 tests). The finite-depth
+Stockfish audit supported both new overloaded-defender positions, 35 of 36
+positions overall, all seven sequences and all twenty-five annotated plies.
+One pre-existing position, `black-knight-double-attack-queen-rook-001`, was
+flagged for human review. The audit report is available as Actions artifact
+`14128664297` from [workflow run 43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013).
+This is finite-depth tactical review, not evidence of general playing strength.
