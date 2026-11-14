@@ -128,9 +128,9 @@
 - Added unit tests for supported and flagged accepted-move scenarios using a deterministic fake engine.
 
 ### Verification
-- GitHub Actions Stockfish audit run [43403925496](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43403925496): **completed successfully** using Stockfish 17.1, depth 16, MultiPV 5, one thread, 256 MB hash and a 150-centipawn tolerance.
+- GitHub Actions Stockfish audit run [43403925496](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43403925496): **completed successfully** using Stockfish 17.1, depth 16, MultiPV 5, one thread, 256 MB hash and a 150-centipawn tolerance.
 - The engine reviewed all thirteen positions: **13/13 accepted moves were within tolerance; 0 positions were flagged**. The workflow uploaded the `tactical-engine-audit` JSON artifact, and its report was also printed to the workflow log for inspection.
-- CPU test workflow run [43403925592](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43403925592): **completed successfully**.
+- CPU test workflow run [43403925592](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43403925592): **completed successfully**.
 - Finite-depth engine agreement supports the accepted moves but does not prove tactical optimality or validate every human motif label/annotation. No real neural-network checkpoint benchmark or playing-strength gain is claimed.
 
 ### Follow-up
@@ -548,9 +548,9 @@ Copy this section for each future engineering batch.
 
 ### Verification
 - Implementation/test revision: `274275f7f617cee4b5f55dc959661986426e34b7`.
-- CPU test workflow [43418653846](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653846): **passed; 149 tests passed in 3.82 seconds** on Python 3.11.
-- Duplicate CPU workflow [43418661520](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418661520) also passed: 149 tests in 3.87 seconds.
-- Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418653867): **passed**; all 13 corpus positions supported, 0 flagged for human review; artifact ID 14032962642. Duplicate audit run [43418661598](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43418661598) also passed.
+- CPU test workflow [43418653846](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43418653846): **passed; 149 tests passed in 3.82 seconds** on Python 3.11.
+- Duplicate CPU workflow [43418661520](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43418661520) also passed: 149 tests in 3.87 seconds.
+- Stockfish audit [43418653867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43418653867): **passed**; all 13 corpus positions supported, 0 flagged for human review; artifact ID 14032962642. Duplicate audit run [43418661598](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43418661598) also passed.
 - The four new static-exchange regression tests are included in the 149-test suite.
 - No checkpoint experiment, training run, measured playing-strength gain or Elo result is claimed.
 
@@ -657,7 +657,7 @@ Copy this section for each future engineering batch.
 
 ### Verification — Batched SEE benchmark
 - Code revision `bf2ceebe4fe5738c4dc94ea44cf3f06185ad0e9a` passed CPU workflow [43421598036](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598036): **153 passed in 2.78 seconds**. The batch benchmark ran and uploaded artifact ID `14033619165`.
-- Stockfish audit [43421598059](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598059) passed; duplicate audit [43421606287](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43421606287) also passed.
+- Stockfish audit [43421598059](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421598059) passed; duplicate audit [43421606287](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43421606287) also passed.
 - Batch size 10, 25 paired batches per position/mode, 1,000 timed expansions per mode across four positions.
 - Aggregate median per expansion: disabled 0.158494 ms; enabled 0.267257 ms; nominal +68.62%. Pooled p95: disabled 0.321696 ms; enabled 0.414722 ms.
 - Position median overhead: starting position +10.19% (zero tactical candidates), simple capture +27.80%, poisoned queen capture +50.10%, promotion choices +68.04%.
@@ -684,7 +684,7 @@ Copy this section for each future engineering batch.
 - Implementation revision `8124b000aef61645b57fd3f686ef81a13174530d`.
 - CPU run [43423373600](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423373600): **154 passed in 3.72 seconds**; batched benchmark completed and uploaded artifact ID `14034344758`.
 - Duplicate CPU run [43423379443](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423379443): passed; **154 passed in 3.22 seconds**; benchmark artifact ID `14034629057`.
-- Stockfish audit [43423379514](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423379514): passed. Duplicate audit [43423373448](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43423373448) also passed.
+- Stockfish audit [43423379514](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423379514): passed. Duplicate audit [43423373448](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43423373448) also passed.
 - The quiet-position fast path is covered by a regression test that asserts the SEE evaluator is not called and the original normalized prior dictionary is returned unchanged.
 - The concurrent benchmark runs reported differing absolute baselines (including SEE-disabled starting-position medians of 0.410099 ms and 0.263501 ms) and nominal starting-position overhead of 7.54% and 9.15%. Other position overheads remained substantial. Because the paired workflows ran concurrently on shared GitHub-hosted runner capacity, these measurements are not a controlled before/after comparison and do not establish a reliable speedup. Keep the SEE default unchanged; isolate benchmark runs before making performance decisions.
 - No checkpoint experiment, training, playing-strength gain or Elo result is claimed.
@@ -1122,6 +1122,6 @@ Copy this section for each future engineering batch.
 - Current corpus size is **35 positions**: 19 White-to-move and 16 Black-to-move. Colour-balanced double-attack coverage is explicitly not claimed.
 
 ### Verification
-- CPU workflow [43635125191](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125191): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also succeeded.
-- Stockfish workflow [43635125225](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43635125225): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Audit artifact `14129428762`.
+- CPU workflow [43635318202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318202): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also succeeded.
+- Stockfish workflow [43635318185](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318185): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Audit artifact `14129213299`.
 - No training, checkpoint evaluation or promotion was performed.
