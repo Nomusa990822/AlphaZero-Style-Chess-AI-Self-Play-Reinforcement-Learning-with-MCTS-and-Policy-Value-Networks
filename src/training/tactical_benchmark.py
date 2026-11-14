@@ -33,6 +33,7 @@ TACTICAL_MOTIFS = frozenset({
     "overloaded_defender",
     "trapped_piece",
     "defensive_resource",
+    "zwischenzug",
     "endgame_tactic",
 })
 
