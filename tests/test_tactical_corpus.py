@@ -199,6 +199,8 @@ def test_black_knight_double_attack_targets_queen_and_rook_without_check():
 
     assert not board.is_check()
     assert board.piece_at(chess.D4) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert board.piece_at(chess.D8) == chess.Piece(chess.QUEEN, chess.BLACK)
+    assert chess.D8 in board.attackers(chess.BLACK, chess.D4)
     assert chess.D4 in board.attackers(chess.BLACK, chess.F3)
     assert chess.D4 in board.attackers(chess.BLACK, chess.F5)
     assert not board.is_attacked_by(chess.WHITE, chess.D4)
