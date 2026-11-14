@@ -58,3 +58,13 @@ The small curated corpus and prescribed sequence lines do not measure general pl
 - Update `README.md`, `benchmarks/README.md`, this status file and `DEVELOPMENT_LOG.md` with each meaningful engineering batch.
 - Add entries to `EXPERIMENT_LOG.md` only when an actual training or benchmark experiment runs.
 - Record exact revisions, workflow links, failures and repairs. Never replace unknown data with estimates.
+
+
+## Baseline restoration automation — prepared
+
+The manual resume workflow has been updated to recover the immutable epoch-0
+baseline from the durable pilot prerelease only when the local
+`data/checkpoints/best_model.pt` is absent or empty. It verifies the expected
+SHA-256 before installation and preserves any existing non-empty checkpoint.
+The workflow remains manually gated by `confirm_training=YES`; this change
+does not dispatch training. The change is pending PR CI and merge.
