@@ -240,8 +240,8 @@ remain annotated principal variations, not forced-line proofs.
 The position corpus now includes a matched pair of knight double attacks:
 White's knight attacks a queen and rook in one move, and Black's knight does
 the same against White. Both examples are non-checking, so the motif is
-distinguished from a checking fork. The corpus now contains thirty-six
-positions, balanced at nineteen White-to-move and seventeen Black-to-move. The
+distinguished from a checking fork. The corpus now contains thirty-five
+positions: nineteen White-to-move and sixteen Black-to-move. The
 paired examples improve colour coverage but do not make the corpus large
 enough for a general tactical-strength claim.
 
@@ -259,25 +259,9 @@ curated motif demonstrations, not a broad estimate of tactical strength.
 
 ## Latest corpus verification — 2026-11-14
 
-The current 36-position corpus passed the CPU suite (188 tests). The finite-depth
-Stockfish audit supported both new overloaded-defender positions, 35 of 36
-positions overall, all seven sequences and all twenty-five annotated plies.
-One pre-existing position, `black-knight-double-attack-queen-rook-001`, was
-flagged for human review. The audit report is available as Actions artifact
-`14128664297` from [workflow run 43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013).
-This is finite-depth tactical review, not evidence of general playing strength.
+The previous 36-position revision passed its CPU suite (188 tests), but Stockfish flagged the Black knight double-attack entry. The entry has since been removed rather than retaining an unsupported motif claim. The current 35-position revision is being revalidated; see the latest PR and workflow results. This is finite-depth tactical review, not evidence of general playing strength.
 
 
-## Repair of the Black knight double-attack example
+## Black knight double-attack coverage
 
-The original Black-to-move example was unsound: after `...Nd2`, White could
-play `Qf4`, simultaneously escaping the knight attack and attacking the
-knight. The finite-depth audit also found that the old position allowed a
-forced-mate continuation, so it was not a useful standalone fork example.
-
-The position has been replaced with a materially populated position. A White pawn on f4 blocks `Qf4`, and a Black pawn on d4 blocks the alternative
-`Qd5` counterattack against the knight. White can save the queen, but Black's
-knight can then capture the undefended rook on f1. A semantic regression test verifies both
-attacked targets, the blocked counterattack and the rook capture. The
-Stockfish audit must still confirm the replacement before it is considered
-verified.
+The corpus currently retains the validated White-to-move knight double-attack examples only. A Black-to-move counterpart was removed after Stockfish rejected the original position and multiple repair attempts. Colour-balanced coverage will be restored only when a Black example passes the same semantic tests and engine audit.
