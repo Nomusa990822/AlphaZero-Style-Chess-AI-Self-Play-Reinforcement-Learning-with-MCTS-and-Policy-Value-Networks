@@ -1125,3 +1125,14 @@ Copy this section for each future engineering batch.
 - CPU workflow [43635318202](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318202): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also succeeded.
 - Stockfish workflow [43635318185](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43635318185): **SUCCESS; 35/35 positions supported, 0 flagged; 7/7 sequences and 25/25 annotated plies supported**. Audit artifact `14129213299`.
 - No training, checkpoint evaluation or promotion was performed.
+
+
+## 2026-11-14 — Construct a Black knight double-attack candidate
+
+### Candidate construction
+- Added a provisional Black-to-move position: `...Nd4` attacks the White queen on f3 and rook on f5 at the same time, without check.
+- The queen is the rook's only defender along the f-file; after a queen move, `...Nxf5` captures the rook. The knight on d4 is not capturable by the queen on f3.
+- Added semantic regression coverage for both targets, non-checking status, knight safety and the illustrative continuation.
+- Proposed corpus size is 36 positions (19 White-to-move, 17 Black-to-move). This is a candidate only; it must not be described as verified or merged until both required CI checks pass.
+- The existing Stockfish settings remain unchanged: depth 16, MultiPV 5, 150cp maximum loss.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
