@@ -266,3 +266,18 @@ One pre-existing position, `black-knight-double-attack-queen-rook-001`, was
 flagged for human review. The audit report is available as Actions artifact
 `14128664297` from [workflow run 43633713013](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43633713013).
 This is finite-depth tactical review, not evidence of general playing strength.
+
+
+## Repair of the Black knight double-attack example
+
+The original Black-to-move example was unsound: after `...Nd2`, White could
+play `Qf4`, simultaneously escaping the knight attack and attacking the
+knight. The finite-depth audit also found that the old position allowed a
+forced-mate continuation, so it was not a useful standalone fork example.
+
+The position has been replaced with a materially populated position. A White
+pawn on f4 blocks `Qf4`; White can save the queen, but Black's knight can then
+capture the undefended rook on f1. A semantic regression test verifies both
+attacked targets, the blocked counterattack and the rook capture. The
+Stockfish audit must still confirm the replacement before it is considered
+verified.
