@@ -15,7 +15,7 @@ Store one JSON object per line in a `.jsonl` file:
 - `motif`: one of the validated labels: `mating_net`, `fork`,
   `hanging_piece`, `pin`, `skewer`, `discovered_attack`,
   `double_attack`, `deflection`, `decoy`, `overloaded_defender`,
-  `trapped_piece`, `defensive_resource`, or `endgame_tactic`.
+  `trapped_piece`, `defensive_resource`, `zwischenzug`, or `endgame_tactic`.
   Unknown labels are rejected to prevent inconsistent per-motif reporting.
 - `fen`: position before the engine moves.
 - `acceptable_moves`: one or more acceptable first moves in UCI notation.
@@ -34,7 +34,7 @@ reviewed; a legal move is not necessarily a tactically good move.
 The committed `tactical_positions.jsonl` is still a small starter corpus. It
 now includes a mating net, knight forks, hanging-piece captures, pins, and
 rook skewers, discovered attacks, defensive resources and promotion tactics,
-with examples for both sides to move. Its thirteen positions are
+with examples for both sides to move. Its thirty-two positions are
 not large or diverse enough to support a general tactical-strength claim.
 
 ## Run a checkpoint benchmark
@@ -227,8 +227,9 @@ defences. CI validates sequence legality and the evaluator; it does not run
 training or measure neural-network playing strength.
 
 
-The sequence corpus has since grown to five combinations and nineteen
+The sequence corpus has since grown to seven combinations and twenty-five
 annotated plies. The two added removal-of-the-defender lines cover both
 colours: White removes a rook to win a knight, while Black removes a pawn
-defender to open a mating square. Both are still evaluated as annotated
-principal variations, not forced-line proofs.
+defender to open a mating square. Two additional zwischenzug lines demonstrate
+a forcing check before capturing a loose bishop, one for each colour. These
+remain annotated principal variations, not forced-line proofs.
