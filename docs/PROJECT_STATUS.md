@@ -584,3 +584,12 @@ For every meaningful development batch:
 - The finite-depth audit is not proof of tactical correctness, a unique best move, or that every annotated reply is forced.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
 - No Elo assessment was performed.
+
+
+## Defensive countercheck semantic regression tests — verified (2026-11-14)
+
+- Regression coverage now checks the actual defensive mechanism for both colours: initial check, legal bishop interposition, resolution of the original check, countercheck of the opposing king, and a legal king response.
+- No benchmark positions or annotated sequences were added; corpus counts remain 35 positions and 11 sequences / 37 annotated plies.
+- CPU workflow [43641653795](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641653795): **SUCCESS; 189 tests passed**.
+- Stockfish workflow [43641653805](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43641653805): **SUCCESS; 35/35 positions and 11/11 sequences / 37/37 plies supported, with zero flagged entries**. Audit artifact `14132052092`.
+- No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.

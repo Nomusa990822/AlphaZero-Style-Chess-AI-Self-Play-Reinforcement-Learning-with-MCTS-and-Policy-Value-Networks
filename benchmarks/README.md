@@ -205,7 +205,13 @@ not run training or claim anything about playing strength.
 ## Multi-motif tactical combinations
 
 The separate `tactical_sequences.jsonl` corpus records annotated principal
-variations that combine motifs across several plies. It currently contains eleven annotated combinations, including checking forks, discovered attacks, decoys, removal of defenders, zwischenzugs, overloaded defenders and defensive counterchecks. The sequence evaluator reports complete-line
+variations that combine motifs across several plies. It currently contains eleven annotated combinations, including checking forks, discovered attacks, decoys, removal of defenders, zwischenzugs, overloaded defenders and defensive counterchecks. Dedicated regression tests also verify the defensive countercheck
+mechanism: the initial side is in check, the bishop interposition resolves
+that check while checking the opposing king, and the annotated king reply is
+legal. This supplements move-legality replay with motif-specific assertions;
+it still does not prove every reply is forced.
+
+The sequence evaluator reports complete-line
 success, per-ply accuracy, colour and phase breakdowns.
 
 Run the sequence evaluator with a compatible trained checkpoint:
@@ -251,7 +257,7 @@ curated motif demonstrations, not a broad estimate of tactical strength.
 
 ## Latest corpus verification — 2026-11-14
 
-The current position corpus contains 35 positions (19 White-to-move and 16 Black-to-move). The separate sequence corpus contains eleven combinations and thirty-seven annotated plies. The latest CPU suite passed 188 tests; the latest Stockfish audit supported 35/35 positions and 11/11 sequences (37/37 plies), with zero flagged entries. See `docs/PROJECT_STATUS.md` for workflow links. Finite-depth tactical review is not evidence of general playing strength.
+The current position corpus contains 35 positions (19 White-to-move and 16 Black-to-move). The separate sequence corpus contains eleven combinations and thirty-seven annotated plies. The latest CPU suite passed 189 tests; the Stockfish audit for this upgrade supported 35/35 positions and 11/11 sequences (37/37 plies), with zero flagged entries. The defensive countercheck semantic regression test passed for both colours. See `docs/PROJECT_STATUS.md` for workflow links. Finite-depth tactical review is not evidence of general playing strength.
 
 
 ## Black knight double-attack coverage
