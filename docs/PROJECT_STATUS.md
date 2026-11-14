@@ -585,3 +585,5 @@ For every meaningful development batch:
 - The fourth candidate was refuted because Black could capture the queen immediately with `...bxc3`. The current iteration removes the pawns so the intended knight fork is the tactical mechanism under review; both required checks remain pending.
 
 - The fifth candidate's annotated move tied the engine's best move, but the position itself was a forced mate for White; it is rejected as an unsuitable standalone example. The latest FEN adds a Black queen to defend f6 and places the White king on e1 to avoid the unrelated mating net. Verification is pending.
+
+- The sixth candidate also failed because `Rh6+` created a forced mating sequence against the Black king on h8. The current FEN moves the Black king to a8 to remove that checking line; CI review is pending.
