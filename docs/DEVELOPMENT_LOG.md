@@ -1111,3 +1111,16 @@ Copy this section for each future engineering batch.
 - Updated benchmark and root documentation in the same change.
 - CPU and Stockfish audit workflows are pending. The replacement is not considered verified until both pass.
 - No training, checkpoint evaluation or promotion was performed.
+
+
+## 2026-11-14 — Remove unsupported Black double-attack entry
+
+### Findings and decision
+- The original Black-to-move position was refuted by a queen counterattack and was already in a forced-mate setting.
+- Two subsequent candidate repairs also failed the engine acceptance threshold: one by 189cp and another by 356cp; a third, with the king moved to g8, was still 356cp below the best move at the audit depth.
+- Rather than weaken the 150cp audit tolerance or mislabel a move as a sound fork, removed the unsupported entry and its specific semantic test. The existing White-to-move double-attack examples remain.
+- Current corpus size is **35 positions**: 19 White-to-move and 16 Black-to-move. Colour-balanced double-attack coverage is explicitly not claimed.
+
+### Verification
+- The current revision's CPU suite and Stockfish audit are pending.
+- No training, checkpoint evaluation or promotion was performed.
