@@ -550,3 +550,11 @@ For every meaningful development batch:
 - Added semantic regression coverage for the fork and its refutation guard.
 - CPU tests and Stockfish tactical engine audit are pending. Do not count the entry as engine-supported until both checks pass.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+## Black double-attack entry — removed pending a sound replacement (2026-11-14)
+
+- Removed the unsupported Black-to-move knight double-attack position after the original and multiple replacement candidates failed Stockfish review.
+- Kept the audit tolerance unchanged. No unsupported tactical annotation is retained merely to preserve colour balance.
+- Current tactical corpus: **35 positions**, 19 White-to-move and 16 Black-to-move. The current corpus does not claim colour-balanced double-attack coverage.
+- The current CPU suite and Stockfish audit are pending. No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
