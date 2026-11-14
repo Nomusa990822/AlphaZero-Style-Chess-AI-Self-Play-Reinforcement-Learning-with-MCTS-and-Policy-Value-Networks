@@ -112,7 +112,7 @@ jobs:
           }
           Path("reports/checkpoint_tactical_evaluation").mkdir(parents=True, exist_ok=True)
           Path("reports/checkpoint_tactical_evaluation/run_metadata.json").write_text(
-              json.dumps(payload, indent=2, sort_keys=True) + "\\n", encoding="utf-8"
+              json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
           )
           print(json.dumps(payload, indent=2, sort_keys=True))
           PY
