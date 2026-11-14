@@ -10,7 +10,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     positions = load_tactical_positions(path)
 
-    assert len(positions) == 35
+    assert len(positions) == 36
     assert {case.motif for case in positions} >= {
         "mating_net",
         "fork",
@@ -38,7 +38,7 @@ def test_curated_tactical_corpus_loads_and_contains_distinct_motifs():
 
     assert sides_to_move == {chess.WHITE, chess.BLACK}
     assert sum(chess.Board(case.fen).turn == chess.WHITE for case in positions) == 19
-    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 16
+    assert sum(chess.Board(case.fen).turn == chess.BLACK for case in positions) == 17
 
 
 def test_added_skewers_and_black_tactical_positions_have_curated_legal_moves():
@@ -182,3 +182,31 @@ def test_white_non_checking_double_attack_has_valid_targets():
         assert board.piece_at(rook_square) == chess.Piece(chess.ROOK, not turn)
         assert board.is_attacked_by(turn, queen_square)
         assert board.is_attacked_by(turn, rook_square)
+
+
+def test_black_knight_double_attack_targets_queen_and_rook_without_check():
+    case = {case.position_id: case for case in load_tactical_positions(Path(__file__).parents[1] / "benchmarks" / "tactical_positions.jsonl")}["black-knight-double-attack-queen-rook-candidate-001"]
+    board = chess.Board(case.fen)
+    move = chess.Move.from_uci("b5d4")
+
+    assert case.motif == "double_attack"
+    assert board.turn == chess.BLACK
+    assert board.piece_at(chess.F3) == chess.Piece(chess.QUEEN, chess.WHITE)
+    assert board.piece_at(chess.F5) == chess.Piece(chess.ROOK, chess.WHITE)
+    assert chess.F5 in board.attackers(chess.WHITE, chess.F5) or chess.F3 in board.attackers(chess.WHITE, chess.F5)
+    assert move in board.legal_moves
+    board.push(move)
+
+    assert not board.is_check()
+    assert board.piece_at(chess.D4) == chess.Piece(chess.KNIGHT, chess.BLACK)
+    assert chess.D4 in board.attackers(chess.BLACK, chess.F3)
+    assert chess.D4 in board.attackers(chess.BLACK, chess.F5)
+    assert not board.is_attacked_by(chess.WHITE, chess.D4)
+
+    queen_escape = chess.Move.from_uci("f3f2")
+    assert queen_escape in board.legal_moves
+    board.push(queen_escape)
+    rook_capture = chess.Move.from_uci("d4f5")
+    assert rook_capture in board.legal_moves
+    board.push(rook_capture)
+    assert board.piece_at(chess.F5) == chess.Piece(chess.KNIGHT, chess.BLACK)
