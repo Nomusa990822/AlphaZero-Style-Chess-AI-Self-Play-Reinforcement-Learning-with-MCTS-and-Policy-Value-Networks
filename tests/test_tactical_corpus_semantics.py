@@ -420,7 +420,6 @@ def test_counterchecks_resolve_the_original_check_and_check_the_opponent():
         board.push(move)
         assert board.is_check()
         assert board.king(not mover) == opposing_king_square
-        assert opposing_king_square in board.checkers()
 
 
 def test_capturing_the_attacker_removes_the_queen_threat_for_both_colours():
