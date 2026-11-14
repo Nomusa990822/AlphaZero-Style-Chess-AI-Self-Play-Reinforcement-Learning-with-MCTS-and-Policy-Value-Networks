@@ -29,15 +29,15 @@ concurrency:
 
 jobs:
   evaluate:
-    # Dispatch from main; evaluate code from the feature branch.
+    # Dispatch and evaluate the exact current main revision.
     if: github.ref == 'refs/heads/main' && inputs.confirm_evaluation == 'YES'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - name: Check out chess-strength-training-upgrade
+      - name: Check out the dispatched main revision
         uses: actions/checkout@v4
         with:
-          ref: chess-strength-training-upgrade
+          ref: ${{ github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -85,6 +85,38 @@ jobs:
               print(f"Verified {name}: {digest}")
           PY
 
+      - name: Record diagnostic provenance
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+          WORKFLOW_RUN_ATTEMPT: ${{ github.run_attempt }}
+          SIMULATIONS: ${{ inputs.simulations }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path("data/checkpoints/fresh_pilot")
+          manifest = json.loads((root / "fresh-pilot-checkpoint-manifest.json").read_text())
+          payload = {
+              "source_commit": os.environ["SOURCE_COMMIT"],
+              "workflow_run_id": os.environ["WORKFLOW_RUN_ID"],
+              "workflow_run_attempt": os.environ["WORKFLOW_RUN_ATTEMPT"],
+              "device": "cpu",
+              "simulations_per_move": int(os.environ["SIMULATIONS"]),
+              "position_corpus": "benchmarks/tactical_positions.jsonl",
+              "position_count": 35,
+              "sequence_corpus": "benchmarks/tactical_sequences.jsonl",
+              "sequence_count": 11,
+              "annotated_sequence_plies": 37,
+              "checkpoints": manifest["checkpoints"],
+          }
+          Path("reports/checkpoint_tactical_evaluation").mkdir(parents=True, exist_ok=True)
+          Path("reports/checkpoint_tactical_evaluation/run_metadata.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(payload, indent=2, sort_keys=True))
+          PY
+
       - name: Evaluate baseline on individual tactical positions
         run: |
           python evaluate_tactics.py \
@@ -124,5 +156,7 @@ jobs:
           path: |
             reports/checkpoint_tactical_evaluation/*.json
             data/checkpoints/fresh_pilot/fresh-pilot-checkpoint-manifest.json
+            data/checkpoints/fresh_pilot/best_model.pt
+            data/checkpoints/fresh_pilot/latest_candidate.pt
           if-no-files-found: error
           retention-days: 90
