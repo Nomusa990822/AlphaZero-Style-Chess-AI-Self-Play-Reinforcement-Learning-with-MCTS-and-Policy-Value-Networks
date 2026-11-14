@@ -205,10 +205,7 @@ not run training or claim anything about playing strength.
 ## Multi-motif tactical combinations
 
 The separate `tactical_sequences.jsonl` corpus records annotated principal
-variations that combine motifs across several plies. It currently contains
-three examples: a Black checking fork that wins a queen, a White discovered
-check that wins a queen, and a Black queen-decoy sequence that trades queens
-before `...Nxg4+` wins a bishop. The sequence evaluator reports complete-line
+variations that combine motifs across several plies. It currently contains eleven annotated combinations, including checking forks, discovered attacks, decoys, removal of defenders, zwischenzugs, overloaded defenders and defensive counterchecks. The sequence evaluator reports complete-line
 success, per-ply accuracy, colour and phase breakdowns.
 
 Run the sequence evaluator with a compatible trained checkpoint:
@@ -228,12 +225,7 @@ defences. CI validates sequence legality and the evaluator; it does not run
 training or measure neural-network playing strength.
 
 
-The sequence corpus has since grown to nine combinations and thirty-one
-annotated plies. In addition to the removal-of-the-defender and zwischenzug
-lines, it now includes an overloaded-defender combination for each colour:
-a checking rook capture forces the sole knight defender away from a queen,
-which is then captured. These remain annotated principal variations, not
-forced-line proofs.
+The sequence corpus now contains eleven combinations and thirty-seven annotated plies. It includes overloaded-defender combinations for both colours and defensive countercheck/interposition examples for both colours. The latter show a bishop interposing against a rook check while delivering a countercheck. These remain annotated principal variations, not forced-line proofs.
 
 ## Balanced non-checking double attacks
 
@@ -259,7 +251,7 @@ curated motif demonstrations, not a broad estimate of tactical strength.
 
 ## Latest corpus verification — 2026-11-14
 
-The previous 36-position revision passed its CPU suite (188 tests), but Stockfish flagged the Black knight double-attack entry. The entry has since been removed rather than retaining an unsupported motif claim. The current 35-position revision is being revalidated; see the latest PR and workflow results. This is finite-depth tactical review, not evidence of general playing strength.
+The current position corpus contains 35 positions (19 White-to-move and 16 Black-to-move). The separate sequence corpus contains eleven combinations and thirty-seven annotated plies. Recent CPU and Stockfish workflow results are recorded in `docs/PROJECT_STATUS.md`. Finite-depth tactical review is not evidence of general playing strength.
 
 
 ## Black knight double-attack coverage
