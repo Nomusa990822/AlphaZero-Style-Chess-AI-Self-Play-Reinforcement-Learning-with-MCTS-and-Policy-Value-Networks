@@ -1140,3 +1140,16 @@ Copy this section for each future engineering batch.
 - Stockfish workflow [43638890935](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890935): **SUCCESS; 35/35 positions supported, 0 flagged; 9/9 sequences and 31/31 annotated plies supported**. Audit artifact `14131357745`.
 - This finite-depth review supports the annotated moves at the configured depth and tolerance; it does not prove every opponent reply is forced or establish general playing strength.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
+
+
+## 2026-11-14 — Add colour-balanced defensive countercheck sequences
+
+### Changes
+- Added a White-to-move and a Black-to-move three-ply defensive-resource sequence.
+- In each line, a bishop interposes against a rook check and simultaneously counterchecks the opposing king; the king responds, then the checked side moves its king while retaining the interposition.
+- Updated sequence evaluator regression expectations from 9 combinations / 31 annotated plies to 11 / 37, with three additional plies for each colour.
+- Updated benchmark and root documentation. The 35-position tactical-position corpus remains unchanged.
+
+### Verification
+- CPU and Stockfish workflows are pending. The new annotated lines remain unverified until both required checks pass.
+- No training, checkpoint evaluation or checkpoint promotion was performed.
