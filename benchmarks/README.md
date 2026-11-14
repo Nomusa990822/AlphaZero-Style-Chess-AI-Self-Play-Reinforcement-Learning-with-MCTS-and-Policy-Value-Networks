@@ -265,3 +265,8 @@ The previous 36-position revision passed its CPU suite (188 tests), but Stockfis
 ## Black knight double-attack coverage
 
 The corpus currently retains the validated White-to-move knight double-attack examples only. A Black-to-move counterpart was removed after Stockfish rejected the original position and multiple repair attempts. Colour-balanced coverage will be restored only when a Black example passes the same semantic tests and engine audit.
+
+
+## Black knight double-attack candidate under review
+
+The review branch adds a minimal Black-to-move fork in which `...Nd4` attacks a White queen on f3 and rook on f5. The semantic regression test checks both targets, the non-checking move, that the knight is not capturable, and the illustrative queen-escape/rook-capture continuation. This construction is still provisional until the full CPU suite and the standard depth-16 Stockfish audit (MultiPV 5, 150cp tolerance) support it. No audit threshold is being relaxed.
