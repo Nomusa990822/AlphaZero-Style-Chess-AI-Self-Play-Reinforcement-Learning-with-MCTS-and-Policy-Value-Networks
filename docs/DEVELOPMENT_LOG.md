@@ -1160,3 +1160,5 @@ Copy this section for each future engineering batch.
 - The eighth candidate was refuted because `Qb4+` escaped the fork with check against the Black king on b8. The latest iteration places the Black king on e8, away from the queen's b-file and rook's horizontal checking escapes, while keeping the c5-e4 fork legal. A fresh engine audit is required.
 
 - The ninth construction is a 180-degree colour rotation of the existing White knight double-attack example: Black's knight moves `f4e2`, attacking the White queen on c3 and rook on c1. The semantic test checks the non-checking move, knight safety, and both unrecapturable capture branches. This is the first candidate built by direct symmetry from an already engine-supported motif; it remains unverified until both required checks pass.
+
+- The ninth, directly rotated candidate still began in a forced-mate setting for Black. The current iteration adds g7/h7 pawn shelter around the Black king while preserving the same `...Ne2` fork geometry, preventing the queen's obvious checking escape lines. This is a new provisional FEN and must pass a fresh audit.
