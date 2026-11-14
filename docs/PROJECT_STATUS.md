@@ -531,3 +531,12 @@ For every meaningful development batch:
 - Candidate's small improvement on individual positions did not carry over to the sequence benchmark. This is a limited curated diagnostic, not an overall chess-strength or Elo measurement.
 - Evaluation reports artifact ID `14074627894` is attached to the workflow run. Both original checkpoints remain backed up and unchanged; no promotion or training occurred.
 - Detailed results, checkpoint hashes, settings and limitations are in `docs/EXPERIMENT_LOG.md`.
+
+
+## Overloaded-defender corpus expansion — verification pending (2026-11-14)
+
+- Added a White-to-move and a Black-to-move overloaded-defender example. In both, a knight is the sole defender of a rook and queen; a checking rook capture forces it to abandon the queen.
+- Added semantic tests for both complete tactical mechanisms, not merely FEN validity or move legality.
+- Tactical position corpus: **36 positions**, comprising **19 White-to-move** and **17 Black-to-move**.
+- Updated the root README and benchmark guide to reflect the new count and motif coverage.
+- CPU tests and Stockfish tactical engine audit are pending. No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
