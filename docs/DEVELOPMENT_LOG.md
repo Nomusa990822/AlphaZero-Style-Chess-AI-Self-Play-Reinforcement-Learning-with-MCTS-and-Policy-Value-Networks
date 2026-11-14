@@ -1136,5 +1136,7 @@ Copy this section for each future engineering batch.
 - Updated benchmark and root documentation. The tactical-position corpus is unchanged at 35 positions; only the sequence corpus grows.
 
 ### Verification
-- CPU and Stockfish workflows are pending. The new annotated plies remain unverified until both checks pass.
+- CPU workflow [43638890941](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890941): **SUCCESS; 188 tests passed**. The SEE overhead benchmark and artifact upload also completed.
+- Stockfish workflow [43638890935](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43638890935): **SUCCESS; 35/35 positions supported, 0 flagged; 9/9 sequences and 31/31 annotated plies supported**. Audit artifact `14131357745`.
+- This finite-depth review supports the annotated moves at the configured depth and tolerance; it does not prove every opponent reply is forced or establish general playing strength.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
