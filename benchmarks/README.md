@@ -233,3 +233,13 @@ colours: White removes a rook to win a knight, while Black removes a pawn
 defender to open a mating square. Two additional zwischenzug lines demonstrate
 a forcing check before capturing a loose bishop, one for each colour. These
 remain annotated principal variations, not forced-line proofs.
+
+## Balanced non-checking double attacks
+
+The position corpus now includes a matched pair of knight double attacks:
+White's knight attacks a queen and rook in one move, and Black's knight does
+the same against White. Both examples are non-checking, so the motif is
+distinguished from a checking fork. The corpus now contains thirty-four
+positions, balanced at eighteen White-to-move and sixteen Black-to-move. The
+paired examples improve colour coverage but do not make the corpus large
+enough for a general tactical-strength claim.
