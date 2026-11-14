@@ -275,9 +275,9 @@ play `Qf4`, simultaneously escaping the knight attack and attacking the
 knight. The finite-depth audit also found that the old position allowed a
 forced-mate continuation, so it was not a useful standalone fork example.
 
-The position has been replaced with a materially populated position. A White
-pawn on f4 blocks `Qf4`; White can save the queen, but Black's knight can then
-capture the undefended rook on f1. A semantic regression test verifies both
+The position has been replaced with a materially populated position. A White pawn on f4 blocks `Qf4`, and a Black pawn on d4 blocks the alternative
+`Qd5` counterattack against the knight. White can save the queen, but Black's
+knight can then capture the undefended rook on f1. A semantic regression test verifies both
 attacked targets, the blocked counterattack and the rook capture. The
 Stockfish audit must still confirm the replacement before it is considered
 verified.
