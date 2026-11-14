@@ -1136,3 +1136,9 @@ Copy this section for each future engineering batch.
 - Proposed corpus size is 36 positions (19 White-to-move, 17 Black-to-move). This is a candidate only; it must not be described as verified or merged until both required CI checks pass.
 - The existing Stockfish settings remain unchanged: depth 16, MultiPV 5, 150cp maximum loss.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+### Candidate iteration note
+- The first sparse candidate passed all 189 CPU tests but Stockfish rejected `...Nd4` by a very large margin and found a forced-mate continuation. It was not merged.
+- Revised the candidate by adding a Black queen on d8 to defend the forked knight and a rook on g8 to avoid an artificially material-lopsided position. The semantic test now explicitly verifies the queen's protection of d4.
+- The revised candidate requires a fresh run of both CI checks; no conclusion is drawn from the first audit for this new FEN.
