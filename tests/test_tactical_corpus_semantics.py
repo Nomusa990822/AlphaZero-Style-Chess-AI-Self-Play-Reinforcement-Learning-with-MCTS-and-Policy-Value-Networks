@@ -472,7 +472,7 @@ def test_overloaded_knight_defender_is_forced_away_for_both_colours():
         mover = board.turn
         enemy = not mover
 
-        # The same knight is the sole defender of both major pieces.
+        # The knight is the only non-king defender of the rook and the sole defender of the queen.
         assert board.piece_at(defender) == chess.Piece(chess.KNIGHT, enemy)
         assert defender in board.attackers(enemy, rook_square)
         assert defender in board.attackers(enemy, queen_square)
