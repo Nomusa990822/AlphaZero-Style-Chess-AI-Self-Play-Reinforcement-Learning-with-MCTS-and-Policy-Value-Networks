@@ -161,6 +161,7 @@ def test_black_non_checking_double_attack_is_a_real_rook_fork():
     assert board.turn == chess.BLACK
     assert move in board.legal_moves
     assert board.piece_at(chess.F4) == chess.Piece(chess.PAWN, chess.WHITE)
+    assert board.piece_at(chess.D4) == chess.Piece(chess.PAWN, chess.BLACK)
     board.push(move)
 
     assert not board.is_check()
@@ -173,6 +174,12 @@ def test_black_non_checking_double_attack_is_a_real_rook_fork():
     assert chess.Move.from_uci("f3f4") not in board.legal_moves
     queen_escape = chess.Move.from_uci("f3g4")
     assert queen_escape in board.legal_moves
+    queen_counterattack = chess.Move.from_uci("f3d5")
+    assert queen_counterattack in board.legal_moves
+    board.push(queen_counterattack)
+    rook_capture_after_counterattack = chess.Move.from_uci("d2f1")
+    assert rook_capture_after_counterattack in board.legal_moves
+    board.pop()
     board.push(queen_escape)
 
     rook_capture = chess.Move.from_uci("d2f1")
