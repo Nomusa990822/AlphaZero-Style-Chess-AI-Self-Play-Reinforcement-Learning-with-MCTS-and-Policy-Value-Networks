@@ -579,3 +579,5 @@ For every meaningful development batch:
 - The second FEN was also rejected: the added Black queen and rook formed an unrelated forced mating net against the White king. The latest iteration moves the White king to a1 to remove that mating motif; its checks are pending.
 
 - The third iteration was rejected because the added g8-rook enabled a forced mating attack. The latest FEN removes that rook but retains the Black queen defending d4; both checks must be rerun.
+
+- The latest candidate changes the fork geometry: `...Ne4` attacks the White queen on c3 and rook on f6. A diagonal queen defence of the rook creates the overload; pawns protect the knight and its two possible capture squares. Both branches are covered by semantic tests. Stockfish review remains pending.
