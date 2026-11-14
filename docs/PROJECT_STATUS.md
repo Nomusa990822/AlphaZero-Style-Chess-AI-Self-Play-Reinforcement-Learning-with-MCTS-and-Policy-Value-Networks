@@ -569,3 +569,9 @@ For every meaningful development batch:
 - Proposed corpus: **36 positions**, 19 White-to-move and 17 Black-to-move. The candidate is not yet verified and does not count as validated colour-balanced coverage until the standard CPU and Stockfish checks pass.
 - Stockfish audit threshold remains depth 16, MultiPV 5 and 150cp. No tolerance change.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
+
+
+### Candidate revision note
+
+- The first sparse FEN passed the CPU suite but Stockfish rejected its annotated move and found a forced-mate continuation. That candidate was not merged.
+- The current review-branch FEN adds a Black queen defending the knight's destination square and a Black rook to avoid the earlier extreme material imbalance. Both required checks must be rerun against this revised FEN.
