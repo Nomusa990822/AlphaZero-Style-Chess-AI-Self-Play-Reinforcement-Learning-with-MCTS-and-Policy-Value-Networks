@@ -1144,3 +1144,5 @@ Copy this section for each future engineering batch.
 - The revised candidate requires a fresh run of both CI checks; no conclusion is drawn from the first audit for this new FEN.
 
 - The second construction also failed Stockfish review: its added Black queen and rook created an immediate mating net against the White king, so the engine preferred mate rather than the fork. The current iteration relocates the White king to a1 to remove that unrelated mating motif; the full audit must be rerun.
+
+- A third iteration showed that the added rook on g8 created a forced mating attack (`...Rg1+`) and caused the audit to reject the fork. Removed that rook while retaining the Black queen that protects the knight on d4; the current FEN now needs a fresh audit.
