@@ -1185,3 +1185,12 @@ Copy this section for each future engineering batch.
 ### Verification
 - Documentation consistency was checked against the current main revision `68cf3a4e2e40aa7b3f92fd5b5d430c6d7a6ddbf8`, the existing experiment record, the published checkpoint release and the latest CI workflow records.
 - PR CPU tests and Stockfish audit remain required before merge; no new training run is authorised by this documentation change.
+
+
+## 2026-11-14 — Prepare hash-verified baseline restoration for resume training
+
+- PR #25 was merged at `dfe3815503d7da6b691a5b2951046872f0adfe5d` after both required checks passed.
+- Added a preflight recovery step to the manual resume workflow: if `best_model.pt` is absent/empty, download the immutable epoch-0 baseline from the existing durable prerelease into a temporary file, verify its pinned SHA-256, then install it.
+- Existing non-empty best checkpoints are preserved and are never overwritten by this recovery step. A failed download/hash check stops before dependency installation.
+- Updated the training recovery guide, README and project status. No checkpoint was downloaded into Git, no checkpoint was committed, and no training/benchmark was run.
+- The manual `confirm_training=YES` gate and six-hour timeout remain unchanged. PR CPU tests and Stockfish audit are required before merge.

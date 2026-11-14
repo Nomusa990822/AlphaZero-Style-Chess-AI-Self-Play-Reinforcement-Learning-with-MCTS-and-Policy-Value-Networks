@@ -28,6 +28,23 @@ jobs:
     steps:
       - name: Check out selected branch
         uses: actions/checkout@v4
+      - name: Restore the original pilot baseline if no checkpoint exists
+        run: |
+          set -euo pipefail
+          checkpoint="data/checkpoints/best_model.pt"
+          if [[ -s "$checkpoint" ]]; then
+            echo "An existing best-model checkpoint is present; preserving it without replacement."
+            exit 0
+          fi
+          mkdir -p data/checkpoints
+          temporary_file="$(mktemp)"
+          trap 'rm -f "$temporary_file"' EXIT
+          checkpoint_url="https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/download/fresh-pilot-checkpoint-43497298757-1/best_model.pt"
+          expected_sha256="7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471"
+          curl --fail --location --retry 3 --retry-delay 2 "$checkpoint_url" --output "$temporary_file"
+          echo "$expected_sha256  $temporary_file" | sha256sum --check --status
+          install -m 600 "$temporary_file" "$checkpoint"
+          echo "Restored and SHA-256-verified the immutable epoch-0 pilot baseline."
       - name: Require an existing best-model checkpoint before spending runner time
         run: |
           if [[ ! -s data/checkpoints/best_model.pt ]]; then
