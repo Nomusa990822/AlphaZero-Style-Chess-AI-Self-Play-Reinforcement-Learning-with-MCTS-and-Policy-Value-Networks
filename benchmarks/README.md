@@ -263,3 +263,8 @@ The current position corpus contains 35 positions (19 White-to-move and 16 Black
 ## Black knight double-attack coverage
 
 The corpus currently retains the validated White-to-move knight double-attack examples only. A Black-to-move counterpart was removed after Stockfish rejected the original position and multiple repair attempts. Colour-balanced coverage will be restored only when a Black example passes the same semantic tests and engine audit.
+
+
+## Latest tactical corpus verification — 2026-11-14
+
+The current corpus snapshot contains **35 tactical positions** (19 White-to-move, 16 Black-to-move) and **11 annotated combinations / 37 plies**. The latest semantic-regression revision passed CPU workflow [43641897416](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897416) with **189 tests passed**. Stockfish audit [43641897417](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417) supported **35/35 positions and 11/11 sequences / 37/37 annotated plies, zero flagged**; artifact [14132283194](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417). This finite-depth review is a consistency check, not a playing-strength or Elo result.
