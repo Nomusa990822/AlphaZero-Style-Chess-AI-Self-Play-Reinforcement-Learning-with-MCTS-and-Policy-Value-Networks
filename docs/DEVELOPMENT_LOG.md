@@ -1155,3 +1155,12 @@ Copy this section for each future engineering batch.
 - Stockfish workflow [43639690662](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43639690662): **SUCCESS; 35/35 positions supported, 0 flagged; 11/11 sequences and 37/37 annotated plies supported**. Audit artifact `14131054706`.
 - The finite-depth audit is not proof of tactical correctness, a unique best move, or that every annotated reply is forced.
 - No training, checkpoint evaluation or checkpoint promotion was performed.
+
+
+## Defensive countercheck semantic regression tests — pending CI (2026-11-14)
+
+- Strengthened the two defensive-resource sequence tests beyond basic move legality.
+- For both colours, the test now verifies that the starting side is in check, the bishop interposition is legal, the original check is resolved, the opposing king is checked by that same move, and the annotated king reply is legal.
+- Updated the root README and benchmark guide to explain the distinction between legal-line replay and motif-specific semantic validation.
+- The position corpus remains 35 positions; the sequence corpus remains 11 combinations / 37 annotated plies. No new chess position or line was added.
+- CPU and Stockfish checks are pending. No training, checkpoint evaluation, promotion or Elo assessment was performed.
