@@ -206,7 +206,7 @@ def test_black_knight_double_attack_targets_queen_and_rook_without_check():
     assert chess.F5 in board.attackers(chess.BLACK, chess.E4)
     assert not board.is_attacked_by(chess.WHITE, chess.E4)
 
-    queen_escape = chess.Move.from_uci("c3d2")
+    queen_escape = chess.Move.from_uci("c3e3")
     assert queen_escape in board.legal_moves
     queen_line = board.copy()
     queen_line.push(queen_escape)
