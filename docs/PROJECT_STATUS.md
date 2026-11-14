@@ -590,6 +590,6 @@ For every meaningful development batch:
 
 - Regression coverage now checks the actual defensive mechanism for both colours: initial check, legal bishop interposition, resolution of the original check, countercheck of the opposing king, and a legal king response.
 - No benchmark positions or annotated sequences were added; corpus counts remain 35 positions and 11 sequences / 37 annotated plies.
-- CPU workflow [43641653795](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641653795): **SUCCESS; 189 tests passed**.
-- Stockfish workflow [43641653805](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Networks/actions/runs/43641653805): **SUCCESS; 35/35 positions and 11/11 sequences / 37/37 plies supported, with zero flagged entries**. Audit artifact `14132052092`.
+- CPU workflow [43641897416](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897416): **SUCCESS; 189 tests passed**.
+- Stockfish workflow [43641897417](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43641897417): **SUCCESS; 35/35 positions and 11/11 sequences / 37/37 plies supported, with zero flagged entries**. Audit artifact `14132283194`.
 - No training, checkpoint evaluation, checkpoint promotion or Elo assessment was performed.
