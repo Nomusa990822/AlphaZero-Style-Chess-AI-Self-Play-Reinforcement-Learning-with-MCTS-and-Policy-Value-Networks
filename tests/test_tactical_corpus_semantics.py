@@ -180,6 +180,7 @@ def test_black_non_checking_double_attack_is_a_real_rook_fork():
     rook_capture_after_counterattack = chess.Move.from_uci("d2f1")
     assert rook_capture_after_counterattack in board.legal_moves
     board.pop()
+    board.pop()
     board.push(queen_escape)
 
     rook_capture = chess.Move.from_uci("d2f1")
