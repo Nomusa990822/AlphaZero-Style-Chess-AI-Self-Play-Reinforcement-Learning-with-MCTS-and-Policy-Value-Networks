@@ -235,15 +235,15 @@ python scripts/audit_self_play_datasets.py \
   --output reports/self-play-dataset-audit.json
 ```
 
-The report includes game outcomes and termination types, total positions,
-White-to-move and Black-to-move counts, mean target by side, and target
-frequencies. It validates PGN legality and consistency between every PGN ply,
+The report includes checkpoint SHA-256/configuration metadata, game outcomes
+and termination types, total positions, White-to-move and Black-to-move counts,
+mean target by side, and target frequencies. It validates PGN legality and consistency between every PGN ply,
 FEN, side-to-move label and value target. It is read-only and makes no model
-changes. The two inputs must come from separately collected self-play datasets
-for the named checkpoints; this utility does not generate those datasets.
-Historical run artifacts without the game log cannot be backfilled from
-checkpoint weights alone. Split future validation by complete games, never by
-individual positions from the same game.
+changes. The two inputs must come from separately collected self-play datasets for the
+named checkpoints. The manual workflow below generates these inputs from the
+preserved checkpoint pair. Historical run artifacts without self-play records
+cannot be backfilled from checkpoint weights alone. Split future validation by
+complete games, never by individual positions from the same game.
 
 
 ### Generate a matched baseline/candidate diagnostic dataset
