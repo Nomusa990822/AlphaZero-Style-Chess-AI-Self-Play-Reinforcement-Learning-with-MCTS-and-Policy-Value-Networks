@@ -51,7 +51,7 @@ The run passes the numerical promotion-evidence threshold for this frozen suite.
 
 - Suite: `benchmarks/evaluation_openings_independent_v2.jsonl`
 - Version: `independent_v2`
-- SHA-256: `98cbce322fba1c04f03728fe6c3bc71d12650920e501e9785ad7272a2d45d8a9`
+- SHA-256: `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`
 - 24 opening positions across 9 labelled families; maximum 4 positions per family.
 - The loader validates legal UCI replay, non-terminal valid positions, unique IDs/FENs, family constraints, and disjointness from the development suite, tactical corpus, and confirmatory v1.
 - Uses the same fixed checkpoints and match settings as v1, so only the opening sample changes.
