@@ -96,29 +96,15 @@ candidate is compared with whichever champion is currently selected at that
 iteration, so the standard is relative to the best model already retained.
 
 
-## First full-run baseline diagnostics — prepared, awaiting dispatch
+## Latest training state — first full run completed (2026-11-15)
 
-The immutable epoch-0 baseline release asset is present and its published
-asset digest matches the pinned SHA-256:
-7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471
-(size 3,404,943 bytes). The separate epoch-1 pilot candidate remains
-preserved and is not the incumbent.
+The first full training run [43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876) completed successfully from `43999a6cdaa57777a9a02f25967a9cdb42eced16`. It ran two iterations, 80 self-play games, 20 epochs and 48 incumbent evaluation games. Iteration 1 candidate score was 0.250 (90% lower confidence bound 0.164); iteration 2 score was 0.000 (lower bound 0.000). Both were rejected. The epoch-0 incumbent remains unchanged and selected (SHA-256 `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`). The final candidate is preserved separately (SHA-256 `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`). Artifact [14139456844](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876/artifacts/14139456844) and durable [checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/model-checkpoint-43646981876-1) preserve the outputs. Full measured details are in [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md). No Elo or general playing-strength claim is made.
 
-The Checkpoint tactical evaluation workflow has been corrected to check
-out the exact dispatched main commit rather than the older
-chess-strength-training-upgrade branch. When manually dispatched with
-confirm_evaluation=YES and simulations=100, it verifies both checkpoint
-hashes, evaluates baseline and candidate on the current fixed 35-position /
-11-sequence / 37-ply corpora, and uploads the raw checkpoint files, release
-manifest, four JSON evaluation reports and run provenance. The workflow
-change must pass PR checks and be merged before dispatch.
+The first reproducible baseline tactical diagnostic [43645701877](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43645701877) was completed before training. Its 35-position results were 5/35 baseline and 10/35 pilot candidate; sequence ply accuracy was 3/13 and 5/15 respectively, with one complete sequence each and zero illegal moves. These are curated tactical diagnostics, not playing-strength ratings.
 
-Not yet run: this diagnostic workflow has not yet produced a new baseline
-report artifact. The first full training workflow has also not been dispatched.
-After the diagnostic artifact is inspected and preserved, run
-.github/workflows/train-and-backup.yml from main with
-confirm_training=YES. Its current configuration is 2 iterations, 40
-self-play games per iteration, 250-ply cap, 80 self-play MCTS simulations,
-100 evaluation simulations, 10 training epochs and 24 balanced gating games
-per iteration; the workflow timeout is six hours. Candidate promotion remains
-subject to the incumbent-relative evidence gate.
+## Updated priorities
+
+1. Preserve the immutable epoch-0 incumbent and final rejected candidate independently.
+2. Inspect training data quality, self-play behaviour, candidate-versus-incumbent match protocol and model optimisation before another full run.
+3. Add diagnostic evidence that can explain the poor head-to-head results; do not relax the promotion criteria.
+4. Continue to record exact run IDs, checkpoint hashes, artifacts and measured outcomes in the experiment and development logs.
