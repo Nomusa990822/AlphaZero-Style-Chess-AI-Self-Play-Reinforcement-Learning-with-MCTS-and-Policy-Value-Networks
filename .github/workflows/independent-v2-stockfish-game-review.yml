@@ -1,0 +1,85 @@
+name: Independent v2 Stockfish game review
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_review:
+        description: "Run the read-only Stockfish review of selected v2 games?"
+        required: true
+        type: choice
+        options: ["NO", "YES"]
+        default: "NO"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: independent-v2-stockfish-game-review
+  cancel-in-progress: false
+
+jobs:
+  analyse:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_review == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Stockfish and python-chess
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes stockfish
+          python -m pip install --upgrade pip
+          python -m pip install "python-chess>=1.999"
+
+      - name: Download and verify the immutable v2 report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p source-artifact
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/43759687103/artifacts")"
+          MATCH_COUNT="$(jq '[.artifacts[] | select(.id == 14180972985 and .name == "independent-confirmation-v2-43759687103" and .expired == false)] | length' <<< "$ARTIFACTS_JSON")"
+          test "$MATCH_COUNT" = "1"
+          gh run download 43759687103 --repo "$GITHUB_REPOSITORY" --name independent-confirmation-v2-43759687103 --dir source-artifact
+          ZIP_PATH="$(find source-artifact -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          if [ -z "$ZIP_PATH" ]; then
+            ZIP_PATH="$(find source-artifact -type f -name '*.json' -print -quit)"
+            test -n "$ZIP_PATH"
+            echo "Pinned artifact ID/name verified against source run; runner will verify source commit, suite and checkpoint digests."
+          else
+            echo "3b46237e3bd8c3a83a785d8b7c1bb00f7f2b75f2546cdfd4d9406b15e61d3c8e  $ZIP_PATH" | sha256sum --check
+            unzip -o "$ZIP_PATH" -d source-artifact/extracted
+          fi
+          INPUT_JSON="$(find source-artifact -type f -name 'independent-confirmation-v2.json' -print -quit)"
+          test -n "$INPUT_JSON"
+          echo "INPUT_JSON=$INPUT_JSON" >> "$GITHUB_ENV"
+
+      - name: Replay and analyse selected games
+        run: |
+          set -euo pipefail
+          python scripts/analyse_confirmatory_games_stockfish.py \
+            --input-json "$INPUT_JSON" \
+            --engine "$(command -v stockfish || echo /usr/games/stockfish)" \
+            --depth 12 \
+            --output reports/independent-v2-stockfish-game-review.json
+
+      - name: Print summary
+        run: cat reports/independent-v2-stockfish-game-review.json | python -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({'engine':d['engine'],'configuration':d['configuration'],'summary_by_outcome':d['summary_by_outcome']},indent=2))"
+
+      - name: Upload full move-by-move analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-v2-stockfish-game-review-${{ github.run_id }}
+          path: reports/independent-v2-stockfish-game-review.json
+          if-no-files-found: error
+          retention-days: 90

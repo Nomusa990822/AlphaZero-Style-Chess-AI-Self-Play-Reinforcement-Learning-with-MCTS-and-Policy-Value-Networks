@@ -371,3 +371,10 @@ The first frozen 24-opening confirmatory run completed as workflow [43755129081]
 The v2 confirmatory artifact contains four losses with the candidate playing White. A qualitative review found repeated king exposure/king walks and poor piece coordination, plus concrete tactical oversights: the candidate's queen is captured by a knight in v2-14-kings-indian, the bishop is captured by a pawn in v2-18-english-reversed, and a rook is captured by a pawn in v2-21-dutch. The Sicilian Taimanov loss ends after the candidate king advances into a mating net. Details: [V2 White-loss diagnostic](../docs/V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md).
 
 This is a descriptive PGN review, not a Stockfish analysis or an independent UCI legality replay. It makes no centipawn-loss, best-move or Elo claims. Do not tune against these four games as if they were a representative sample; use an engine-backed review and compare White draws/wins before selecting a corrective intervention.
+
+
+## Selected v2 game-level Stockfish review — prepared
+
+The manual workflow `.github/workflows/independent-v2-stockfish-game-review.yml` is designed to analyse nine preserved candidate-White games: four losses, four draw controls (Sicilian Kan, London, English Symmetrical and Pirc), and the single White win (Modern). It validates the stored FEN/UCI/PGN move record and records fixed-depth-12 Stockfish comparisons for each played move. Full output is uploaded as a 90-day artifact.
+
+The workflow has not yet been dispatched, so no engine conclusions are available. This selected sample is diagnostic only and is not an Elo estimate or a representative statistical sample.

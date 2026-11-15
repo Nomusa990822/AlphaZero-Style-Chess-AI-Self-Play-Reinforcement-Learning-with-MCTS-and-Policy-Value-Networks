@@ -54,3 +54,9 @@ These are hypotheses for targeted investigation, not proof that the model has on
 ## Decision and next step
 
 Keep epoch 0 as incumbent and epoch 10 as an unpromoted candidate. Do not train, write checkpoints or promote based on this review. The next useful diagnostic is a reproducible Stockfish-backed, move-by-move analysis of these four losses and a matched sample of candidate-White draws and the single candidate-White win. That comparison should distinguish opening/development issues from tactical blunders and later endgame failures before any training change is proposed.
+
+## Engine-backed comparison — workflow prepared
+
+A follow-up workflow and runner are now prepared to compare all four losses against four predeclared draw controls and the only candidate-White win. The controls are `v2-02-sicilian-kan`, `v2-13-london`, `v2-17-english-symmetrical`, and `v2-22-pirc`; the win is `v2-23-modern`. The runner will validate the stored FEN/UCI/PGN move sequence and analyse every ply with Stockfish at fixed depth 12. It will report played-move loss, best-move/PV and summaries separately for candidate-White and incumbent-Black moves.
+
+The workflow is manual and has not yet been run. These are the predeclared controls, not findings. The qualitative observations above remain unverified by an engine until the workflow completes. No training, checkpoint mutation or promotion is authorized.
