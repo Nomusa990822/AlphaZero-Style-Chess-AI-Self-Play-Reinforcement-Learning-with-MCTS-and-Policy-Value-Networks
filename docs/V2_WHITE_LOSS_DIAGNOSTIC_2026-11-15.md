@@ -60,3 +60,12 @@ Keep epoch 0 as incumbent and epoch 10 as an unpromoted candidate. Do not train,
 A follow-up workflow and runner are now prepared to compare all four losses against four predeclared draw controls and the only candidate-White win. The controls are `v2-02-sicilian-kan`, `v2-13-london`, `v2-17-english-symmetrical`, and `v2-22-pirc`; the win is `v2-23-modern`. The runner will validate the stored FEN/UCI/PGN move sequence and analyse every ply with Stockfish at fixed depth 12. It will report played-move loss, best-move/PV and summaries separately for candidate-White and incumbent-Black moves.
 
 The workflow is manual and has not yet been run. These are the predeclared controls, not findings. The qualitative observations above remain unverified by an engine until the workflow completes. No training, checkpoint mutation or promotion is authorized.
+
+
+## First engine-review workflow attempt — blocked by PGN/FEN alignment
+
+Workflow [43764823179](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43764823179) completed with failure before Stockfish analysis or artifact upload. The pinned source artifact and its immutable identifiers passed verification. The replay runner then found that the PGN contains the complete game from the standard opening position, while each record's UCI list begins at its recorded post-opening starting_fen. For the first selected game, this meant 52 PGN SAN moves versus 44 UCI continuation moves; the final SAN and UCI move were consistent, but the runner incorrectly compared the full PGN against the continuation-only UCI list.
+
+This is a replay alignment defect in the review script, not evidence of an illegal move or a model defect. The source artifact has not been modified. The correction must parse and validate the PGN main line, locate the exact recorded starting FEN within that line, and compare only the remaining SAN continuation against the UCI list. The full game must remain legally replayable, and all existing checkpoint, suite, and result integrity checks must remain in force.
+
+No Stockfish scores were produced, no analysis artifact was uploaded, and no training, optimizer update, checkpoint write or promotion occurred. The epoch-0 incumbent remains unchanged and epoch 10 remains unpromoted. The workflow must be rerun after the parser correction is merged.
