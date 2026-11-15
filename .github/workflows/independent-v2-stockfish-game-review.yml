@@ -55,7 +55,7 @@ jobs:
           if [ -z "$ZIP_PATH" ]; then
             ZIP_PATH="$(find source-artifact -type f -name '*.json' -print -quit)"
             test -n "$ZIP_PATH"
-            echo "Artifact downloaded as an extracted JSON; source artifact ZIP digest is verified by GitHub artifact identity."
+            echo "Pinned artifact ID/name verified against source run; runner will verify source commit, suite and checkpoint digests."
           else
             echo "3b46237e3bd8c3a83a785d8b7c1bb00f7f2b75f2546cdfd4d9406b15e61d3c8e  $ZIP_PATH" | sha256sum --check
             unzip -o "$ZIP_PATH" -d source-artifact/extracted
