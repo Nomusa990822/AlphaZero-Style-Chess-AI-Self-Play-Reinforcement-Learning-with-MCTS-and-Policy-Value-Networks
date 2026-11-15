@@ -1149,3 +1149,26 @@ A read-only workflow, [Checkpoint run postmortem diagnostics](.github/workflows/
 ## Paired-opening promotion evaluation
 
 The deterministic standard-start match protocol was corrected: repeating the same deterministic game 12 times per colour does not create 24 distinct observations. The new protocol uses 12 fixed, distinct opening positions, plays each in both mirrored colour assignments, reports outcomes by candidate colour, and calculates the approximate lower confidence bound across the 12 opening-pair scores. This remains a fixed-suite comparison, not an Elo estimate. The read-only [checkpoint postmortem workflow](.github/workflows/checkpoint-run-postmortem.yml) evaluates preserved run artifacts without training or modifying checkpoints.
+
+
+## Self-play dataset capture and audit
+
+Self-play game logs preserve PGNs and, for newly captured runs, each position's
+FEN, side to move and final-outcome value target. The logger validates the
+side-to-move target before writing it. The resume-only training workflow
+archives the self-play log and replay-buffer data with its checkpoint artifact.
+
+Compare two archived datasets without loading or modifying model weights:
+
+```bash
+python scripts/audit_self_play_datasets.py \
+  --baseline path/to/baseline/self_play_games.jsonl \
+  --candidate path/to/candidate/self_play_games.jsonl \
+  --output reports/self-play-dataset-audit.json
+```
+
+The report checks PGN/FEN/target consistency and summarises game outcomes,
+termination reasons, White/Black position counts and value-target
+distributions. Both input logs must have been captured independently from the
+baseline and candidate checkpoints. This is a data-distribution diagnostic,
+not a playing-strength or Elo benchmark.
