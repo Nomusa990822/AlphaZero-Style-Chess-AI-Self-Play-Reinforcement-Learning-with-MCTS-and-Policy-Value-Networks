@@ -1378,3 +1378,17 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - Existing 12-opening suite is now designated development/regression only because it has already been reused in diagnostics.
 - Found an implementation discrepancy to fix before any dispatch: evaluator uses multiplier 1.645 while labelling the result a one-sided 90% lower bound. 1.645 is approximately a one-sided 95% normal critical value; protocol requires the finite-sample Student-t 90% critical value for 23 degrees of freedom.
 - This commit is protocol documentation only. No suite file, evaluator code, workflow, match run, training, checkpoint write or promotion was changed or executed. Epoch-0 remains incumbent and epoch-10 remains unpromoted.
+
+
+## 2026-11-15 — confirmatory paired evaluation implementation
+
+Started the isolated confirmatory path on
+`confirmatory-paired-evaluation`. Added the 24-position versioned opening
+suite, a separate loader/evaluator with legal replay, family-size and
+uniqueness constraints, disjointness checks against development and tactical
+positions, a Student-t 90% paired lower bound, an inference-only CLI runner,
+a manual read-only workflow with immutable checkpoint SHA-256 pins, and raw
+game PGN/UCI/termination records. Added dedicated unit tests and implementation
+notes. This work does not modify the routine training evaluator or launch the
+48-game evaluation. PR creation and required CI verification are the next
+gates; no checkpoint was trained, changed, or promoted.
