@@ -247,3 +247,17 @@ weights were changed in the failed run. The workflow must be dispatched again.
 The corrected checkpoint digests were verified successfully in workflow [43750026398](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750026398). The run then failed before generating either dataset: direct execution of `scripts/generate_self_play_dataset.py` placed `scripts/`, rather than the repository root, on `sys.path`, so importing `src.engine.encoder` raised `ModuleNotFoundError: No module named 'src'`. Candidate generation and comparison were skipped; no dataset artifact was produced. No checkpoint was changed and no training or promotion occurred.
 
 A focused fix adds the repository root (derived from `__file__`) to `sys.path` before importing project modules. It changes no model, inference, search, training or checkpoint behaviour. The diagnostic workflow must be dispatched again after the fix is merged.
+
+
+## First successful preserved-checkpoint self-play dataset audit (2026-11-15)
+
+Workflow [43750799705](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750799705) completed successfully on main commit `4357a799331596c21c24cad52c7875247b4a4701`. Both preserved checkpoint SHA-256 pins passed. The workflow generated and audited both datasets using CPU inference, 8 games per checkpoint, 40 MCTS simulations, 120-ply cap, seed `20261115`, Dirichlet root noise enabled, and identical temperature settings.
+
+| Dataset | Games | Positions | Results | Termination |
+|---|---:|---:|---|---|
+| Epoch-0 baseline | 8 | 793 | 1 Black win, 7 draws | 3 chess-rule endings, 5 move-cap draws |
+| Epoch-10 candidate | 8 | 727 | 2 White wins, 1 Black win, 5 draws | 4 chess-rule endings, 4 move-cap draws |
+
+The audit report marks both datasets and the combined comparison valid, with no reported validation errors. The preserved artifact contains both raw JSONL datasets (including PGNs, UCI move sequences, FENs, side-to-move labels and value targets), both metadata files, and the audit report: [artifact 14176203642](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750799705/artifacts/14176203642). The artifact is retained for 90 days.
+
+**Interpretation limit:** this is a successful data-preservation and structural/label-consistency milestone, not a playing-strength comparison. The two checkpoints played separate stochastic self-play games; equal seeds and settings do not make the resulting games paired head-to-head matches. The 8-game samples, high draw rates and move-cap terminations are insufficient for Elo, strength, or value-calibration claims. No training, checkpoint mutation, or promotion occurred. Next, perform read-only analysis of the preserved game/position distributions and design a genuinely paired held-out evaluation before any training or promotion decision.

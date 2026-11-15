@@ -281,3 +281,14 @@ place in the failed run. Re-dispatch the workflow after the fix is merged.
 ## Self-play dataset audit: standalone script import-path repair
 
 The first post-digest-correction dispatch, [43750026398](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750026398), verified both checkpoint hashes but failed when the dataset generator attempted to import the project's `src` package. A script executed from `scripts/` does not automatically receive the repository root on `sys.path`. The generator now derives and inserts the repository root before importing project modules. This is an import/bootstrap-only change; it does not alter inference settings, checkpoints, model weights, training, or promotion. Re-run the manual dataset audit workflow after this repair is merged.
+
+
+## Preserved-checkpoint self-play dataset audit — first successful run
+
+The first complete read-only run is [43750799705](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750799705). It used the pinned epoch-0 and epoch-10 checkpoints, CPU inference, seed `20261115`, 8 games per checkpoint, 40 MCTS simulations and a 120-ply cap. Both datasets passed the audit with no reported errors.
+
+- Baseline: 8 games / 793 positions; 1 Black win, 7 draws; 5 games reached the move cap.
+- Candidate: 8 games / 727 positions; 2 White wins, 1 Black win, 5 draws; 4 games reached the move cap.
+- Preserved artifact: [self-play dataset audit 14176203642](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750799705/artifacts/14176203642), containing raw game JSONL, PGNs, per-position labels, metadata and the audit report.
+
+These are separate stochastic self-play samples, not paired matches between the two checkpoints. The run establishes that both datasets can be generated and structurally audited; it does not establish relative strength or calibrated values. The workflow is inference-only and did not train, modify, or promote checkpoints. Use the preserved data for diagnostic analysis, and keep strength claims for a separate adequately sized paired evaluation.
