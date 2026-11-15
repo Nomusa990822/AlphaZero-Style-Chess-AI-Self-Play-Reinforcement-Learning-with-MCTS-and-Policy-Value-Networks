@@ -117,5 +117,11 @@ def test_summary_excludes_mate_scores_from_centipawn_aggregates():
         {"played_move_loss_cp": None},
         {"played_move_loss_cp": 240},
     ]
-    summary = MODULE.analyse_game.__globals__["mean"]  # confirm standard aggregate dependency remains available
-    assert callable(summary)
+    summary = MODULE.summarize_rows(rows)
+    assert summary["moves_analysed"] == 3
+    assert summary["moves_with_finite_cp_comparison"] == 2
+    assert summary["moves_with_mate_score"] == 1
+    assert summary["mean_loss_cp_finite_only"] == 180
+    assert summary["median_loss_cp_finite_only"] == 180
+    assert summary["moves_at_least_100cp_finite_only"] == 2
+    assert summary["largest_finite_loss_cp"] == 240
