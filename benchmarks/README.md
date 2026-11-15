@@ -313,3 +313,8 @@ the original manifest, four tactical JSON reports and run_metadata.json
 and checkpoint hashes). This establishes a reproducible diagnostic reference;
 it is not an Elo estimate or proof of general playing strength. Run it before
 the first full resume-training workflow.
+
+
+## First full training run — candidate rejection and checkpoint preservation
+
+The first full CPU training run [43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876) completed two iterations (80 self-play games, 20 training epochs, 48 incumbent evaluation games). Iteration 1 scored 0.250 (90% lower confidence bound 0.164); iteration 2 scored 0.000 (lower bound 0.000). Both candidates were rejected. The selected epoch-0 baseline remains unchanged. The candidate was preserved separately. This is training/evaluation pipeline evidence, not a tactical corpus result or Elo estimate. See [the measured experiment record](../docs/EXPERIMENT_LOG.md) and [checkpoint release](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/model-checkpoint-43646981876-1).
