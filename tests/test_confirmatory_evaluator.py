@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 
 from src.training.confirmatory_evaluator import (
     PAIR_COUNT,
@@ -35,3 +36,13 @@ def test_paired_lcb_requires_exactly_24_scores():
 def test_paired_lcb_rejects_invalid_scores():
     with pytest.raises(ValueError, match="finite values"):
         paired_student_t_lcb90([0.5] * 23 + [float("nan")])
+
+
+def test_independent_v2_suite_is_valid_and_disjoint_from_v1():
+    suite_path = Path(__file__).resolve().parents[1] / "benchmarks" / "evaluation_openings_independent_v2.jsonl"
+    openings = load_confirmatory_openings(suite_path, suite_version="independent_v2")
+    v1 = load_confirmatory_openings()
+    assert len(openings) == PAIR_COUNT
+    assert len({opening_id for opening_id, _ in openings}) == PAIR_COUNT
+    assert not ({board.fen(en_passant="fen") for _, board in openings} & {board.fen(en_passant="fen") for _, board in v1})
+    assert all(board.is_valid() and not board.is_game_over(claim_draw=True) for _, board in openings)
