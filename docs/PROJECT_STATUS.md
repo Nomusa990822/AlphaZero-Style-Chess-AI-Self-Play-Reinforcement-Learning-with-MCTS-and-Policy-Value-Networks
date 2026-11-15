@@ -179,3 +179,19 @@ The read-only [checkpoint colour-symmetry audit](https://github.com/Nomusa990822
 3. Investigate candidate self-play colour outcomes with a larger paired/mirrored suite and preserve per-game PGNs and traces.
 4. Keep the baseline checkpoint selected; do not promote the epoch-10 candidate or start another full training run yet.
 5. Design held-out validation split by complete games before making value-calibration or strength claims.
+
+
+## Side-to-move contract source review and regression coverage
+
+A source-level trace of the value contract found no obvious sign inversion in the current pipeline:
+
+- Self-play converts the final PGN result to a White-relative value, then _value_for_player() flips it for Black-to-move samples.
+- AlphaZeroDataset passes the stored scalar unchanged; alphazero_loss() applies MSE without a perspective conversion.
+- The value head emits a bounded tanh scalar. ModelInference.predict() returns it unchanged as the current side-to-move value.
+- MCTS terminal values are from the terminal node's side-to-move perspective; _backpropagate() alternates sign once per edge; PUCT negates the child value when scoring from the parent perspective.
+
+The encoder uses explicit White/Black piece planes and absolute rank/file coordinates. MoveEncoding normalizes Black move deltas by a 180-degree rotation. The model architecture does not enforce exact colour-mirror equivariance, and the inspected training path does not apply mirror augmentation. These are important representational/training facts, but they are not by themselves proof of a defect. The audit's poor candidate symmetry is therefore still a learned-behaviour signal with root cause undetermined.
+
+A focused regression module, tests/test_colour_symmetry_contract.py, now covers the Board.mirror() encoder-plane transform, legal-move encode/decode on mirrored positions (including castling, en-passant and promotions), invariant side-to-move outcome labels, alternating MCTS backup perspective, and mirrored terminal values. These tests validate contracts; they deliberately do not assert that an unconstrained neural network must produce identical mirrored predictions.
+
+No model, checkpoint, training configuration, or promotion rule was changed. The epoch-0 checkpoint remains selected; the epoch-10 candidate remains unpromoted. Further work should inspect sample distributions and add held-out game-level validation before attempting a symmetry augmentation or architecture change.
