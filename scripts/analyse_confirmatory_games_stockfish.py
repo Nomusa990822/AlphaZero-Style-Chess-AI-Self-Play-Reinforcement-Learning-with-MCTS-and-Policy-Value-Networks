@@ -131,6 +131,21 @@ def score_components(info: dict[str, Any], pov: chess.Color) -> tuple[int | None
     return score.score(), score.mate()
 
 
+def summarize_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    all_losses = [row["played_move_loss_cp"] for row in rows]
+    finite_losses = [value for value in all_losses if value is not None]
+    return {
+        "moves_analysed": len(rows),
+        "moves_with_finite_cp_comparison": len(finite_losses),
+        "moves_with_mate_score": len(all_losses) - len(finite_losses),
+        "mean_loss_cp_finite_only": round(mean(finite_losses), 1) if finite_losses else None,
+        "median_loss_cp_finite_only": round(median(finite_losses), 1) if finite_losses else None,
+        "moves_at_least_100cp_finite_only": sum(value >= 100 for value in finite_losses),
+        "moves_at_least_200cp_finite_only": sum(value >= 200 for value in finite_losses),
+        "largest_finite_loss_cp": max(finite_losses, default=None),
+    }
+
+
 def analyse_game(
     engine: chess.engine.SimpleEngine,
     record: dict[str, Any],
@@ -179,20 +194,6 @@ def analyse_game(
     white_rows = [row for row in move_rows if row["side"] == "white"]
     black_rows = [row for row in move_rows if row["side"] == "black"]
 
-    def summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-        all_losses = [row["played_move_loss_cp"] for row in rows]
-        finite_losses = [value for value in all_losses if value is not None]
-        return {
-            "moves_analysed": len(rows),
-            "moves_with_finite_cp_comparison": len(finite_losses),
-            "moves_with_mate_score": len(all_losses) - len(finite_losses),
-            "mean_loss_cp_finite_only": round(mean(finite_losses), 1) if finite_losses else None,
-            "median_loss_cp_finite_only": round(median(finite_losses), 1) if finite_losses else None,
-            "moves_at_least_100cp_finite_only": sum(value >= 100 for value in finite_losses),
-            "moves_at_least_200cp_finite_only": sum(value >= 200 for value in finite_losses),
-            "largest_finite_loss_cp": max(finite_losses, default=None),
-        }
-
     if final_board.fen() == "":
         raise AssertionError("unreachable empty FEN")
     return {
@@ -202,8 +203,8 @@ def analyse_game(
         "result": record["result"],
         "termination": record["termination"],
         "final_fen": final_board.fen(),
-        "candidate_white_move_summary": summary(white_rows),
-        "incumbent_black_move_summary": summary(black_rows),
+        "candidate_white_move_summary": summarize_rows(white_rows),
+        "incumbent_black_move_summary": summarize_rows(black_rows),
         "moves": move_rows,
     }
 
