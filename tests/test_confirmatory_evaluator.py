@@ -23,7 +23,7 @@ def test_student_t_critical_value_is_one_sided_90_percent_df23():
 def test_paired_lcb_uses_24_pair_observations():
     scores = [1.0] * 18 + [0.0] * 6
     assert paired_student_t_lcb90(scores) == pytest.approx(
-        0.75 - T_ONE_SIDED_90_DF23 * (0.4522670169 / 4.898979486), abs=1e-6
+        0.75 - T_ONE_SIDED_90_DF23 * ((4.5 / 23) ** 0.5 / (24 ** 0.5)), abs=1e-6
     )
 
 
