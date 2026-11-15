@@ -79,7 +79,7 @@ class EvaluationResult:
 
     @property
     def lower_confidence_bound(self) -> float:
-        """One-sided 90% lower bound using independent opening-pair scores."""
+        """One-sided 90% lower bound using distinct opening-pair scores."""
         if self.opening_pair_scores:
             scores = self.opening_pair_scores
             n = len(scores)
@@ -207,7 +207,7 @@ class NetworkEvaluator:
         if result.games_played < MIN_PROMOTION_GAMES:
             reasons.append(f"only {result.games_played} evaluation games; at least {MIN_PROMOTION_GAMES} are required")
         if len(result.opening_pair_scores) < MIN_OPENING_PAIRS:
-            reasons.append(f"only {len(result.opening_pair_scores)} independent opening pairs; at least {MIN_OPENING_PAIRS} are required")
+            reasons.append(f"only {len(result.opening_pair_scores)} distinct opening pairs; at least {MIN_OPENING_PAIRS} are required")
         if result.score <= INCUMBENT_SCORE:
             reasons.append(f"candidate score {result.score:.3f} did not exceed the incumbent baseline of {INCUMBENT_SCORE:.2f}")
         if result.lower_confidence_bound <= INCUMBENT_SCORE:
