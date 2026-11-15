@@ -8,8 +8,8 @@ or proof of optimal play.
 from __future__ import annotations
 
 import argparse
+import io
 import json
-import re
 import shutil
 from pathlib import Path
 from statistics import mean, median
@@ -17,6 +17,7 @@ from typing import Any
 
 import chess
 import chess.engine
+import chess.pgn
 
 LOSS_IDS = {
     "v2-01-sicilian-taimanov",
@@ -36,47 +37,68 @@ EXPECTED_BASELINE_SHA256 = "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a
 EXPECTED_CANDIDATE_SHA256 = "101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00"
 
 
-def san_tokens(pgn: str) -> list[str]:
-    """Extract main-line SAN tokens from this evaluator's simple PGN export."""
-    movetext = "\n".join(line for line in pgn.splitlines() if not line.startswith("["))
-    movetext = re.sub(r"\{[^}]*\}|;[^\n]*", " ", movetext)
-    movetext = re.sub(r"\([^)]*\)", " ", movetext)
-    movetext = re.sub(r"\d+\.(?:\.\.)?", " ", movetext)
-    tokens = [token for token in movetext.split() if token not in {"1-0", "0-1", "1/2-1/2", "*"}]
-    return [token for token in tokens if not token.startswith("$")]
-
-
 def replay_record(record: dict[str, Any]) -> tuple[list[tuple[chess.Board, chess.Move, str]], chess.Board]:
-    """Validate FEN/UCI/SAN agreement and return every pre-move position."""
+    """Validate the PGN main line from its origin and UCI moves from recorded FEN.
+
+    Evaluation PGNs include opening moves before starting_fen; the UCI list
+    starts at that recorded position. Locate the exact FEN in the PGN main
+    line before comparing the remaining SAN moves with UCI.
+    """
     board = chess.Board(record["starting_fen"])
     moves = record["uci_moves"]
     if len(moves) != record["plies"]:
         raise ValueError(f"{record['opening_id']}: UCI count does not match plies")
-    tokens = san_tokens(record["pgn"])
-    if len(tokens) != len(moves):
-        raise ValueError(f"{record['opening_id']}: SAN count {len(tokens)} != UCI count {len(moves)}")
+
+    game = chess.pgn.read_game(io.StringIO(record["pgn"]))
+    if game is None:
+        raise ValueError(f"{record['opening_id']}: PGN could not be parsed")
+    if game.errors:
+        raise ValueError(f"{record['opening_id']}: PGN parse errors: {game.errors}")
+    if game.headers.get("Result") != record.get("result"):
+        raise ValueError(f"{record['opening_id']}: PGN result does not match record result")
+
+    pgn_board = game.board()
+    mainline = list(game.mainline_moves())
+    start_index = None
+    for index in range(len(mainline) + 1):
+        if pgn_board.fen() == board.fen():
+            start_index = index
+            break
+        if index < len(mainline):
+            pgn_board.push(mainline[index])
+    if start_index is None:
+        raise ValueError(
+            f"{record['opening_id']}: recorded starting FEN is not present in PGN main line"
+        )
+
+    san_moves = mainline[start_index:]
+    if len(san_moves) != len(moves):
+        raise ValueError(
+            f"{record['opening_id']}: PGN moves after starting FEN {len(san_moves)} "
+            f"!= UCI count {len(moves)}"
+        )
 
     positions: list[tuple[chess.Board, chess.Move, str]] = []
-    for index, (uci, san) in enumerate(zip(moves, tokens), start=1):
+    for index, (uci, pgn_move) in enumerate(zip(moves, san_moves), start=1):
         try:
             move = chess.Move.from_uci(uci)
         except ValueError as exc:
             raise ValueError(f"{record['opening_id']} ply {index}: malformed UCI {uci}") from exc
         if move not in board.legal_moves:
             raise ValueError(f"{record['opening_id']} ply {index}: illegal UCI {uci}")
-        try:
-            parsed_san = board.parse_san(san)
-        except ValueError as exc:
-            raise ValueError(f"{record['opening_id']} ply {index}: invalid SAN {san}") from exc
-        if parsed_san != move:
+        if pgn_move != move:
+            san = board.san(pgn_move)
             raise ValueError(
-                f"{record['opening_id']} ply {index}: SAN {san} != UCI {uci}"
+                f"{record['opening_id']} ply {index}: PGN SAN {san} != UCI {uci}"
             )
+        san = board.san(move)
         positions.append((board.copy(stack=False), move, san))
         board.push(move)
 
     if record.get("result") not in {"1-0", "0-1", "1/2-1/2"}:
         raise ValueError(f"{record['opening_id']}: unsupported result {record.get('result')}")
+    if board.is_checkmate() and board.result() != record["result"]:
+        raise ValueError(f"{record['opening_id']}: replayed checkmate result mismatch")
     return positions, board
 
 
