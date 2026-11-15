@@ -54,7 +54,7 @@ The run passes the numerical promotion-evidence threshold for this frozen suite.
 - SHA-256: `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`
 - 24 opening positions across 9 labelled families; maximum 4 positions per family.
 - The loader validates legal UCI replay, non-terminal valid positions, unique IDs/FENs, family constraints, and disjointness from the development suite, tactical corpus, and confirmatory v1.
-- Uses the same fixed checkpoints and match settings as v1, so only the opening sample changes.
+- Uses the same fixed checkpoints and match settings as v1, so only the opening sample changes. NumPy, Python and PyTorch RNGs are seeded with `20261116`; the workflow checks the exact suite SHA-256 before model loading and records the seed/runtime metadata in the report.
 - Workflow: `.github/workflows/independent-confirmation-v2.yml`; manual dispatch only, main branch only, explicit YES, CPU inference-only, hash-pinned checkpoints, 90-day report artifact.
 
 The v2 workflow must not be dispatched until its implementation PR is merged and required checks pass. The second result will be reported alongside v1, not pooled with it as if the two suites were one predeclared 48-pair sample. Any future promotion decision requires human review of both reports and the colour splits. No training or checkpoint mutation is part of this work.
