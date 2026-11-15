@@ -339,3 +339,8 @@ The deterministic standard-start match protocol was corrected: repeating the sam
 ### Additional self-play diagnostic from workflow 43646981876
 
 The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four draws ended at the 250-ply cap. Iteration 1 was White 8 / Black 16 / Draw 16 (three move-cap draws); iteration 2 was White 7 / Black 16 / Draw 17 (one move-cap draw). This pronounced colour imbalance is a diagnostic signal to investigate, not proof of an encoder or search bug: only 80 games were played and every game began from the standard position. The previous evaluator did not preserve individual PGNs or per-colour match results, so its 0-24 candidate score cannot be decomposed beyond the two repeated standard-start colour assignments.
+
+
+## Confirmatory paired checkpoint evaluation protocol
+
+The current `evaluation_openings.jsonl` (12 positions) is the development/regression suite; it has already been used in prior checkpoint diagnostics. Do not treat repeated results on that suite as an untouched confirmatory test. The new confirmatory design is documented in [docs/PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md](../docs/PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md): create a separate frozen 24-opening suite from at least 8 opening families and run 48 head-to-head games, pairing candidate-White and candidate-Black games for each opening. The primary score is the mean of 24 pair scores. Promotion evidence requires score >0.50 and a one-sided 90% Student-t lower bound >0.50, with no illegal moves or incomplete pairs. Implementation and statistical tests must be completed before dispatch. The protocol is design-only; no new benchmark suite has been generated or run.
