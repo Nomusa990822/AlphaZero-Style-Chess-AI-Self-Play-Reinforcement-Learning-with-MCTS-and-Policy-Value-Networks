@@ -130,7 +130,7 @@ def main() -> None:
         "late_temperature": 0.5,
         "positions": sum(game.num_positions for game in games),
     }
-    metadata_path.write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
     print({
         "label": args.label,
