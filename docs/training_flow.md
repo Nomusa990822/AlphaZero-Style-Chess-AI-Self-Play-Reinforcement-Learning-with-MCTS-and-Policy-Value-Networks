@@ -197,3 +197,18 @@ The key contract is that training values are stored from the **side-to-move pers
 Same-checkpoint self-play produced baseline 1 win / 0 losses / 23 draws and candidate 8 wins / 5 losses / 11 draws. Candidate as White: 2 wins / 3 losses / 7 draws; as Black: 6 wins / 2 losses / 4 draws. These are colour-consistency observations from a small 12-opening suite, not strength estimates.
 
 **Decision:** retain the epoch-0 baseline and keep the epoch-10 candidate unpromoted. Do not start another full training run yet. First trace the side-to-move value contract end-to-end, test mirrored encoder planes and policy action mapping independently, and add known-label mirror-pair tests. Root cause remains undetermined.
+
+
+## Side-to-move value contract review
+
+The value target is defined from the perspective of the player to move at each stored position. The source path is:
+
+1. SelfPlayGenerator._result_to_white_value() converts the final game result to a White-relative value.
+2. SelfPlayGenerator._value_for_player() returns that value for White-to-move samples and negates it for Black-to-move samples.
+3. AlphaZeroDataset preserves the scalar; alphazero_loss() compares it directly with the network value using MSE.
+4. ModelInference.predict() returns the value head output without changing its sign.
+5. MCTS terminal values are side-to-move-relative; backup flips sign at each parent edge; PUCT negates the child Q value when selecting from the parent's perspective.
+
+The source review found no obvious sign inversion across these stages. This does not explain why the epoch-10 candidate's predictions are much less symmetric than the baseline. The encoder uses separate colour planes and absolute board coordinates, while Black move deltas are rotated 180 degrees in the action encoder. The network is not architecturally mirror-equivariant and the inspected training path does not apply mirror augmentation. Those design choices leave symmetry to be learned from data; they are not, on their own, proof of an implementation bug.
+
+The test-only module tests/test_colour_symmetry_contract.py adds regression coverage for mirrored encoder planes, mirrored legal move encoding/decoding, side-to-move outcome-label invariance, MCTS backup sign alternation and terminal-value mirror invariance. It intentionally does not require neural predictions to be exactly mirror-equivariant. No training, checkpoint or promotion behaviour is changed by these tests.
