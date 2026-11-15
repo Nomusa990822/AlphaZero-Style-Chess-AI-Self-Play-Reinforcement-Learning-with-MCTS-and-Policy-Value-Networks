@@ -18,6 +18,7 @@ from src.training.evaluator import NetworkEvaluator
 
 SUITE_PATH = Path(__file__).resolve().parents[2] / "benchmarks" / "evaluation_openings_confirmatory_v1.jsonl"
 DEVELOPMENT_SUITE_PATH = Path(__file__).resolve().parents[2] / "benchmarks" / "evaluation_openings.jsonl"
+TACTICAL_SUITE_PATH = Path(__file__).resolve().parents[2] / "benchmarks" / "tactical_positions.jsonl"
 PAIR_COUNT = 24
 GAME_COUNT = 48
 SIMULATIONS = 50
@@ -80,6 +81,10 @@ def load_confirmatory_openings(path: str | Path = SUITE_PATH) -> list[tuple[str,
     overlap = fens & development
     if overlap:
         raise ValueError(f"confirmatory suite overlaps development suite at {len(overlap)} position(s)")
+    tactical = load_tactical_fens(TACTICAL_SUITE_PATH)
+    tactical_overlap = fens & tactical
+    if tactical_overlap:
+        raise ValueError(f"confirmatory suite overlaps tactical corpus at {len(tactical_overlap)} position(s)")
     return records
 
 
@@ -94,6 +99,17 @@ def load_development_fens(path: str | Path) -> set[str]:
             for uci in item["moves_uci"]:
                 board.push_uci(uci)
             result.add(_normalized_fen(board))
+    return result
+
+
+def load_tactical_fens(path: str | Path) -> set[str]:
+    result: set[str] = set()
+    with Path(path).open("r", encoding="utf-8") as handle:
+        for raw in handle:
+            if not raw.strip() or raw.lstrip().startswith("#"):
+                continue
+            item = json.loads(raw)
+            result.add(_normalized_fen(chess.Board(item["fen"])))
     return result
 
 
