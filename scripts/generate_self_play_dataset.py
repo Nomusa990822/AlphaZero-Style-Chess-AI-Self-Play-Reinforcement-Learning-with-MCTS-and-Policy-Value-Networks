@@ -5,8 +5,15 @@ import argparse
 import hashlib
 import json
 import random
+import sys
 import time
 from pathlib import Path
+
+# Running a file under scripts/ sets sys.path[0] to that directory, not the
+# repository root. Make the src package importable in clean CI checkouts.
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
 
 import numpy as np
 import torch
