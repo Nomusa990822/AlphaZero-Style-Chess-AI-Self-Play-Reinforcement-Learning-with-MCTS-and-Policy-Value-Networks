@@ -302,3 +302,16 @@ The preserved epoch-0 and epoch-10 datasets have now undergone a read-only diagn
 ## Confirmatory paired checkpoint evaluation protocol
 
 See [PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md](PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md) for the frozen confirmatory design. It calls for 24 distinct opening pairs / 48 games, candidate playing each opening as both White and Black, 50 MCTS simulations, no exploration noise, zero move temperature and a 200-ply cap. Score each game from the candidate perspective and average the two scores within each opening pair; apply the predeclared one-sided 90% Student-t lower bound across the 24 pair scores. The candidate must score above 0.50 and the lower bound must also exceed 0.50; illegal moves or incomplete pairs invalidate the run. The existing 12-opening suite is development-only and must not be reused as the confirmatory holdout. Before dispatch, implement and test a new 24-opening suite and fix the evaluator's current 1.645 standard-error multiplier, which is mislabeled as a one-sided 90% bound and does not use a finite-sample Student-t critical value. Protocol preparation only; no match, training or checkpoint mutation has occurred.
+
+
+## Separate confirmatory checkpoint evaluation
+
+The frozen 24-opening/48-game confirmatory path is implemented separately from
+the routine training promotion evaluator. It loads the epoch-0 incumbent and
+epoch-10 candidate in CPU inference mode, verifies their pinned SHA-256 values,
+plays each opening with candidate as White and Black, and stores pair-level
+scores plus per-game PGN, UCI moves, start FEN and termination metadata. Its
+one-sided 90% lower bound uses the Student-t critical value for 23 degrees of
+freedom. The manual workflow defaults to NO and only runs on main after an
+explicit YES input. It does not train, write checkpoints, publish releases or
+promote a candidate. The 48-game run has not been dispatched.
