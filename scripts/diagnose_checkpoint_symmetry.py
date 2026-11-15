@@ -228,12 +228,12 @@ def self_play_symmetry(
         "losses": result.losses,
         "draws": result.draws,
         "designated_model_score": result.score,
-        "candidate_as_white": {
+        "model_as_white": {
             "wins": result.candidate_white_wins,
             "losses": result.candidate_white_losses,
             "draws": result.candidate_white_draws,
         },
-        "candidate_as_black": {
+        "model_as_black": {
             "wins": result.candidate_black_wins,
             "losses": result.candidate_black_losses,
             "draws": result.candidate_black_draws,
