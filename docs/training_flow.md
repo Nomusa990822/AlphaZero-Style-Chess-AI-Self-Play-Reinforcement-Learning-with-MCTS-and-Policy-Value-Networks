@@ -339,3 +339,8 @@ The workflow is manual and defaults to NO. It has not yet run; do not infer resu
 ## Read-only v2 game review replay repair
 
 The first manual dispatch of `.github/workflows/independent-v2-stockfish-game-review.yml` failed before engine analysis because the exported PGN starts at the opening position while each UCI list starts at the recorded post-opening FEN. PR #50 fixes this by replaying the PGN main line to the exact starting FEN before comparing the continuation. The repair passed the 227-test CPU suite and the Stockfish tactical audit. Once merged, manually dispatch the workflow again with confirmation `YES`. The workflow remains read-only: no self-play generation, training, optimizer updates, checkpoint writes or promotion. Do not interpret the earlier failed run as a model failure or as completed engine analysis.
+
+
+## Stockfish game-review artifact and score caveat
+
+The nine selected games were replayed and analysed successfully in workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151), with artifact 14182093603. The initial report's centipawn summaries are not yet interpretable: the script maps mate scores to 100,000 CP and includes those sentinel values in averages/maxima. Correct reporting must retain mate distance as a separate field and compute CPL aggregates only where both scores are finite centipawn values. Do not draw a comparative conclusion from the first aggregate table.
