@@ -298,3 +298,10 @@ PR #46 merged at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`. Its independent_v2 
 A read-only qualitative review of the four v2 games lost by the epoch-10 candidate as White is recorded in [V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md](V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md). The recurring visible failure modes are premature king exposure/king walks, insufficient piece development, and direct tactical oversights (including a queen left en prise and a rook lost to a pawn capture). The four losses are a small selected subset, so they do not establish a general error rate or prove a single root cause.
 
 This was a PGN/UCI record inspection, not a Stockfish evaluation or an independent python-chess replay. No engine centipawn-loss claims are made. The incumbent and candidate checkpoint hashes remain unchanged; no training, optimizer step, checkpoint write or promotion was performed. Epoch 0 remains incumbent and epoch 10 remains unpromoted. Next diagnostic priority: add engine-backed move-by-move review for these four preserved games and compare with White draws/wins before proposing any training changes.
+
+
+## Read-only Stockfish review of selected v2 games — prepared
+
+A reproducible manual workflow, `.github/workflows/independent-v2-stockfish-game-review.yml`, and runner, `scripts/analyse_confirmatory_games_stockfish.py`, now define an engine-backed follow-up. The predeclared sample contains the four candidate-White losses, four draw controls (Sicilian Kan, London, English Symmetrical and Pirc), and the only candidate-White win (Modern). The runner validates each recorded starting FEN, replays all UCI moves, cross-checks each move against the PGN SAN, and compares every played move with Stockfish at fixed depth 12.
+
+This is a read-only diagnostic. It does not train, alter model files, write checkpoints or promote. The workflow is manual and defaults to NO; it has not yet been dispatched. Results must be reviewed before any training change is considered. Epoch 0 remains incumbent and epoch 10 remains unpromoted.
