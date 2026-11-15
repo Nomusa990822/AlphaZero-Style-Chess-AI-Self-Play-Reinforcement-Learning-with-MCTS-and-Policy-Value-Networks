@@ -139,3 +139,9 @@ def test_illegal_evaluator_move_aborts_the_match():
             return chess.Move.from_uci("a1a8")
     with pytest.raises(RuntimeError, match="illegal move"):
         evaluator._play_single_game(IllegalMoveAgent(), IllegalMoveAgent())
+
+
+
+def test_pipeline_rejects_more_games_than_opening_suite():
+    with pytest.raises(ValueError, match="cannot exceed 24"):
+        PipelineConfig(gating_games=26)
