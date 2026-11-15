@@ -124,3 +124,8 @@ A read-only workflow, [Checkpoint run postmortem diagnostics](.github/workflows/
 ## Paired-opening promotion evaluation
 
 The deterministic standard-start match protocol was corrected: repeating the same deterministic game 12 times per colour does not create 24 distinct observations. The new protocol uses 12 fixed, distinct opening positions, plays each in both mirrored colour assignments, reports outcomes by candidate colour, and calculates the approximate lower confidence bound across the 12 opening-pair scores. This remains a fixed-suite comparison, not an Elo estimate. The read-only [checkpoint postmortem workflow](.github/workflows/checkpoint-run-postmortem.yml) evaluates preserved run artifacts without training or modifying checkpoints.
+
+
+### Additional self-play diagnostic from workflow 43646981876
+
+The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four draws ended at the 250-ply cap. Iteration 1 was White 8 / Black 16 / Draw 16 (three move-cap draws); iteration 2 was White 7 / Black 16 / Draw 17 (one move-cap draw). This pronounced colour imbalance is a diagnostic signal to investigate, not proof of an encoder or search bug: only 80 games were played and every game began from the standard position. The previous evaluator did not preserve individual PGNs or per-colour match results, so its 0-24 candidate score cannot be decomposed beyond the two repeated standard-start colour assignments.
