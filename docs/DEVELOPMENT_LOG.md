@@ -1347,3 +1347,14 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - The baseline dataset step failed immediately at `from src.engine.encoder import BoardEncoder` with `ModuleNotFoundError: No module named 'src'`. When a Python file is run as `python scripts/name.py`, Python places the script directory on the import path; this standalone diagnostic script had not added the repository root.
 - Updated `scripts/generate_self_play_dataset.py` to derive the repository root from `Path(__file__).resolve().parents[1]` and prepend it to `sys.path` before project imports. This follows the clean-checkout bootstrap pattern used by other standalone project scripts.
 - The workflow did not generate baseline or candidate data and uploaded no artifact. It did not train, mutate, or promote either checkpoint. The next step is required PR checks, followed by a fresh manual dispatch after merge.
+
+
+## 2026-11-15 — First successful checkpoint self-play dataset audit
+
+- Workflow [43750799705](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750799705) completed successfully after PR #40. Both pinned checkpoint digests passed; baseline and candidate inference-only dataset generation, comparison, and artifact upload all succeeded.
+- Reproducibility settings: seed 20261115, CPU, 8 games/checkpoint, 40 MCTS simulations, 120-ply cap, Dirichlet noise enabled (α=0.5, ε=0.3), opening temperature 1.3 for 30 plies, then 0.5.
+- Epoch-0 baseline: 8 games, 793 positions; 1 Black win and 7 draws; 3 chess-rule endings and 5 move-cap draws.
+- Epoch-10 candidate: 8 games, 727 positions; 2 White wins, 1 Black win and 5 draws; 4 chess-rule endings and 4 move-cap draws.
+- The generated audit JSON reports both datasets and the combined audit as valid, with empty error lists. The artifact contains 8 game records per dataset, PGNs, UCI moves, per-position FEN/side-to-move/value targets, metadata and the audit report. Artifact ID 14176203642; 90-day retention.
+- This validates dataset generation/preservation and structural consistency only. The independent self-play games are not paired head-to-head evaluation; these small stochastic samples do not establish playing strength, Elo, or value calibration. No model training, checkpoint mutation, or promotion occurred.
+- Next: inspect distributions and label behaviour from the preserved raw data, then define a separate paired held-out evaluation. Do not interpret self-play win/draw counts as candidate strength evidence.
