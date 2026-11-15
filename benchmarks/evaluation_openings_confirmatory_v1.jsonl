@@ -9,10 +9,10 @@
 {"id":"cf-v1-09-four-knights","family":"open-defences","moves_uci":["e2e4","e7e5","g1f3","b8c6","b1c3","g8f6"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-10-petrov","family":"open-defences","moves_uci":["e2e4","e7e5","g1f3","g8f6","f3e5","d7d6"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-11-french-advance","family":"french","moves_uci":["e2e4","e7e6","d2d4","d7d5","e4e5"],"suite_version":"confirmatory_v1"}
-{"id":"cf-v1-12-french-classical","family":"french","moves_uci":["e2e4","e7e6","d2d4","d7d5","b1c3","g8f6"],"suite_version":"confirmatory_v1"}
+{"id":"cf-v1-12-french-classical","family":"french","moves_uci":["e2e4","e7e6","d2d4","d7d5","b1d2","g8f6"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-13-caro-advance","family":"caro-scandinavian","moves_uci":["e2e4","c7c6","d2d4","d7d5","e4e5"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-14-scandinavian","family":"caro-scandinavian","moves_uci":["e2e4","d7d5","e4d5","d8d5","b1c3"],"suite_version":"confirmatory_v1"}
-{"id":"cf-v1-15-queens-gambit","family":"queen-pawn","moves_uci":["d2d4","d7d5","c2c4","e7e6","b1c3","g8f6"],"suite_version":"confirmatory_v1"}
+{"id":"cf-v1-15-queens-gambit","family":"queen-pawn","moves_uci":["d2d4","d7d5","c2c4","e7e6","g1f3","g8f6"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-16-slav","family":"queen-pawn","moves_uci":["d2d4","d7d5","c2c4","c7c6","g1f3","g8f6"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-17-london","family":"queen-pawn","moves_uci":["d2d4","d7d5","g1f3","g8f6","c1f4"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-18-king-indian","family":"indian","moves_uci":["d2d4","g8f6","c2c4","g7g6","b1c3","f8g7"],"suite_version":"confirmatory_v1"}
