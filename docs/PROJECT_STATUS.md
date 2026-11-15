@@ -240,3 +240,10 @@ preserved artifact ZIP established the candidate digest as
 `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.
 The workflow pin has been corrected. No dataset was generated and no model
 weights were changed in the failed run. The workflow must be dispatched again.
+
+
+## Self-play dataset audit dispatch — import-path failure (2026-11-15)
+
+The corrected checkpoint digests were verified successfully in workflow [43750026398](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750026398). The run then failed before generating either dataset: direct execution of `scripts/generate_self_play_dataset.py` placed `scripts/`, rather than the repository root, on `sys.path`, so importing `src.engine.encoder` raised `ModuleNotFoundError: No module named 'src'`. Candidate generation and comparison were skipped; no dataset artifact was produced. No checkpoint was changed and no training or promotion occurred.
+
+A focused fix adds the repository root (derived from `__file__`) to `sys.path` before importing project modules. It changes no model, inference, search, training or checkpoint behaviour. The diagnostic workflow must be dispatched again after the fix is merged.

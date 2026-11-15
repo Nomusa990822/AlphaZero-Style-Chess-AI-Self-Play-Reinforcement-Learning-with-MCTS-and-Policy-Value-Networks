@@ -276,3 +276,8 @@ candidate digest is
 `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.
 The workflow pin has been corrected. No inference or dataset generation took
 place in the failed run. Re-dispatch the workflow after the fix is merged.
+
+
+## Self-play dataset audit: standalone script import-path repair
+
+The first post-digest-correction dispatch, [43750026398](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750026398), verified both checkpoint hashes but failed when the dataset generator attempted to import the project's `src` package. A script executed from `scripts/` does not automatically receive the repository root on `sys.path`. The generator now derives and inserts the repository root before importing project modules. This is an import/bootstrap-only change; it does not alter inference settings, checkpoints, model weights, training, or promotion. Re-run the manual dataset audit workflow after this repair is merged.

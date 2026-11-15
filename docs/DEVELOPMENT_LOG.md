@@ -1339,3 +1339,11 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - Investigated failed self-play dataset audit run 43749569356. It stopped at the checkpoint integrity gate before environment setup or inference.
 - Downloaded the exact preserved checkpoint artifact and independently recalculated both file digests. The epoch-0 baseline matched its pinned SHA-256; the epoch-10 candidate's actual SHA-256 is `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`, not the value previously entered in the workflow.
 - Corrected the candidate digest pin. The failed run produced no datasets and did not train, modify or promote any checkpoint. A fresh manual dispatch is required.
+
+
+## 2026-11-15 — Fix self-play dataset generator import path
+
+- Reviewed failed workflow [43750026398](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43750026398). Both preserved checkpoint files passed their SHA-256 checks; Python setup and dependency installation also succeeded.
+- The baseline dataset step failed immediately at `from src.engine.encoder import BoardEncoder` with `ModuleNotFoundError: No module named 'src'`. When a Python file is run as `python scripts/name.py`, Python places the script directory on the import path; this standalone diagnostic script had not added the repository root.
+- Updated `scripts/generate_self_play_dataset.py` to derive the repository root from `Path(__file__).resolve().parents[1]` and prepend it to `sys.path` before project imports. This follows the clean-checkout bootstrap pattern used by other standalone project scripts.
+- The workflow did not generate baseline or candidate data and uploaded no artifact. It did not train, mutate, or promote either checkpoint. The next step is required PR checks, followed by a fresh manual dispatch after merge.
