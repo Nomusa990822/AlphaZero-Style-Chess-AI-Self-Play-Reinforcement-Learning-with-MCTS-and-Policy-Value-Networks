@@ -45,6 +45,8 @@ def main():
     parser.add_argument("--expected-baseline-sha256", required=True)
     parser.add_argument("--expected-candidate-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--opening-suite", type=Path, default=Path("benchmarks/evaluation_openings_confirmatory_v1.jsonl"))
+    parser.add_argument("--suite-version", default="confirmatory_v1")
     args = parser.parse_args()
     for path in (args.baseline, args.candidate):
         if not path.is_file() or path.stat().st_size == 0:
@@ -58,10 +60,12 @@ def main():
     encoding, encoder = MoveEncoding(), BoardEncoder()
     incumbent, incumbent_meta = load_agent(args.baseline, encoding, encoder)
     candidate, candidate_meta = load_agent(args.candidate, encoding, encoder)
-    evaluator = ConfirmatoryPairedEvaluator(encoding)
+    evaluator = ConfirmatoryPairedEvaluator(encoding, suite_path=args.opening_suite, suite_version=args.suite_version)
     report = evaluator.compare(candidate, incumbent)
     report["checkpoints"] = {"incumbent": incumbent_meta, "candidate": candidate_meta}
-    report["opening_suite_sha256"] = digest(Path("benchmarks/evaluation_openings_confirmatory_v1.jsonl"))
+    report["suite_version"] = args.suite_version
+    report["opening_suite_path"] = str(args.opening_suite)
+    report["opening_suite_sha256"] = digest(args.opening_suite)
     report["source_commit"] = __import__("os").environ.get("GITHUB_SHA")
     report["execution_mode"] = "cpu_inference_only"
     args.output.parent.mkdir(parents=True, exist_ok=True)
