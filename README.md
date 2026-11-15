@@ -1172,3 +1172,13 @@ termination reasons, White/Black position counts and value-target
 distributions. Both input logs must have been captured independently from the
 baseline and candidate checkpoints. This is a data-distribution diagnostic,
 not a playing-strength or Elo benchmark.
+
+
+A manual, inference-only
+[self-play dataset audit workflow](.github/workflows/self-play-dataset-audit.yml)
+generates matched datasets from the preserved epoch-0 baseline and epoch-10
+candidate checkpoints, validates each position's FEN/side/value label against
+its PGN, and uploads both raw datasets and a comparison report. Its default
+budget is eight games per checkpoint, 40 MCTS simulations and a 120-ply cap.
+It does not train or modify checkpoints; the small diagnostic sample is not a
+playing-strength or Elo benchmark.
