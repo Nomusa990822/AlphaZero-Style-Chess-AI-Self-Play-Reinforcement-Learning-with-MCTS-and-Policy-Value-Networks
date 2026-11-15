@@ -88,10 +88,11 @@ def main() -> None:
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
+    metadata_path = output.with_suffix(".metadata.json")
     logger = MetricsLogger(output.parent)
     # Use a fresh output file: never append to or overwrite an existing archive.
-    if output.exists():
-        raise FileExistsError(f"Refusing to overwrite existing dataset: {output}")
+    if output.exists() or metadata_path.exists():
+        raise FileExistsError(f"Refusing to overwrite existing dataset or metadata: {output}")
 
     checkpoint_hash = sha256_file(checkpoint)
     started = time.perf_counter()
@@ -111,6 +112,25 @@ def main() -> None:
             value_targets=[sample.value_target for sample in game.samples],
         )
 
+    metadata = {
+        "label": args.label,
+        "checkpoint_sha256": checkpoint_hash,
+        "checkpoint_epoch": checkpoint_metadata.get("epoch"),
+        "seed": args.seed,
+        "games": args.games,
+        "simulations": args.simulations,
+        "max_moves": args.max_moves,
+        "device": "cpu",
+        "dirichlet_noise": True,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_epsilon": 0.30,
+        "opening_temperature_moves": 30,
+        "opening_temperature": 1.3,
+        "late_temperature": 0.5,
+        "positions": sum(game.num_positions for game in games),
+    }
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
+
     print({
         "label": args.label,
         "checkpoint": str(checkpoint),
@@ -123,6 +143,7 @@ def main() -> None:
         "positions": sum(game.num_positions for game in games),
         "elapsed_seconds": round(time.perf_counter() - started, 2),
         "output": str(output),
+        "metadata": str(metadata_path),
     })
 
 
