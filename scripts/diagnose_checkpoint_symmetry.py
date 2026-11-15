@@ -74,8 +74,14 @@ def legal_policy_distribution(
 
 
 def mirror_move_uci(move_uci: str) -> str:
-    """Map a UCI move through the same vertical reflection as Board.mirror()."""
-    return chess.Move.from_uci(move_uci).mirror().uci()
+    """Map a UCI move through the vertical reflection used by Board.mirror()."""
+    move = chess.Move.from_uci(move_uci)
+    return chess.Move(
+        chess.square_mirror(move.from_square),
+        chess.square_mirror(move.to_square),
+        promotion=move.promotion,
+        drop=move.drop,
+    ).uci()
 
 
 def jensen_shannon_divergence(
