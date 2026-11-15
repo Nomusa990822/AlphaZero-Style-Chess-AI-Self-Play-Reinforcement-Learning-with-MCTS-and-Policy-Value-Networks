@@ -79,3 +79,33 @@ def test_select_records_rejects_wrong_outcome():
     ]
     with pytest.raises(ValueError, match="not a recorded candidate-White loss"):
         MODULE.select_records({"game_records": records})
+
+
+def test_replay_record_handles_pgn_opening_preamble_before_recorded_fen():
+    opening = chess.Board()
+    prelude = ["e2e4", "e7e5", "g1f3", "b8c6"]
+    san_prefix = []
+    for uci in prelude:
+        move = chess.Move.from_uci(uci)
+        san_prefix.append(f"{opening.fullmove_number}{'.' if opening.turn else '...'} {opening.san(move)}")
+        opening.push(move)
+
+    continuation = ["f1c4", "g8f6", "d2d3"]
+    record = record_for(continuation)
+    record["starting_fen"] = opening.fen()
+    continuation_board = opening.copy()
+    san_continuation = []
+    for uci in continuation:
+        move = chess.Move.from_uci(uci)
+        san_continuation.append(f"{continuation_board.fullmove_number}{'.' if continuation_board.turn else '...'} {continuation_board.san(move)}")
+        continuation_board.push(move)
+    record["pgn"] = (
+        '[Result "1-0"]\\n\\n'
+        + " ".join(san_prefix + san_continuation)
+        + " 1-0"
+    )
+
+    positions, final_board = MODULE.replay_record(record)
+    assert len(positions) == len(continuation)
+    assert positions[0][0].fen() == opening.fen()
+    assert final_board.fen() == continuation_board.fen()
