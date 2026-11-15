@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -78,7 +79,7 @@ def audit_dataset(path: str | Path, label: str) -> dict[str, Any]:
                         raise ValueError(f"side-to-move mismatch at ply {ply}")
                     target = float(target_record["value_target"])
                     expected = _expected_target(result, board.turn)
-                    if abs(target - expected) > 1e-7:
+                    if not math.isfinite(target) or abs(target - expected) > 1e-7:
                         raise ValueError(
                             f"value target mismatch at ply {ply}: expected {expected}, got {target}"
                         )
