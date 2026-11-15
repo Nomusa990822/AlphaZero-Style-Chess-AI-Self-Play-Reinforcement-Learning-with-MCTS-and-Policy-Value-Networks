@@ -57,3 +57,25 @@ def test_san_tokenizer_handles_move_numbers_and_results():
     assert MODULE.san_tokens('[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0') == [
         "e4", "e5", "Nf3", "Nc6"
     ]
+
+
+def test_select_records_uses_four_losses_four_draws_and_white_win():
+    records = []
+    for opening_id in MODULE.LOSS_IDS:
+        records.append({"opening_id": opening_id, "leg": "candidate_white", "candidate_outcome": "loss"})
+    for opening_id in MODULE.DRAW_IDS:
+        records.append({"opening_id": opening_id, "leg": "candidate_white", "candidate_outcome": "draw"})
+    for opening_id in MODULE.WIN_IDS:
+        records.append({"opening_id": opening_id, "leg": "candidate_white", "candidate_outcome": "win"})
+    selected = MODULE.select_records({"game_records": records})
+    assert len(selected) == 9
+    assert {item["candidate_outcome"] for item in selected} == {"loss", "draw", "win"}
+
+
+def test_select_records_rejects_wrong_outcome():
+    records = [
+        {"opening_id": opening_id, "leg": "candidate_white", "candidate_outcome": "draw"}
+        for opening_id in MODULE.LOSS_IDS | MODULE.DRAW_IDS | MODULE.WIN_IDS
+    ]
+    with pytest.raises(ValueError, match="not a recorded candidate-White loss"):
+        MODULE.select_records({"game_records": records})
