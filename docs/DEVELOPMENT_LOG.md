@@ -454,15 +454,15 @@ Copy this section for each future engineering batch.
 ## 2026-11-13 — Exercise the MCTS configuration benchmark execution path
 
 ### Changes
-- Refactored the sweep orchestration into \`run_benchmark(args)\` so the execution path can be tested independently of CLI parsing and with replaceable model/search components.
+- Refactored the sweep orchestration into `run_benchmark(args)` so the execution path can be tested independently of CLI parsing and with replaceable model/search components.
 - Added mocked end-to-end orchestration coverage for all simulation-budget, PUCT and filter-mode combinations, single network construction, deterministic search settings, checkpoint SHA-256/epoch metadata, per-position selections, and persisted JSON report round-tripping.
 - Added preflight regression coverage proving an over-budget plan is rejected before network construction and a missing checkpoint is rejected before corpus loading.
-- Hardened the PUCT parser to reject non-finite values (\`nan\`, positive/negative infinity) as well as non-positive values.
+- Hardened the PUCT parser to reject non-finite values (`nan`, positive/negative infinity) as well as non-positive values.
 - No training or actual checkpoint search is performed by these tests.
 
 ### Verification
 - Implementation/test revision `0f12e052434a66f03499bd1f91abafa1afeeb2fa`: CPU CI and Stockfish audit both **passed** (details below).
-- Existing latest verified baseline remains \`040877a1ab822e7023a68b8f025eb17535eac073\`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
+- Existing latest verified baseline remains `040877a1ab822e7023a68b8f025eb17535eac073`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
 - No compatible trained checkpoint is available; no search sweep, training run, playing-strength result or Elo claim is produced.
 
 ### Follow-up
@@ -471,8 +471,8 @@ Copy this section for each future engineering batch.
 
 ### CI verification
 - CPU test workflow [43412113192](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113192): **passed; 142 tests passed in 3.20 seconds** on Python 3.11.
-- Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the \`tactical-engine-audit\` artifact uploaded successfully (artifact ID \`14030281382\`).
-- Both workflows tested the same revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
+- Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the `tactical-engine-audit` artifact uploaded successfully (artifact ID `14030281382`).
+- Both workflows tested the same revision `0f12e052434a66f03499bd1f91abafa1afeeb2fa`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
 - The benchmark has still **not** been run against a real checkpoint. No training, actual search experiment, playing-strength gain or Elo claim is made.
 
 
@@ -1294,7 +1294,7 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - The 80-game colour split (32 Black wins, 15 White wins, 33 draws) is a real observed imbalance but not a diagnosis: every self-play game began from the standard starting position. The corrected 24-game candidate/incumbent evaluation was level and does not reproduce a decisive candidate colour advantage.
 - The 35-position tactical corpus has 19 White-to-move and 16 Black-to-move cases. Candidate MCTS results were 5/19 White and 3/16 Black; baseline results were 3/19 White and 3/16 Black. The difference is too small and the corpus too uneven to conclude an encoder/search defect.
 - The candidate raw value mean shifted from -0.004 (baseline) to +0.134, with a wider range (-0.699 to +0.800 versus -0.215 to +0.250). These positions have no independent outcome labels, so this cannot be called value calibration.
-- Confirmed iteration lifecycle in \`src/training/pipeline.py\`: self-play always uses the current incumbent; every candidate is cloned from that incumbent and receives a new Adam optimizer; rejected candidate weights and optimizer state are discarded before the next outer iteration. Replay samples accumulate across iterations. The trainer has no held-out validation split and logs only in-sample losses.
-- Added \`scripts/diagnose_checkpoint_symmetry.py\` and a manual, read-only workflow \`.github/workflows/checkpoint-colour-symmetry-audit.yml\`. It evaluates original/mirrored tactical positions and same-checkpoint self-play across the 12-opening paired suite. It verifies the checkpoint manifest hashes and never trains or mutates checkpoints.
+- Confirmed iteration lifecycle in `src/training/pipeline.py`: self-play always uses the current incumbent; every candidate is cloned from that incumbent and receives a new Adam optimizer; rejected candidate weights and optimizer state are discarded before the next outer iteration. Replay samples accumulate across iterations. The trainer has no held-out validation split and logs only in-sample losses.
+- Added `scripts/diagnose_checkpoint_symmetry.py` and a manual, read-only workflow `.github/workflows/checkpoint-colour-symmetry-audit.yml`. It evaluates original/mirrored tactical positions and same-checkpoint self-play across the 12-opening paired suite. It verifies the checkpoint manifest hashes and never trains or mutates checkpoints.
 - Added unit tests for mirror move mapping, Jensen-Shannon divergence and report aggregation. CI verification is pending on PR.
 - **Next:** run the new audit after merge, inspect the report, then design held-out policy/value validation and decide whether to maintain a separate challenger lineage. Do not alter the promotion gate or launch another full training run yet.
