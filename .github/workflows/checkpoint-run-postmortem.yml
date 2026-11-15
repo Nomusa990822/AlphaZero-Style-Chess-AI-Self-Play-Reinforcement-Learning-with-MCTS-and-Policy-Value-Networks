@@ -58,7 +58,8 @@ jobs:
             echo "::error::training_run_id must contain digits only."
             exit 1
           fi
-          ARTIFACT_NAME="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$TRAINING_RUN_ID/artifacts" \
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$TRAINING_RUN_ID/artifacts")"
+          ARTIFACT_NAME="$(jq -r --arg prefix "chess-model-checkpoints-$TRAINING_RUN_ID-" '.artifacts | map(select(.expired == false and (.name | startswith($prefix)))) | sort_by(.created_at) | last | .name // empty' <<< "$ARTIFACTS_JSON")"
             --jq ".artifacts[] | select(.expired == false and (.name | startswith(\"chess-model-checkpoints-$TRAINING_RUN_ID-\"))) | .name" | tail -n 1)"
           if [[ -z "$ARTIFACT_NAME" ]]; then
             echo "::error::No unexpired chess-model-checkpoints artifact found for run $TRAINING_RUN_ID."
