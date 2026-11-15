@@ -43,7 +43,7 @@ def test_paired_lcb_rejects_invalid_scores():
 def test_independent_v2_suite_is_valid_and_disjoint_from_v1():
     suite_path = Path(__file__).resolve().parents[1] / "benchmarks" / "evaluation_openings_independent_v2.jsonl"
     openings = load_confirmatory_openings(suite_path, suite_version="independent_v2")
-    assert hashlib.sha256(suite_path.read_bytes()).hexdigest() == "98cbce322fba1c04f03728fe6c3bc71d12650920e501e9785ad7272a2d45d8a9"
+    assert hashlib.sha256(suite_path.read_bytes()).hexdigest() == "69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03"
     v1 = load_confirmatory_openings()
     assert len(openings) == PAIR_COUNT
     assert len({opening_id for opening_id, _ in openings}) == PAIR_COUNT
