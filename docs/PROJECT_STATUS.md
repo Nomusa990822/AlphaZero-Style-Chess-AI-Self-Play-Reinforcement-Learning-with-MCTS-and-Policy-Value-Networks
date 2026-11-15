@@ -217,3 +217,15 @@ or promote a model, and does not itself generate a candidate-checkpoint dataset.
 A matched pair of baseline and candidate self-play logs is still required for
 the comparison. Existing historical artifacts that omitted game logs cannot be
 retrospectively reconstructed. No checkpoint or promotion state changes.
+
+
+The manual read-only workflow
+`.github/workflows/self-play-dataset-audit.yml` now generates matched baseline
+and candidate datasets from the preserved checkpoints in training run
+[43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876).
+It defaults to eight games per checkpoint, 40 MCTS simulations and a 120-ply
+cap, resets the same random seed for each checkpoint, and uploads both raw
+PGN/position-target logs plus the validated comparison report. It is inference
+only: no optimizer, training loop, checkpoint write, promotion or release
+operation is invoked. The workflow is manual and has not been dispatched by
+this source change.
