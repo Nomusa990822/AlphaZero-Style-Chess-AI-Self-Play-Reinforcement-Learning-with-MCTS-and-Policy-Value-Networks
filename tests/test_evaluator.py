@@ -120,7 +120,7 @@ def test_insufficient_game_count_never_promotes_even_a_perfect_candidate(monkeyp
     assert small_sample.score == 1.0
     assert promoted is False
     assert any("at least 24" in reason for reason in evaluator.promotion_rejection_reasons(small_sample))
-    assert any("independent opening pairs" in reason for reason in evaluator.promotion_rejection_reasons(small_sample))
+    assert any("distinct opening pairs" in reason for reason in evaluator.promotion_rejection_reasons(small_sample))
 
 
 def test_pipeline_default_gating_games_meets_promotion_sample_minimum():
