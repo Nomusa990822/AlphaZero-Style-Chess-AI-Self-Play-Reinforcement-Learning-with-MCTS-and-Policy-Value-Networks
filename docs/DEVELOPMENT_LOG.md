@@ -1309,3 +1309,13 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - **Same-checkpoint self-play:** baseline 24 games: 1 win / 0 losses / 23 draws; as White 1/0/11, as Black 0/0/12. Candidate 24 games: 8 wins / 5 losses / 11 draws; as White 2/3/7, as Black 6/2/4. Since one identical checkpoint controls both colours, these outcomes indicate a colour-dependent pattern worth investigating; they are not evidence of playing strength and are based on only 12 opening pairs.
 - **Assessment:** candidate epoch 10 is substantially less colour-symmetric than the epoch-0 baseline. Its earlier modest tactical-position increase does not offset the symmetry regression. Keep baseline as incumbent and candidate unpromoted. Do not begin another full training run or change the promotion gate.
 - **Next:** trace the side-to-move value contract end-to-end; independently test mirrored encoder planes and move-index mapping; add known-label mirror-pair tests; then repeat paired self-play with PGN retention and a held-out game-level validation set. Do not claim an encoder or MCTS bug until a targeted test isolates one.
+
+
+## 2026-11-15 — Trace side-to-move value and mirror contracts
+
+- Reviewed src/training/self_play.py, src/training/dataset.py, src/training/loss.py, src/training/trainer.py, src/model/inference.py, src/mcts/node.py, src/mcts/search.py and src/mcts/puct.py.
+- Source review found the intended side-to-move sign convention consistently applied from final game outcome through sample targets, value loss, inference, terminal evaluation, MCTS backup and PUCT selection. No obvious sign inversion was identified.
+- BoardEncoder stores separate White/Black piece planes in absolute board coordinates; MoveEncoding rotates Black move deltas by 180 degrees. The network does not impose exact mirror equivariance, and the reviewed training path contains no colour-mirror augmentation. These facts may contribute to learned asymmetry but do not establish a code defect.
+- Added tests/test_colour_symmetry_contract.py for exact encoder mirror-plane transforms, legal move round-trips on mirrored positions (including castling, en-passant and promotions), known outcome-label invariance, MCTS backup sign alternation and terminal-value mirror invariance.
+- This is test-only diagnostic coverage: no production model, training, checkpoint or promotion behaviour changed. The epoch-0 incumbent remains selected and the epoch-10 candidate remains unpromoted.
+- Next: run the required CPU and Stockfish PR checks; then inspect self-play sample colour/perspective distributions and design held-out game-level validation. Do not start another full training run or add symmetry augmentation until its effect can be isolated and measured.
