@@ -175,9 +175,9 @@ iteration, so the standard is relative to the best model already retained.
 
 The current pipeline uses an incumbent/challenger pattern, but it does not preserve a rejected challenger between outer iterations:
 
-1. Self-play is generated using the current \`best_model\` (the incumbent).
-2. \`_build_candidate_model()\` copies the incumbent state into a newly constructed model.
-3. A new \`AlphaZeroTrainer\` and Adam optimizer are constructed for that candidate.
+1. Self-play is generated using the current `best_model` (the incumbent).
+2. `_build_candidate_model()` copies the incumbent state into a newly constructed model.
+3. A new `AlphaZeroTrainer` and Adam optimizer are constructed for that candidate.
 4. The candidate trains on the entire accumulated replay buffer.
 5. If promotion fails, the incumbent remains unchanged. The next iteration repeats from the same incumbent weights with another fresh optimizer; only the replay buffer has grown.
 
