@@ -1167,9 +1167,9 @@ python scripts/audit_self_play_datasets.py \
   --output reports/self-play-dataset-audit.json
 ```
 
-The report checks PGN/FEN/target consistency and summarises game outcomes,
-termination reasons, White/Black position counts and value-target
-distributions. Both input logs must have been captured independently from the
+The report checks PGN/FEN/target consistency, includes the SHA-256 and run
+configuration for each checkpoint, and summarises game outcomes, termination
+reasons, White/Black position counts and value-target distributions. Both input logs must have been captured independently from the
 baseline and candidate checkpoints. This is a data-distribution diagnostic,
 not a playing-strength or Elo benchmark.
 
