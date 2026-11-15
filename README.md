@@ -1122,3 +1122,14 @@ reports and run provenance in one Actions artifact. This is a diagnostic
 benchmark, not an Elo or general playing-strength rating. Complete this run
 before dispatching Train and preserve model checkpoints with
 confirm_training=YES.
+
+
+## First full training run — 2026-11-15
+
+The first full configured CPU training run [43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876) completed successfully: two iterations, 80 self-play games, 20 training epochs and 48 incumbent evaluation games. Both candidates were rejected by the incumbent-relative promotion gate (scores 0.250 and 0.000; one-sided 90% lower confidence bounds 0.164 and 0.000). The epoch-0 baseline remains the selected checkpoint and was not overwritten. The final candidate is retained separately.
+
+- Selected baseline SHA-256: `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`.
+- Final rejected candidate SHA-256: `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.
+- [Durable checkpoint prerelease](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/releases/tag/model-checkpoint-43646981876-1) · [Actions artifact](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876/artifacts/14139456844).
+
+Training-loss reduction is not evidence of stronger chess play. No Elo or general playing-strength rating is claimed. See [the experiment log](docs/EXPERIMENT_LOG.md) for exact losses, match outcomes, checkpoint sizes and hashes.
