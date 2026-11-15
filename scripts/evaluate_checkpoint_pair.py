@@ -80,6 +80,7 @@ def main():
             "one_sided_90_percent_lower_confidence_bound": result.lower_confidence_bound,
             "candidate_colour_breakdown": result.colour_breakdown,
             "opening_pair_scores": list(result.opening_pair_scores),
+            "opening_pair_results": list(result.opening_pair_results),
         },
         "promotion_eligible": promoted,
         "promotion_rejection_reasons": evaluator.promotion_rejection_reasons(result),
