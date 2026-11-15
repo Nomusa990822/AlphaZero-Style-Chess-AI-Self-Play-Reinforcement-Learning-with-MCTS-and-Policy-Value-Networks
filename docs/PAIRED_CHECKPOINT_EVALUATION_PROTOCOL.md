@@ -143,14 +143,14 @@ Value calibration is a separate experiment. It requires raw model value predicti
 
 This document defines the protocol; it does not claim that the protocol is already implemented or that a match has been run.
 
-- [ ] Add and validate `benchmarks/evaluation_openings_confirmatory_v1.jsonl` with 24 unique positions from at least 8 opening families.
-- [ ] Add tests proving every opening line is legal, non-terminal, unique, and disjoint from the development/tactical suites.
-- [ ] Extend the paired evaluator to require exactly 24 pairs / 48 games for this confirmatory mode.
-- [ ] Correct the one-sided 90% paired Student-t lower-bound calculation; add reference-value and edge-case tests.
-- [ ] Make the 50-simulation, no-noise, zero-temperature, 200-ply configuration explicit in CLI/workflow inputs and report metadata.
-- [ ] Preserve per-game PGNs, UCI moves, opening FENs, termination reasons and checkpoint/suite hashes.
-- [ ] Add tests that illegal moves abort evaluation and prevent promotion; incomplete game pairs cannot be counted.
-- [ ] Ensure the workflow is read-only: download and hash-check checkpoints, run inference-only games, upload reports; no optimizer, training, checkpoint overwrite, release publication or promotion action.
+- [x] Add and validate `benchmarks/evaluation_openings_confirmatory_v1.jsonl` with 24 unique positions from at least 8 opening families.
+- [x] Add tests proving every opening line is legal, non-terminal, unique, and disjoint from the development/tactical suites.
+- [x] Extend the paired evaluator to require exactly 24 pairs / 48 games for this confirmatory mode.
+- [x] Correct the one-sided 90% paired Student-t lower-bound calculation; add reference-value and edge-case tests.
+- [x] Make the 50-simulation, no-noise, zero-temperature, 200-ply configuration explicit in CLI/workflow inputs and report metadata.
+- [x] Preserve per-game PGNs, UCI moves, opening FENs, termination reasons and checkpoint/suite hashes.
+- [x] Add tests that illegal moves abort evaluation and prevent promotion; incomplete game pairs cannot be counted.
+- [x] Ensure the workflow is read-only: download and hash-check checkpoints, run inference-only games, upload reports; no optimizer, training, checkpoint overwrite, release publication or promotion action.
 - [ ] Run required CPU and Stockfish checks on the implementation PR.
 - [ ] Only after the implementation is merged should a manually dispatched, explicitly confirmed evaluation be considered.
 
