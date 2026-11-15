@@ -1392,3 +1392,13 @@ game PGN/UCI/termination records. Added dedicated unit tests and implementation
 notes. This work does not modify the routine training evaluator or launch the
 48-game evaluation. PR creation and required CI verification are the next
 gates; no checkpoint was trained, changed, or promoted.
+
+
+## 2026-11-15 — First confirmatory paired checkpoint evaluation
+
+- PR #45 merged at `727639e75b7defcad5a915473258b1f13bf94389`; the CPU suite and Stockfish tactical audit both succeeded before merge.
+- Manually dispatched read-only workflow [43755129081](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081). Both immutable checkpoint hashes matched their pins; all 24 opening pairs / 48 games completed.
+- Candidate score 55.21%; 7 wins, 39 draws, 2 losses; paired-score SD 0.1645013; one-sided 90% Student-t LCB 0.5077776. Candidate White: 4W/20D/0L; candidate Black: 3W/19D/2L. All 48 games ended under chess rules; no move-cap draws.
+- Uploaded raw report artifact [14179310181](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081/artifacts/14179310181). This passes the v1 numerical evidence gate, but does not establish Elo or general strength. The margin is narrow; epoch 0 remains incumbent and epoch 10 is not promoted.
+- Added an independent v2 suite and dedicated read-only workflow on branch `independent-confirmation-v2`. The v2 suite is designed to be disjoint from development, tactical and v1 positions; its SHA-256 is `98cbce322fba1c04f03728fe6c3bc71d12650920e501e9785ad7272a2d45d8a9`. The evaluator and runner now accept an explicit suite path/version, and tests assert v2/v1 disjointness. This second evaluation has not been dispatched.
+- Updated protocol, project status, training-flow and benchmark documentation; detailed report: [INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md](INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md).
