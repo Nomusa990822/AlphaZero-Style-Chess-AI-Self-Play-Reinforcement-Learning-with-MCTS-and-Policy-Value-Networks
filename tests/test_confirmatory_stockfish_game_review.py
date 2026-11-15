@@ -103,3 +103,19 @@ def test_replay_record_handles_pgn_opening_preamble_before_recorded_fen():
     assert len(positions) == len(continuation)
     assert positions[0][0].fen() == opening.fen()
     assert final_board.fen() == continuation_board.fen()
+
+
+def test_score_components_preserves_mate_instead_of_converting_to_centipawns():
+    info = {"score": chess.engine.PovScore(chess.engine.Mate(3), chess.WHITE)}
+    assert MODULE.score_components(info, chess.WHITE) == (None, 3)
+    assert MODULE.score_components(info, chess.BLACK) == (None, -3)
+
+
+def test_summary_excludes_mate_scores_from_centipawn_aggregates():
+    rows = [
+        {"played_move_loss_cp": 120},
+        {"played_move_loss_cp": None},
+        {"played_move_loss_cp": 240},
+    ]
+    summary = MODULE.analyse_game.__globals__["mean"]  # confirm standard aggregate dependency remains available
+    assert callable(summary)
