@@ -1368,3 +1368,13 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - No raw model value predictions are present, so value calibration cannot be assessed. Outcome-label means are descriptive only.
 - Found a non-blocking instrumentation issue: every record stores elapsed_seconds=0.0 because the generator script passes a literal zero to MetricsLogger, despite SelfPlayGenerator exposing per-game elapsed time through its completion callback. This does not affect training positions or labels; correct separately before using runtime metrics.
 - Detailed analysis saved in docs/SELF_PLAY_DATASET_DIAGNOSTIC_2026-11-15.md. Recommended next evaluation is a fixed-opening, colour-swapped, paired baseline-vs-candidate held-out match suite with a predeclared statistical criterion.
+
+
+## 2026-11-15 — Confirmatory paired checkpoint evaluation protocol prepared
+
+- Added `docs/PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md` defining a read-only, incumbent-versus-candidate confirmatory comparison.
+- Design: new frozen 24-opening suite from at least 8 opening families; 48 games total, with each opening played once with candidate White and once with candidate Black from the mirrored position. CPU, 50 MCTS simulations, no Dirichlet noise, zero move temperature and 200-ply cap.
+- Primary statistic: mean of 24 paired opening scores; promotion evidence requires overall score >0.50 and a one-sided 90% Student-t lower confidence bound >0.50, plus complete data and zero illegal moves. Report colour splits, pair outcomes, termination reasons and raw PGNs.
+- Existing 12-opening suite is now designated development/regression only because it has already been reused in diagnostics.
+- Found an implementation discrepancy to fix before any dispatch: evaluator uses multiplier 1.645 while labelling the result a one-sided 90% lower bound. 1.645 is approximately a one-sided 95% normal critical value; protocol requires the finite-sample Student-t 90% critical value for 23 degrees of freedom.
+- This commit is protocol documentation only. No suite file, evaluator code, workflow, match run, training, checkpoint write or promotion was changed or executed. Epoch-0 remains incumbent and epoch-10 remains unpromoted.
