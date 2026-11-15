@@ -97,6 +97,8 @@ jobs:
             --candidate reports/self-play-candidate.jsonl \
             --baseline-label epoch-0-baseline \
             --candidate-label epoch-10-candidate \
+            --baseline-metadata reports/self-play-baseline.metadata.json \\
+            --candidate-metadata reports/self-play-candidate.metadata.json \\
             --output reports/self-play-dataset-audit.json
 
       - name: Preserve raw PGNs, position labels and audit report
@@ -107,6 +109,8 @@ jobs:
           path: |
             reports/self-play-baseline.jsonl
             reports/self-play-candidate.jsonl
+            reports/self-play-baseline.metadata.json
+            reports/self-play-candidate.metadata.json
             reports/self-play-dataset-audit.json
           if-no-files-found: warn
           retention-days: 90
