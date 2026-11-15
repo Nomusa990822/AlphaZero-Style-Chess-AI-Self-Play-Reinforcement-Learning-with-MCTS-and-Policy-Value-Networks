@@ -85,7 +85,7 @@ def main():
         "promotion_rejection_reasons": evaluator.promotion_rejection_reasons(result),
         "interpretation_limits": [
             "This is a fixed 12-opening paired comparison, not an Elo rating.",
-            "The confidence calculation uses opening-pair scores as the distinct opening-pair observations.",
+            "The lower-bound estimate reflects variation across the 12 distinct opening-pair scores; it is an approximate gate on this fixed suite, not a population-strength estimate.",
             "The result is relative to this exact opponent, search configuration and opening suite.",
         ],
     }
