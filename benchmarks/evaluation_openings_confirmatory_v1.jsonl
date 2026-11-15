@@ -21,4 +21,4 @@
 {"id":"cf-v1-21-english-reversed","family":"flank","moves_uci":["c2c4","e7e5","b1c3","g8f6","g2g3"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-22-reti","family":"flank","moves_uci":["g1f3","d7d5","g2g3","g8f6","f1g2"],"suite_version":"confirmatory_v1"}
 {"id":"cf-v1-23-bird","family":"flank","moves_uci":["f2f4","d7d5","g1f3","g8f6","e2e3"],"suite_version":"confirmatory_v1"}
-{"id":"cf-v1-24-dutch","family":"flank","moves_uci":["d2d4","f7f5","c2c4","g8f6","g1f3"],"suite_version":"confirmatory_v1"}
+{"id":"cf-v1-24-dutch","family":"dutch-defense","moves_uci":["d2d4","f7f5","c2c4","g8f6","g1f3"],"suite_version":"confirmatory_v1"}
