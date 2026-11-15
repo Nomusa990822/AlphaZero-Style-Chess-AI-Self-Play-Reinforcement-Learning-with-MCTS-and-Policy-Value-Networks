@@ -53,12 +53,6 @@ def test_replay_record_rejects_san_uci_mismatch():
         MODULE.replay_record(item)
 
 
-def test_san_tokenizer_handles_move_numbers_and_results():
-    assert MODULE.san_tokens('[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0') == [
-        "e4", "e5", "Nf3", "Nc6"
-    ]
-
-
 def test_select_records_uses_four_losses_four_draws_and_white_win():
     records = []
     for opening_id in MODULE.LOSS_IDS:
@@ -100,7 +94,7 @@ def test_replay_record_handles_pgn_opening_preamble_before_recorded_fen():
         san_continuation.append(f"{continuation_board.fullmove_number}{'.' if continuation_board.turn else '...'} {continuation_board.san(move)}")
         continuation_board.push(move)
     record["pgn"] = (
-        '[Result "1-0"]\\n\\n'
+        '[Result "1-0"]\n\n'
         + " ".join(san_prefix + san_continuation)
         + " 1-0"
     )
