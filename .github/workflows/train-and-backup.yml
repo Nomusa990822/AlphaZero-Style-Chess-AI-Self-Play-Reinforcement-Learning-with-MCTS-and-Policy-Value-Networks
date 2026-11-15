@@ -76,6 +76,9 @@ jobs:
           path: |
             data/checkpoints/*.pt
             reports/checkpoint-manifest.json
+            data/logs/self_play_games.jsonl
+            data/replay_buffer/latest_buffer.pkl
+            data/replay_buffer/latest_buffer_journal/*.pkl
           if-no-files-found: warn
           retention-days: 90
       - name: Publish durable checkpoint release

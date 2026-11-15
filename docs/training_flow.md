@@ -212,3 +212,56 @@ The value target is defined from the perspective of the player to move at each s
 The source review found no obvious sign inversion across these stages. This does not explain why the epoch-10 candidate's predictions are much less symmetric than the baseline. The encoder uses separate colour planes and absolute board coordinates, while Black move deltas are rotated 180 degrees in the action encoder. The network is not architecturally mirror-equivariant and the inspected training path does not apply mirror augmentation. Those design choices leave symmetry to be learned from data; they are not, on their own, proof of an implementation bug.
 
 The test-only module tests/test_colour_symmetry_contract.py adds regression coverage for mirrored encoder planes, mirrored legal move encoding/decoding, side-to-move outcome-label invariance, MCTS backup sign alternation and terminal-value mirror invariance. It intentionally does not require neural predictions to be exactly mirror-equivariant. No training, checkpoint or promotion behaviour is changed by these tests.
+
+
+## Self-play dataset capture and comparison
+
+New self-play game records include the complete PGN and a `position_targets`
+array. Each entry stores the exact pre-move FEN, zero-based ply, side to move and
+final game outcome target from that side's perspective. The logger validates
+the target against the final result before persisting it. Existing records
+created before this change contain PGNs but no position targets and are
+intentionally rejected by the strict comparison tool.
+
+The training workflow artifact now preserves the self-play JSONL log and replay
+snapshot/journal as well as model checkpoints. To compare two archived logs:
+
+```bash
+python scripts/audit_self_play_datasets.py \
+  --baseline path/to/baseline/self_play_games.jsonl \
+  --candidate path/to/candidate/self_play_games.jsonl \
+  --baseline-label epoch-0-baseline \
+  --candidate-label epoch-10-candidate \
+  --output reports/self-play-dataset-audit.json
+```
+
+The report includes checkpoint SHA-256/configuration metadata, game outcomes
+and termination types, total positions, White-to-move and Black-to-move counts,
+mean target by side, and target frequencies. It validates PGN legality and consistency between every PGN ply,
+FEN, side-to-move label and value target. It is read-only and makes no model
+changes. The two inputs must come from separately collected self-play datasets for the
+named checkpoints. The manual workflow below generates these inputs from the
+preserved checkpoint pair. Historical run artifacts without self-play records
+cannot be backfilled from checkpoint weights alone. Split future validation by
+complete games, never by individual positions from the same game.
+
+
+### Generate a matched baseline/candidate diagnostic dataset
+
+The manual workflow
+`.github/workflows/self-play-dataset-audit.yml` downloads the immutable
+baseline and epoch-10 candidate from preserved training artifact
+[43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876).
+It runs `scripts/generate_self_play_dataset.py` once per checkpoint using the
+same seed, CPU device, exploration settings, MCTS simulations and game cap,
+then validates and compares the resulting JSONL logs.
+
+The default is eight games per checkpoint, 40 MCTS simulations and a 120-ply
+cap. These are intentionally bounded diagnostic settings, not a training run
+or a strength evaluation. The workflow is manually dispatched from GitHub
+Actions and uploads both raw PGN/position-target datasets and the summary
+report for 90 days. The generator loads checkpoints for inference only; it
+does not instantiate an optimizer, train weights, overwrite checkpoints or
+invoke promotion. Because the sample is small, its outcome counts are
+descriptive only. Use the report to inspect data distribution and label
+integrity, not to infer Elo or general playing strength.

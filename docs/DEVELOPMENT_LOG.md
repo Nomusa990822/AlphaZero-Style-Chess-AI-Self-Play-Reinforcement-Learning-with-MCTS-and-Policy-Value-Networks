@@ -1319,3 +1319,16 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - Added tests/test_colour_symmetry_contract.py for exact encoder mirror-plane transforms, legal move round-trips on mirrored positions (including castling, en-passant and promotions), known outcome-label invariance, MCTS backup sign alternation and terminal-value mirror invariance.
 - This is test-only diagnostic coverage: no production model, training, checkpoint or promotion behaviour changed. The epoch-0 incumbent remains selected and the epoch-10 candidate remains unpromoted.
 - Next: run the required CPU and Stockfish PR checks; then inspect self-play sample colour/perspective distributions and design held-out game-level validation. Do not start another full training run or add symmetry augmentation until its effect can be isolated and measured.
+
+
+## 2026-11-15 — Preserve per-position self-play labels for dataset audits
+
+- Extended the existing per-game self-play JSONL record with per-position FEN, ply index, side to move and final-outcome value target. The writer checks that the target count matches the played moves and that each target has the correct side-to-move perspective.
+- Updated the resume-only training workflow artifact to include `data/logs/self_play_games.jsonl`, the replay-buffer snapshot and per-game journal chunks, alongside the checkpoint files and manifest.
+- Added `scripts/audit_self_play_datasets.py`, a read-only comparator for two self-play logs. It validates PGN legality, move/sample counts, exact position FENs, side-to-move labels and final-result targets; reports game outcomes, termination types, White/Black sample counts and target distributions; and fails closed on legacy PGN-only or inconsistent records.
+- Added regression tests for valid records, corrupted value targets and legacy records without position labels.
+- This change does not start training, modify checkpoints, change candidate promotion, or infer playing strength. It captures data from future training runs; the older 43646981876 artifact did not include the required game log and cannot be reconstructed from its checkpoint-only contents. A matched baseline/candidate pair of logs is still required before a comparative dataset conclusion can be drawn.
+
+
+- Added `.github/workflows/self-play-dataset-audit.yml` and `scripts/generate_self_play_dataset.py`. The manual workflow downloads the preserved baseline/candidate pair from run 43646981876, generates separate inference-only self-play datasets with the same seed and declared MCTS/game limits, runs the strict dataset comparator, and retains both raw JSONL datasets plus the report as a 90-day artifact.
+- Defaults are eight games per checkpoint, 40 simulations per move and a 120-ply cap to bound diagnostic compute. The workflow is manual; it has not been dispatched. This does not run training or mutate either checkpoint.

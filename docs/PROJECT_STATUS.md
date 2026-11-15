@@ -195,3 +195,37 @@ The encoder uses explicit White/Black piece planes and absolute rank/file coordi
 A focused regression module, tests/test_colour_symmetry_contract.py, now covers the Board.mirror() encoder-plane transform, legal-move encode/decode on mirrored positions (including castling, en-passant and promotions), invariant side-to-move outcome labels, alternating MCTS backup perspective, and mirrored terminal values. These tests validate contracts; they deliberately do not assert that an unconstrained neural network must produce identical mirrored predictions.
 
 No model, checkpoint, training configuration, or promotion rule was changed. The epoch-0 checkpoint remains selected; the epoch-10 candidate remains unpromoted. Further work should inspect sample distributions and add held-out game-level validation before attempting a symmetry augmentation or architecture change.
+
+
+## Per-position self-play dataset preservation and audit
+
+The self-play game log already retains complete PGNs, but earlier records did not
+retain the corresponding per-position value targets. The diagnostic branch now
+adds one record per played position containing its FEN, ply, side to move and
+side-to-move-relative outcome target. The logger checks each target against the
+completed game's result before writing it.
+
+The training workflow artifact is extended to retain the game log and replay
+buffer/journal alongside checkpoints and the checkpoint manifest. A read-only
+comparison utility, `scripts/audit_self_play_datasets.py`, validates two
+separately collected game-log files and reports outcomes, termination types,
+White/Black sample counts and target distributions. It rejects legacy PGN-only
+records and inconsistent PGN/FEN/target data.
+
+This is data-capture and audit infrastructure only. It does not train or promote
+a model. The manual diagnostic workflow generates a matched pair of baseline
+and candidate logs from the preserved checkpoints. Existing historical
+training data that was never retained cannot be retrospectively reconstructed.
+No checkpoint or promotion state changes.
+
+
+The manual read-only workflow
+`.github/workflows/self-play-dataset-audit.yml` now generates matched baseline
+and candidate datasets from the preserved checkpoints in training run
+[43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876).
+It defaults to eight games per checkpoint, 40 MCTS simulations and a 120-ply
+cap, resets the same random seed for each checkpoint, and uploads both raw
+PGN/position-target logs plus the validated comparison report. It is inference
+only: no optimizer, training loop, checkpoint write, promotion or release
+operation is invoked. The workflow is manual and has not been dispatched by
+this source change.

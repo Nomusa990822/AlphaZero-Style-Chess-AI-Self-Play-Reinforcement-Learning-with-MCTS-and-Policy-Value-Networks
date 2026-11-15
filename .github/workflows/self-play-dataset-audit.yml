@@ -1,0 +1,117 @@
+name: Read-only checkpoint self-play dataset audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      games:
+        description: "Self-play games per checkpoint (small diagnostic default)"
+        required: true
+        type: number
+        default: 8
+      simulations:
+        description: "MCTS simulations per move"
+        required: true
+        type: number
+        default: 40
+      max_moves:
+        description: "Maximum plies per game"
+        required: true
+        type: number
+        default: 120
+      seed:
+        description: "Shared random seed for paired reproducibility"
+        required: true
+        type: number
+        default: 20261115
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  dataset-audit:
+    name: Generate and compare checkpoint self-play datasets
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Download preserved baseline and candidate checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p checkpoint-source
+          gh run download 43646981876 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --name chess-model-checkpoints-43646981876-1 \
+            --dir checkpoint-source
+          baseline="$(find checkpoint-source -name best_model.pt -type f -print -quit)"
+          candidate="$(find checkpoint-source -name latest_candidate.pt -type f -print -quit)"
+          test -n "$baseline" && test -s "$baseline"
+          test -n "$candidate" && test -s "$candidate"
+          mkdir -p data/checkpoints
+          cp "$baseline" data/checkpoints/baseline.pt
+          cp "$candidate" data/checkpoints/candidate.pt
+          echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  data/checkpoints/baseline.pt" | sha256sum --check
+          echo "3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7  data/checkpoints/candidate.pt" | sha256sum --check
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CPU PyTorch and project dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2.0"
+          python -m pip install -r requirements.txt
+
+      - name: Generate baseline dataset (inference only)
+        run: |
+          python scripts/generate_self_play_dataset.py \
+            --checkpoint data/checkpoints/baseline.pt \
+            --label epoch-0-baseline \
+            --games "${{ inputs.games }}" \
+            --simulations "${{ inputs.simulations }}" \
+            --max-moves "${{ inputs.max_moves }}" \
+            --seed "${{ inputs.seed }}" \
+            --output reports/self-play-baseline.jsonl
+
+      - name: Generate candidate dataset (inference only)
+        run: |
+          python scripts/generate_self_play_dataset.py \
+            --checkpoint data/checkpoints/candidate.pt \
+            --label epoch-10-candidate \
+            --games "${{ inputs.games }}" \
+            --simulations "${{ inputs.simulations }}" \
+            --max-moves "${{ inputs.max_moves }}" \
+            --seed "${{ inputs.seed }}" \
+            --output reports/self-play-candidate.jsonl
+
+      - name: Audit and compare complete-game datasets
+        run: |
+          python scripts/audit_self_play_datasets.py \
+            --baseline reports/self-play-baseline.jsonl \
+            --candidate reports/self-play-candidate.jsonl \
+            --baseline-label epoch-0-baseline \
+            --candidate-label epoch-10-candidate \
+            --baseline-metadata reports/self-play-baseline.metadata.json \
+            --candidate-metadata reports/self-play-candidate.metadata.json \
+            --output reports/self-play-dataset-audit.json
+
+      - name: Preserve raw PGNs, position labels and audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-play-dataset-audit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            reports/self-play-baseline.jsonl
+            reports/self-play-candidate.jsonl
+            reports/self-play-baseline.metadata.json
+            reports/self-play-candidate.metadata.json
+            reports/self-play-dataset-audit.json
+          if-no-files-found: warn
+          retention-days: 90

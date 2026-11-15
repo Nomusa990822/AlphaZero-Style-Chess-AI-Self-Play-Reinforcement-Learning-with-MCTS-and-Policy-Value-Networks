@@ -265,6 +265,7 @@ class AlphaZeroPipeline:
                 ended_by_resignation=game_result.ended_by_resignation,
                 ended_by_adjudication=game_result.ended_by_adjudication,
                 ended_by_move_limit=game_result.ended_by_move_limit,
+                value_targets=[sample.value_target for sample in game_result.samples],
             )
             if game_result.result == "1-0":
                 completed_record["white_wins"] += 1

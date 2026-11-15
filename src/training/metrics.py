@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import io
 import json
+import math
 
 import chess
 import chess.pgn
@@ -71,6 +72,7 @@ class MetricsLogger:
         ended_by_adjudication: bool = False,
         ended_by_move_limit: bool = False,
         filename: str = "self_play_games.jsonl",
+        value_targets: list[float] | None = None,
     ) -> None:
         """Persist a complete game record as soon as self-play finishes."""
         path = self.log_dir / filename
@@ -101,6 +103,35 @@ class MetricsLogger:
         pgn_stream = io.StringIO()
         print(game, file=pgn_stream)
 
+        position_targets = []
+        if value_targets is not None:
+            if len(value_targets) != len(moves):
+                raise ValueError(
+                    "The number of self-play value targets must match the number of played moves."
+                )
+            target_board = chess.Board()
+            for ply, (move_uci, value_target) in enumerate(zip(moves, value_targets)):
+                expected_white_value = (
+                    1.0 if result == "1-0" else -1.0 if result == "0-1" else 0.0
+                )
+                expected_target = (
+                    expected_white_value
+                    if target_board.turn == chess.WHITE
+                    else -expected_white_value
+                )
+                if not math.isfinite(float(value_target)) or abs(float(value_target) - expected_target) > 1e-7:
+                    raise ValueError(
+                        f"Value target mismatch at ply {ply}: "
+                        f"expected {expected_target}, received {value_target}."
+                    )
+                position_targets.append({
+                    "ply": ply,
+                    "fen": target_board.fen(),
+                    "side_to_move": "white" if target_board.turn == chess.WHITE else "black",
+                    "value_target": float(value_target),
+                })
+                target_board.push_uci(move_uci)
+
         record = {
             "iteration": iteration,
             "game": game_number,
@@ -110,6 +141,7 @@ class MetricsLogger:
             "moves_uci": moves,
             "pgn": pgn_stream.getvalue().strip(),
             "samples": samples,
+            "position_targets": position_targets,
             "elapsed_seconds": round(elapsed_seconds, 3),
             "ended_by_resignation": ended_by_resignation,
             "ended_by_adjudication": ended_by_adjudication,
