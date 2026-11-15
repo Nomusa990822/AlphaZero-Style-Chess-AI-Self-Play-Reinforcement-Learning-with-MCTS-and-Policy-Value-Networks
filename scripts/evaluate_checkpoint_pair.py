@@ -3,7 +3,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
+
+# Running a script from scripts/ puts that directory, not the repository root,
+# at sys.path[0]. Add the project root so src.* imports work in clean CI jobs.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 from src.engine.encoder import BoardEncoder
 from src.engine.move_encoding import MoveEncoding
 from src.mcts.search import MCTSConfig
