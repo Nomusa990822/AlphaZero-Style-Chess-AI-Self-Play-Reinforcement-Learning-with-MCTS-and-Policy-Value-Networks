@@ -125,11 +125,25 @@ def select_records(report: dict[str, Any]) -> list[dict[str, Any]]:
     return [by_id[key] for key in sorted(selected_ids)]
 
 
-def score_cp(info: dict[str, Any], pov: chess.Color) -> int:
-    value = info["score"].pov(pov).score(mate_score=100_000)
-    if value is None:
-        raise RuntimeError("Stockfish returned an unscorable position")
-    return int(value)
+def score_components(info: dict[str, Any], pov: chess.Color) -> tuple[int | None, int | None]:
+    """Return centipawns and mate distance separately; never encode mate as CP."""
+    score = info["score"].pov(pov)
+    return score.score(), score.mate()
+
+
+def summarize_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    all_losses = [row["played_move_loss_cp"] for row in rows]
+    finite_losses = [value for value in all_losses if value is not None]
+    return {
+        "moves_analysed": len(rows),
+        "moves_with_finite_cp_comparison": len(finite_losses),
+        "moves_with_mate_score": len(all_losses) - len(finite_losses),
+        "mean_loss_cp_finite_only": round(mean(finite_losses), 1) if finite_losses else None,
+        "median_loss_cp_finite_only": round(median(finite_losses), 1) if finite_losses else None,
+        "moves_at_least_100cp_finite_only": sum(value >= 100 for value in finite_losses),
+        "moves_at_least_200cp_finite_only": sum(value >= 200 for value in finite_losses),
+        "largest_finite_loss_cp": max(finite_losses, default=None),
+    }
 
 
 def analyse_game(
@@ -147,15 +161,19 @@ def analyse_game(
         if not best_pv:
             raise RuntimeError(f"{record['opening_id']} ply {ply}: no best PV")
         best_move = best_pv[0]
-        best_score = score_cp(best_info, side)
+        best_score_cp, best_score_mate = score_components(best_info, side)
         if played == best_move:
             played_info = best_info
         else:
             played_info = engine.analyse(
                 board, chess.engine.Limit(depth=depth), root_moves=[played]
             )
-        played_score = score_cp(played_info, side)
-        loss_cp = max(0, best_score - played_score)
+        played_score_cp, played_score_mate = score_components(played_info, side)
+        loss_cp = (
+            max(0, best_score_cp - played_score_cp)
+            if best_score_cp is not None and played_score_cp is not None
+            else None
+        )
         move_rows.append({
             "ply": ply,
             "side": "white" if side == chess.WHITE else "black",
@@ -164,8 +182,10 @@ def analyse_game(
             "played_uci": played.uci(),
             "best_san": board.san(best_move),
             "best_uci": best_move.uci(),
-            "best_score_cp_from_mover_pov": best_score,
-            "played_score_cp_from_mover_pov": played_score,
+            "best_score_cp_from_mover_pov": best_score_cp,
+            "best_score_mate_from_mover_pov": best_score_mate,
+            "played_score_cp_from_mover_pov": played_score_cp,
+            "played_score_mate_from_mover_pov": played_score_mate,
             "played_move_loss_cp": loss_cp,
             "best_pv_uci": [move.uci() for move in best_pv[:12]],
             "played_pv_uci": [move.uci() for move in played_info.get("pv", [])[:12]],
@@ -173,17 +193,6 @@ def analyse_game(
 
     white_rows = [row for row in move_rows if row["side"] == "white"]
     black_rows = [row for row in move_rows if row["side"] == "black"]
-
-    def summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-        losses = [row["played_move_loss_cp"] for row in rows]
-        return {
-            "moves_analysed": len(rows),
-            "mean_loss_cp": round(mean(losses), 1) if losses else None,
-            "median_loss_cp": round(median(losses), 1) if losses else None,
-            "moves_at_least_100cp": sum(value >= 100 for value in losses),
-            "moves_at_least_200cp": sum(value >= 200 for value in losses),
-            "largest_loss_cp": max(losses, default=None),
-        }
 
     if final_board.fen() == "":
         raise AssertionError("unreachable empty FEN")
@@ -194,8 +203,8 @@ def analyse_game(
         "result": record["result"],
         "termination": record["termination"],
         "final_fen": final_board.fen(),
-        "candidate_white_move_summary": summary(white_rows),
-        "incumbent_black_move_summary": summary(black_rows),
+        "candidate_white_move_summary": summarize_rows(white_rows),
+        "incumbent_black_move_summary": summarize_rows(black_rows),
         "moves": move_rows,
     }
 
@@ -240,16 +249,23 @@ def main() -> int:
         outcome_summary[outcome] = {
             "games": len(group),
             "candidate_white_moves": sum(item["candidate_white_move_summary"]["moves_analysed"] for item in group),
-            "candidate_white_moves_at_least_100cp": sum(item["candidate_white_move_summary"]["moves_at_least_100cp"] for item in group),
-            "candidate_white_moves_at_least_200cp": sum(item["candidate_white_move_summary"]["moves_at_least_200cp"] for item in group),
-            "mean_candidate_white_move_loss_cp": round(mean(
-                row["candidate_white_move_summary"]["mean_loss_cp"]
-                for row in group if row["candidate_white_move_summary"]["mean_loss_cp"] is not None
-            ), 1) if group else None,
+            "candidate_white_moves_with_finite_cp_comparison": sum(item["candidate_white_move_summary"]["moves_with_finite_cp_comparison"] for item in group),
+            "candidate_white_moves_with_mate_score": sum(item["candidate_white_move_summary"]["moves_with_mate_score"] for item in group),
+            "candidate_white_moves_at_least_100cp_finite_only": sum(item["candidate_white_move_summary"]["moves_at_least_100cp_finite_only"] for item in group),
+            "candidate_white_moves_at_least_200cp_finite_only": sum(item["candidate_white_move_summary"]["moves_at_least_200cp_finite_only"] for item in group),
+            "mean_candidate_white_move_loss_cp_finite_only": round(mean(
+                row["played_move_loss_cp"]
+                for item in group
+                for row in item["moves"]
+                if row["side"] == "white" and row["played_move_loss_cp"] is not None
+            ), 1) if any(
+                row["side"] == "white" and row["played_move_loss_cp"] is not None
+                for item in group for row in item["moves"]
+            ) else None,
         }
 
     output = {
-        "schema_version": 1,
+        "schema_version": 2,
         "source": {
             "workflow_run_id": 43759687103,
             "artifact_id": 14180972985,
@@ -270,7 +286,7 @@ def main() -> int:
         "limitations": [
             "Finite-depth Stockfish scores depend on engine version, depth and hardware; they are diagnostic, not a proof of best play.",
             "The four losses and selected controls are a small, deliberately selected sample, not a representative statistical sample.",
-            "Centipawn loss is measured at fixed depth from the side-to-move perspective before each played move; horizon effects and mate-score conversion can affect values.",
+            "Centipawn loss is measured at fixed depth from the side-to-move perspective before each played move. Positions with a mate score are reported separately and excluded from finite centipawn-loss aggregates; mate distance is not centipawn loss.",
             "The baseline's moves are included as opponent context; this does not compare the two checkpoints in a new match or estimate Elo.",
             "No training, optimizer update, checkpoint write or promotion is performed.",
         ],
