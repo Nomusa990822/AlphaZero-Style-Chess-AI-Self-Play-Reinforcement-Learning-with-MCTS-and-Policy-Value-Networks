@@ -378,3 +378,8 @@ This is a descriptive PGN review, not a Stockfish analysis or an independent UCI
 The manual workflow `.github/workflows/independent-v2-stockfish-game-review.yml` is designed to analyse nine preserved candidate-White games: four losses, four draw controls (Sicilian Kan, London, English Symmetrical and Pirc), and the single White win (Modern). It validates the stored FEN/UCI/PGN move record and records fixed-depth-12 Stockfish comparisons for each played move. Full output is uploaded as a 90-day artifact.
 
 The workflow has not yet been dispatched, so no engine conclusions are available. This selected sample is diagnostic only and is not an Elo estimate or a representative statistical sample.
+
+
+## Independent v2 Stockfish game-review replay fix
+
+The initial manual run [43764823179](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43764823179) stopped before Stockfish analysis because the PGN contains opening moves preceding the recorded FEN, whereas the UCI list contains only the continuation. PR #50 ([merged](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/50)) corrects the replay alignment and adds a regression test. Validation passed: 227 CPU tests and the existing Stockfish tactical audit. Re-dispatch the nine-game review manually; no engine conclusions or move-loss measurements are available until that run succeeds.

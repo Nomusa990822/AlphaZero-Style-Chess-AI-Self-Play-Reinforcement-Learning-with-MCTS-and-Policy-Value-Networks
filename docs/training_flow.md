@@ -334,3 +334,8 @@ This review is qualitative only. It did not run Stockfish on these games or inde
 A manual read-only workflow now analyses a fixed nine-game sample from independent v2: all four candidate-White losses, four predeclared White-draw controls (Sicilian Kan, London, English Symmetrical, Pirc), and the only White win (Modern). It replays the recorded UCI stream from each starting FEN, cross-checks SAN from the stored PGN, and uses Stockfish at depth 12 to compare each played move with the engine's best move. See `scripts/analyse_confirmatory_games_stockfish.py` and `.github/workflows/independent-v2-stockfish-game-review.yml`.
 
 The workflow is manual and defaults to NO. It has not yet run; do not infer results from the earlier qualitative review. The engine report must be examined before selecting a training intervention. This diagnostic is read-only and does not authorize training or checkpoint changes.
+
+
+## Read-only v2 game review replay repair
+
+The first manual dispatch of `.github/workflows/independent-v2-stockfish-game-review.yml` failed before engine analysis because the exported PGN starts at the opening position while each UCI list starts at the recorded post-opening FEN. PR #50 fixes this by replaying the PGN main line to the exact starting FEN before comparing the continuation. The repair passed the 227-test CPU suite and the Stockfish tactical audit. Once merged, manually dispatch the workflow again with confirmation `YES`. The workflow remains read-only: no self-play generation, training, optimizer updates, checkpoint writes or promotion. Do not interpret the earlier failed run as a model failure or as completed engine analysis.
