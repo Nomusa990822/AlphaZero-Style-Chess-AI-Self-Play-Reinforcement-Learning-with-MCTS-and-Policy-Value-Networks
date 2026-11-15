@@ -244,3 +244,24 @@ for the named checkpoints; this utility does not generate those datasets.
 Historical run artifacts without the game log cannot be backfilled from
 checkpoint weights alone. Split future validation by complete games, never by
 individual positions from the same game.
+
+
+### Generate a matched baseline/candidate diagnostic dataset
+
+The manual workflow
+`.github/workflows/self-play-dataset-audit.yml` downloads the immutable
+baseline and epoch-10 candidate from preserved training artifact
+[43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876).
+It runs `scripts/generate_self_play_dataset.py` once per checkpoint using the
+same seed, CPU device, exploration settings, MCTS simulations and game cap,
+then validates and compares the resulting JSONL logs.
+
+The default is eight games per checkpoint, 40 MCTS simulations and a 120-ply
+cap. These are intentionally bounded diagnostic settings, not a training run
+or a strength evaluation. The workflow is manually dispatched from GitHub
+Actions and uploads both raw PGN/position-target datasets and the summary
+report for 90 days. The generator loads checkpoints for inference only; it
+does not instantiate an optimizer, train weights, overwrite checkpoints or
+invoke promotion. Because the sample is small, its outcome counts are
+descriptive only. Use the report to inspect data distribution and label
+integrity, not to infer Elo or general playing strength.
