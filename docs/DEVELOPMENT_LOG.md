@@ -1402,3 +1402,13 @@ gates; no checkpoint was trained, changed, or promoted.
 - Uploaded raw report artifact [14179310181](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081/artifacts/14179310181). This passes the v1 numerical evidence gate, but does not establish Elo or general strength. The margin is narrow; epoch 0 remains incumbent and epoch 10 is not promoted.
 - Added an independent v2 suite and dedicated read-only workflow on branch `independent-confirmation-v2`. The v2 suite is designed to be disjoint from development, tactical and v1 positions; its SHA-256 is `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. The evaluator and runner now accept an explicit suite path/version, and tests assert v2/v1 disjointness. This second evaluation has not been dispatched.
 - Updated protocol, project status, training-flow and benchmark documentation; detailed report: [INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md](INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md).
+
+
+## 2026-11-15 — Merge independent confirmatory suite v2
+
+- PR #46 merged to main at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`.
+- The first v2 suite draft failed the new disjointness test because five positions overlapped the development suite. Those positions were replaced with different legal continuations; the suite was re-frozen at SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. The final loader/test validates disjointness from development, tactical and confirmatory_v1 suites.
+- Final CPU workflow [43759061879](${repoUrl}/actions/runs/43759061879): **221 tests passed**. Stockfish audit [43759061894](${repoUrl}/actions/runs/43759061894): **35/35 positions, 11/11 sequences, zero flagged entries**; artifact [14179282087](${repoUrl}/actions/runs/43759061894/artifacts/14179282087).
+- Added manual workflow `.github/workflows/independent-confirmation-v2.yml`, which pins both checkpoint hashes and the v2 suite hash, seeds Python/NumPy/PyTorch with `20261116`, runs CPU inference only, and uploads a 90-day report artifact.
+- The v2 match has not been dispatched. Epoch 0 remains incumbent; epoch 10 remains unpromoted. No training, checkpoint write or promotion occurred.
+- Updated project status, protocol, training flow, benchmark README and detailed evaluation record.

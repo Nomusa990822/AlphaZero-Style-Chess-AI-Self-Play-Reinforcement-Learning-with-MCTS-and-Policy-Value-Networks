@@ -47,7 +47,7 @@ The run passes the numerical promotion-evidence threshold for this frozen suite.
 
 **Decision: do not promote yet.** Preserve epoch 0 as incumbent and epoch 10 as candidate. Obtain an independent second opening-suite result before making a promotion decision.
 
-## Independent suite v2 — prepared, not yet run
+## Independent suite v2 — merged, ready for manual dispatch
 
 - Suite: `benchmarks/evaluation_openings_independent_v2.jsonl`
 - Version: `independent_v2`
@@ -57,4 +57,4 @@ The run passes the numerical promotion-evidence threshold for this frozen suite.
 - Uses the same fixed checkpoints and match settings as v1, so only the opening sample changes. NumPy, Python and PyTorch RNGs are seeded with `20261116`; the workflow checks the exact suite SHA-256 before model loading and records the seed/runtime metadata in the report.
 - Workflow: `.github/workflows/independent-confirmation-v2.yml`; manual dispatch only, main branch only, explicit YES, CPU inference-only, hash-pinned checkpoints, 90-day report artifact.
 
-The v2 workflow must not be dispatched until its implementation PR is merged and required checks pass. The second result will be reported alongside v1, not pooled with it as if the two suites were one predeclared 48-pair sample. Any future promotion decision requires human review of both reports and the colour splits. No training or checkpoint mutation is part of this work.
+PR #46 merged at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`. Required checks passed: [CPU suite 43759061879](${repoUrl}/actions/runs/43759061879) completed with **221 tests passed**; [Stockfish audit 43759061894](${repoUrl}/actions/runs/43759061894) supported **35/35 positions and 11/11 sequences with zero flagged entries** (artifact [14179282087](${repoUrl}/actions/runs/43759061894/artifacts/14179282087)). The v2 workflow is now available on `main` and awaits manual dispatch with `confirm_evaluation=YES`. It pins suite SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03` and uses RNG seed `20261116`. The v2 workflow has not yet been run. The second result will be reported alongside v1, not pooled with it as if the two suites were one predeclared 48-pair sample. Any future promotion decision requires human review of both reports and the colour splits. No training or checkpoint mutation is part of this work.

@@ -1,6 +1,6 @@
 # Paired checkpoint strength-evaluation protocol
 
-**Status:** confirmatory v1 implemented and executed; independent v2 prepared for follow-up (2026-11-15)  
+**Status:** confirmatory v1 executed; independent v2 implementation merged, follow-up evaluation pending (2026-11-15)  
 **Protocol version:** 1.0  
 **Prepared:** 2026-11-15  
 **Purpose:** compare one immutable candidate checkpoint directly against one immutable incumbent without training, checkpoint mutation, or automatic promotion during the evaluation itself.
@@ -141,7 +141,7 @@ Value calibration is a separate experiment. It requires raw model value predicti
 
 ## 7. Implementation checklist before dispatch
 
-This document defines the protocol; it does not claim that the protocol is already implemented or that a match has been run.
+The v1 protocol is implemented and has been executed. The independent_v2 implementation is also merged; its second match awaits manual dispatch.
 
 - [x] Add and validate `benchmarks/evaluation_openings_confirmatory_v1.jsonl` with 24 unique positions from at least 8 opening families.
 - [x] Add tests proving every opening line is legal, non-terminal, unique, and disjoint from the development/tactical suites.
@@ -166,4 +166,4 @@ The numerical gate passed, but this is not an Elo estimate, external-strength me
 
 ## 10. Independent confirmatory v2
 
-A second frozen 24-position suite, `benchmarks/evaluation_openings_independent_v2.jsonl`, has been added with version `independent_v2` and SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. It is intended to be disjoint from the development suite, tactical corpus, and confirmatory_v1. The loader enforces this disjointness. The dedicated manual workflow `.github/workflows/independent-confirmation-v2.yml` reuses the exact checkpoint hashes and v1 match settings, changing only the frozen opening suite. It remains unrun until its PR is merged and required checks pass. The two suite results must be considered separately, not pooled post hoc into a larger sample.
+A second frozen 24-position suite, `benchmarks/evaluation_openings_independent_v2.jsonl`, has been added with version `independent_v2` and SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. It is intended to be disjoint from the development suite, tactical corpus, and confirmatory_v1. The loader enforces this disjointness. The dedicated manual workflow `.github/workflows/independent-confirmation-v2.yml` reuses the exact checkpoint hashes and v1 match settings, changing only the frozen opening suite. PR #46 merged at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`. The CPU suite passed 221 tests in workflow [43759061879](${repoUrl}/actions/runs/43759061879). Stockfish audit [43759061894](${repoUrl}/actions/runs/43759061894) supported 35/35 positions and 11/11 sequences with zero flagged entries. The workflow pins suite SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`, seeds Python/NumPy/PyTorch with `20261116`, and is ready for manual dispatch from `main`; the v2 match itself has not run. The two suite results must be considered separately, not pooled post hoc into a larger sample.
