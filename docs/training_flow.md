@@ -315,3 +315,8 @@ one-sided 90% lower bound uses the Student-t critical value for 23 degrees of
 freedom. The manual workflow defaults to NO and only runs on main after an
 explicit YES input. It does not train, write checkpoints, publish releases or
 promote a candidate. The 48-game run has not been dispatched.
+
+
+## Independent confirmatory checkpoint evaluation v2
+
+After confirmatory_v1, do not promote a candidate solely because one curated suite passes. The read-only `independent-confirmation-v2.yml` workflow evaluates the same pinned incumbent/candidate checkpoint files against a separately frozen 24-opening suite. It preserves 24 paired observations / 48 games, candidate colour balance, CPU inference, 50 MCTS simulations, disabled Dirichlet noise, temperature 0.0 and a 200-ply cap. The only experimental dimension changed from v1 is the opening suite. The v2 loader rejects overlap with the development suite, tactical corpus and v1. The report and suite hash are retained as a 90-day artifact. It is a manual main-branch workflow requiring `confirm_evaluation=YES`; it does not train, write checkpoints or promote. The v2 run is pending merge and manual dispatch. See [the independent evaluation record](INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md).
