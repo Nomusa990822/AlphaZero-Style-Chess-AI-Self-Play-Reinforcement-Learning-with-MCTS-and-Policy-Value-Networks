@@ -17,7 +17,7 @@ from src.mcts.search import MCTSConfig
 from src.model.inference import ModelInference
 from src.model.network import AlphaZeroNet, NetworkConfig
 from src.training.checkpoint import checkpoint_exists, load_checkpoint, save_checkpoint
-from src.training.evaluator import INCUMBENT_SCORE, MIN_PROMOTION_GAMES, NetworkEvaluator
+from src.training.evaluator import INCUMBENT_SCORE, MIN_OPENING_PAIRS, MIN_PROMOTION_GAMES, NetworkEvaluator
 from src.training.metrics import IterationMetrics, MetricsLogger
 from src.training.replay_buffer import ReplayBuffer
 from src.training.self_play import SelfPlayGameResult, SelfPlayGenerator
@@ -74,6 +74,11 @@ class PipelineConfig:
     def __post_init__(self) -> None:
         if self.gating_games < 2 or self.gating_games % 2 != 0:
             raise ValueError("gating_games must be an even number of at least 2 for colour balance.")
+        if self.gating_games > MIN_OPENING_PAIRS * 2:
+            raise ValueError(
+                f"gating_games cannot exceed {MIN_OPENING_PAIRS * 2}; "
+                "the fixed evaluation opening suite does not contain more pairs."
+            )
 
 
 class AlphaZeroPipeline:
