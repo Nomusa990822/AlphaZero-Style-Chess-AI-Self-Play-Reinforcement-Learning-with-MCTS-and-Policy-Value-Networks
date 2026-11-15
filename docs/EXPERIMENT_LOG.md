@@ -145,3 +145,17 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - **Mirrored value:** the training target is side-to-move-relative, so equivalent mirrored positions should retain the same value perspective. Mean absolute value difference was 0.07374 baseline versus 0.79301 candidate; candidate maximum 1.46195. This is a large symmetry regression, not a calibration score. It does not isolate the cause.
 - **Same-checkpoint self-play:** baseline 1W/0L/23D (score 0.5208); candidate 8W/5L/11D (score 0.5625). Candidate as White 2W/3L/7D; as Black 6W/2L/4D. Same-checkpoint games are a colour-consistency diagnostic, not a strength match.
 - **Outcome/decision:** candidate epoch 10 is less symmetric than the epoch-0 baseline despite its modest earlier tactical-position gain. Keep baseline selected and candidate unpromoted. No training or checkpoint mutation occurred. Do not launch another full run until side-to-move target/inference semantics, mirrored encoder planes and policy action mapping are independently tested. No root cause or Elo conclusion is asserted.
+
+
+## 2026-11-15 — Confirmatory paired checkpoint comparison (suite v1)
+
+**Workflow:** [43755129081](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081)  
+**Artifact:** [14179310181](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081/artifacts/14179310181)  
+**Source commit:** `727639e75b7defcad5a915473258b1f13bf94389`  
+**Checkpoints:** epoch-0 incumbent SHA-256 `7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471`; epoch-10 candidate SHA-256 `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.  
+**Suite:** confirmatory_v1, 24 opening pairs, suite SHA-256 `896c7a09997b18d848f1e4452da75dec151c3a4960fac780ad379694859813ca`.  
+**Settings:** CPU inference-only, 50 MCTS simulations, no Dirichlet noise, temperature 0.0, 200-ply cap.
+
+**Results:** 48 games; candidate 7 wins, 39 draws, 2 losses; score 0.5520833; paired-score sample SD 0.1645013; one-sided 90% Student-t LCB 0.5077776. Candidate White: 4 wins / 20 draws / 0 losses; candidate Black: 3 wins / 19 draws / 2 losses. All games terminated under chess rules; no move-cap draws. Both checkpoint SHA-256 pins passed.
+
+**Decision:** numerical v1 evidence gate passed, but epoch 0 remains incumbent and epoch 10 remains unpromoted pending independent_v2. The LCB margin is narrow; this curated fixed-suite comparison is not an Elo estimate, external strength rating or value-calibration result. No training or checkpoint mutation occurred.
