@@ -265,3 +265,14 @@ does not instantiate an optimizer, train weights, overwrite checkpoints or
 invoke promotion. Because the sample is small, its outcome counts are
 descriptive only. Use the report to inspect data distribution and label
 integrity, not to infer Elo or general playing strength.
+
+
+### Checkpoint integrity gate correction
+
+The first dispatch of the read-only dataset workflow, run 43749569356, failed
+at the candidate SHA-256 check. The exact original artifact was downloaded and
+both checkpoint files were re-hashed. The baseline digest was correct; the
+candidate digest is
+`101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.
+The workflow pin has been corrected. No inference or dataset generation took
+place in the failed run. Re-dispatch the workflow after the fix is merged.
