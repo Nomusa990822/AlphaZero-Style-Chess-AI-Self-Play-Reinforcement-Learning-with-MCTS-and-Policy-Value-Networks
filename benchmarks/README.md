@@ -388,3 +388,8 @@ The initial manual run [43764823179](https://github.com/Nomusa990822/AlphaZero-S
 ## Stockfish review run 43765868151 — score encoding caveat
 
 Workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) successfully produced the nine-game move-level artifact (14182093603) using Stockfish 17.1, depth 12, one thread and 256 MB hash. A report defect was identified: mate scores are converted to a 100,000-CP sentinel and included in centipawn aggregates, producing artificial ~100k CPL values. Those means and maxima must not be interpreted. The reporting fix will separate mate distance from centipawns and exclude mate-scored positions from finite-CP aggregates. No Elo or strength inference is justified from this selected sample.
+
+
+## Stockfish mate-score reporting fix — PR #52
+
+The initial successful run [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) generated artifact 14182093603, but its CPL aggregates included artificial 100,000-CP mate sentinels. PR [#52](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/52) now stores mate distance separately, leaves CPL null for mate-score comparisons, and excludes these rows from finite-CP summaries while counting them separately. PR #52 merged successfully; CPU tests and the Stockfish tactical audit both passed. Manually rerun the review workflow to generate the corrected artifact before drawing comparisons between the four losses, four draws and the White win.

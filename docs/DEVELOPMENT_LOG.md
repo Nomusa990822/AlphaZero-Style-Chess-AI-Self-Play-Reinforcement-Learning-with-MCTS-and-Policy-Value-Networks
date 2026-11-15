@@ -1459,3 +1459,12 @@ The workflow is manual, defaults to NO, and has not been dispatched. No model/tr
 ## Stockfish review reporting caveat
 
 The nine-game review workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) completed and uploaded the full report (artifact 14182093603). Before interpreting the outcome summaries, note that the first report version converts mate scores to 100,000 centipawns, contaminating CPL means/maxima. A corrected schema must separate mate distances from centipawn values and omit mate-scored rows from finite-CP aggregates. The review is read-only and has no effect on checkpoints or training.
+
+
+## 2026-11-15 — PR #52 merged: Stockfish mate-score handling
+
+- The first successful nine-game Stockfish review [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) produced artifact 14182093603, but inspection found mate scores converted to a 100,000-CP sentinel and incorrectly included in CPL aggregates.
+- Fixed the runner to retain CP and mate distance separately; CPL is null if either score is mate. Finite-only summaries count mate-scored positions separately and aggregate White CPL across individual finite move rows.
+- Added regression tests for mate-score perspective and finite-only summary calculations.
+- PR [#52](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/52) merged at `5181bf316aa20185a0c7669cbd8e287da06f7c5a). CPU suite [43766114680](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43766114680) and Stockfish tactical audit [43766114626](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43766114626) both succeeded.
+- Re-dispatch the nine-game review to produce corrected schema-v2 artifact. Do not interpret the first artifact's CPL means/maxima. No training/checkpoint mutation; epoch 0 remains incumbent.

@@ -344,3 +344,8 @@ The first manual dispatch of `.github/workflows/independent-v2-stockfish-game-re
 ## Stockfish game-review artifact and score caveat
 
 The nine selected games were replayed and analysed successfully in workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151), with artifact 14182093603. The initial report's centipawn summaries are not yet interpretable: the script maps mate scores to 100,000 CP and includes those sentinel values in averages/maxima. Correct reporting must retain mate distance as a separate field and compute CPL aggregates only where both scores are finite centipawn values. Do not draw a comparative conclusion from the first aggregate table.
+
+
+## Corrected Stockfish mate-score handling
+
+PR #52 merged the reporting repair: mate distances are separate from CP, mate-scored move comparisons have null CPL and are counted separately, and finite CPL summaries exclude mate scores. Both required checks passed. The original run 43765868151 remains the record of the first execution, but its 100,000-CP sentinel-contaminated aggregates must not be used. After merging, manually dispatch the review workflow again to generate the corrected report. This workflow remains read-only and does not modify training or checkpoints.
