@@ -1,6 +1,6 @@
 # Paired checkpoint strength-evaluation protocol
 
-**Status:** confirmatory v1 executed; independent v2 implementation merged, follow-up evaluation pending (2026-11-15)  
+**Status:** confirmatory v1 and independent v2 executed; v2 failed the promotion evidence gate (2026-11-15)  
 **Protocol version:** 1.0  
 **Prepared:** 2026-11-15  
 **Purpose:** compare one immutable candidate checkpoint directly against one immutable incumbent without training, checkpoint mutation, or automatic promotion during the evaluation itself.
@@ -141,7 +141,7 @@ Value calibration is a separate experiment. It requires raw model value predicti
 
 ## 7. Implementation checklist before dispatch
 
-The v1 protocol is implemented and has been executed. The independent_v2 implementation is also merged; its second match awaits manual dispatch.
+The v1 and independent_v2 workflows are implemented and have both been executed. The independent_v2 result failed the numerical promotion gate; see the execution records below.
 
 - [x] Add and validate `benchmarks/evaluation_openings_confirmatory_v1.jsonl` with 24 unique positions from at least 8 opening families.
 - [x] Add tests proving every opening line is legal, non-terminal, unique, and disjoint from the development/tactical suites.
@@ -156,7 +156,7 @@ The v1 protocol is implemented and has been executed. The independent_v2 impleme
 
 ## 8. Current decision
 
-The epoch-0 checkpoint remains the incumbent. The epoch-10 checkpoint remains an unpromoted candidate. Confirmatory v1 completed on 2026-11-15 and passed its numerical score and paired-LCB thresholds (55.21%; LCB 50.78%). Because the lower-bound margin is narrow and the suite is curated, do not promote on v1 alone. Run the separately frozen independent_v2 suite before a promotion decision. No training or checkpoint mutation is authorised by either evaluation.
+The epoch-0 checkpoint remains the incumbent. The epoch-10 checkpoint remains unpromoted. V1 passed narrowly (55.21%; LCB 50.78%), but independent_v2 failed (47.92%; LCB 42.33%). Do not pool the two fixed-suite results post hoc. The v2 White score was 35.42%, triggering human review. The independent result does not replicate the v1 advantage; no promotion is justified. No training or checkpoint mutation occurred.
 
 ## 9. Confirmatory v1 execution record
 
@@ -167,3 +167,10 @@ The numerical gate passed, but this is not an Elo estimate, external-strength me
 ## 10. Independent confirmatory v2
 
 A second frozen 24-position suite, `benchmarks/evaluation_openings_independent_v2.jsonl`, has been added with version `independent_v2` and SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. It is intended to be disjoint from the development suite, tactical corpus, and confirmatory_v1. The loader enforces this disjointness. The dedicated manual workflow `.github/workflows/independent-confirmation-v2.yml` reuses the exact checkpoint hashes and v1 match settings, changing only the frozen opening suite. PR #46 merged at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`. The CPU suite passed 221 tests in workflow [43759061879](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759061879). Stockfish audit [43759061894](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759061894) supported 35/35 positions and 11/11 sequences with zero flagged entries. The workflow pins suite SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`, seeds Python/NumPy/PyTorch with `20261116`, and is ready for manual dispatch from `main`; the v2 match itself has not run. The two suite results must be considered separately, not pooled post hoc into a larger sample.
+
+
+## 11. Independent confirmatory v2 execution record
+
+Workflow [43759687103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103) completed 24 opening pairs / 48 games using the pinned v2 suite and the same immutable checkpoint hashes/settings as v1. The candidate scored 6 wins, 34 draws and 8 losses (47.92%); paired-score SD 0.2074255585; one-sided 90% Student-t LCB 0.4232999850. Candidate-as-White: 1W/19D/4L (35.42%); candidate-as-Black: 5W/15D/4L (52.08%). There were 45 chess-rule endings and 3 move-cap draws. Suite SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`; seed `20261116`. Report artifact [14180972985](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103/artifacts/14180972985). The downloaded artifact was structurally reconciled: 48 records, 24 opening IDs, 48 unique colour legs, UCI count equal to recorded plies, and pair-score arithmetic matching the report. A separate chess-library replay was not completed, and the JSON report does not expose an explicit illegal-move-count field.
+
+The candidate fails both primary numerical thresholds. Its White score is below the 0.40 human-review threshold. V1's positive result is therefore not independently replicated. **Keep epoch 0 as incumbent and epoch 10 unpromoted.** Do not pool v1 and v2. Next step is diagnostic review of White-side losses, complete PGNs and the colour-performance reversal; no training or checkpoint mutation occurred in this evaluation.

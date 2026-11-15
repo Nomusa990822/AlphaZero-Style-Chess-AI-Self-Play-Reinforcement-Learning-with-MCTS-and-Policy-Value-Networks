@@ -1412,3 +1412,13 @@ gates; no checkpoint was trained, changed, or promoted.
 - Added manual workflow `.github/workflows/independent-confirmation-v2.yml`, which pins both checkpoint hashes and the v2 suite hash, seeds Python/NumPy/PyTorch with `20261116`, runs CPU inference only, and uploads a 90-day report artifact.
 - The v2 match has not been dispatched. Epoch 0 remains incumbent; epoch 10 remains unpromoted. No training, checkpoint write or promotion occurred.
 - Updated project status, protocol, training flow, benchmark README and detailed evaluation record.
+
+## 2026-11-15 — Independent confirmatory v2 result: candidate not promoted
+
+- Workflow [43759687103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103) completed successfully; raw report artifact [14180972985](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103/artifacts/14180972985), 90-day retention.
+- Same pinned epoch-0 incumbent and epoch-10 candidate hashes as v1; same CPU / 50 simulations / no Dirichlet noise / temperature 0 / 200-ply cap. Independent suite hash `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`, seed `20261116`.
+- 24 pairs / 48 games: 6 wins, 34 draws, 8 losses; score 47.92%; paired SD 0.2074255585; one-sided 90% Student-t LCB 42.33%. Gate failed.
+- Candidate White: 1W/19D/4L (35.42%), below the 0.40 human-review threshold. Candidate Black: 5W/15D/4L (52.08%). Terminations: 45 chess-rule, 3 move-cap draws.
+- Artifact structure reconciled: 48 game records, 24 unique opening IDs, 48 unique colour legs; UCI lengths match recorded plies and pair-score arithmetic matches report. Independent external chess-library replay not completed; report omits an explicit illegal-move-count field.
+- Decision: keep epoch 0 incumbent and epoch 10 unpromoted. V1's narrow positive result was not independently replicated; do not pool v1/v2 post hoc. Next task is diagnostic PGN/colour-asymmetry review, not promotion or immediate retraining. No checkpoint writes or training occurred.
+- Updated the combined evaluation record, protocol, project status, training flow and benchmark README; detailed record: `docs/INDEPENDENT_CONFIRMATION_V2_RESULTS_2026-11-15.md`.
