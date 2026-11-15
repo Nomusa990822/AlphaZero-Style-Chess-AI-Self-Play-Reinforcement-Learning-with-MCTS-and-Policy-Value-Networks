@@ -134,7 +134,7 @@ def test_mcts_backup_alternates_value_perspective_by_ply():
 
 
 def test_terminal_value_is_invariant_under_colour_mirror():
-    checkmated = chess.Board("7k/5Q2/7K/8/8/8/8/8 b - - 0 1")
+    checkmated = chess.Board("7k/5Q2/5K2/8/8/8/8/8 b - - 0 1")
     mirrored = checkmated.mirror()
 
     assert checkmated.is_checkmate()
