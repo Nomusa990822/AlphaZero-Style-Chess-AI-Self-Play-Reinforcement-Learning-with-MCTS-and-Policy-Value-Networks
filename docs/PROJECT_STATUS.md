@@ -195,3 +195,25 @@ The encoder uses explicit White/Black piece planes and absolute rank/file coordi
 A focused regression module, tests/test_colour_symmetry_contract.py, now covers the Board.mirror() encoder-plane transform, legal-move encode/decode on mirrored positions (including castling, en-passant and promotions), invariant side-to-move outcome labels, alternating MCTS backup perspective, and mirrored terminal values. These tests validate contracts; they deliberately do not assert that an unconstrained neural network must produce identical mirrored predictions.
 
 No model, checkpoint, training configuration, or promotion rule was changed. The epoch-0 checkpoint remains selected; the epoch-10 candidate remains unpromoted. Further work should inspect sample distributions and add held-out game-level validation before attempting a symmetry augmentation or architecture change.
+
+
+## Per-position self-play dataset preservation and audit
+
+The self-play game log already retains complete PGNs, but earlier records did not
+retain the corresponding per-position value targets. The diagnostic branch now
+adds one record per played position containing its FEN, ply, side to move and
+side-to-move-relative outcome target. The logger checks each target against the
+completed game's result before writing it.
+
+The training workflow artifact is extended to retain the game log and replay
+buffer/journal alongside checkpoints and the checkpoint manifest. A read-only
+comparison utility, `scripts/audit_self_play_datasets.py`, validates two
+separately collected game-log files and reports outcomes, termination types,
+White/Black sample counts and target distributions. It rejects legacy PGN-only
+records and inconsistent PGN/FEN/target data.
+
+This is data-capture and audit infrastructure only. It does not train, evaluate
+or promote a model, and does not itself generate a candidate-checkpoint dataset.
+A matched pair of baseline and candidate self-play logs is still required for
+the comparison. Existing historical artifacts that omitted game logs cannot be
+retrospectively reconstructed. No checkpoint or promotion state changes.
