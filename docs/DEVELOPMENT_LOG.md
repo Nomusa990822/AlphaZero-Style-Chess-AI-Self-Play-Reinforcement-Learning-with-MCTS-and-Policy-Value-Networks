@@ -1436,3 +1436,12 @@ Reviewed the four candidate-White losses from workflow [43759687103](https://git
 The recurring pattern is not a single opening-specific defect: the sampled losses feature unsafe king placement, poor coordination/development and failure to preserve high-value pieces. These observations are descriptive, not engine-verified blunder classifications. The review did not independently replay the UCI streams with python-chess and did not run Stockfish on these PGNs; no centipawn-loss or best-move claims are made. The complete record and limitations are in [V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md](V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md).
 
 No source-code or model changes, training, checkpoint writes or promotion occurred. Epoch 0 remains incumbent; epoch 10 remains unpromoted. Do not infer a general White-side defect from four losses alone. Follow-up should run engine-backed move-by-move analysis and compare the four losses against candidate-White draws and its single win before selecting a corrective training intervention.
+
+
+## 2026-11-15 — prepare engine-backed review of v2 candidate-White games
+
+Added `scripts/analyse_confirmatory_games_stockfish.py`, its unit tests, and manual workflow `.github/workflows/independent-v2-stockfish-game-review.yml`. The workflow is pinned to v2 workflow run 43759687103 / artifact 14180972985, verifies the artifact ID/name against the source run, and the analysis runner verifies the source commit, suite digest and both immutable checkpoint digests.
+
+The predeclared nine-game sample includes all four candidate-White losses; four draw controls spanning Sicilian Kan, London, English Symmetrical and Pirc; and the sole candidate-White win (Modern). Each selected game is replayed from its stored starting FEN. The runner checks UCI legality and move count, cross-checks the SAN movetext against the UCI stream, then analyses every played ply with Stockfish at fixed depth 12. It reports played-move loss in centipawns from the mover's perspective, principal variations, and per-game/per-outcome summaries. This is finite-depth engine evidence, not a best-play proof or Elo estimate.
+
+The workflow is manual, defaults to NO, and has not been dispatched. No model/training source, training run, optimizer, checkpoint or promotion state was changed. Epoch 0 remains incumbent and epoch 10 remains unpromoted. The next step after this PR is merged is to run the manual workflow and inspect the uploaded report before proposing any model changes.
