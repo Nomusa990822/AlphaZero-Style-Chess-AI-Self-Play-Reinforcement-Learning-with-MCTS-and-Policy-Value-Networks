@@ -1358,3 +1358,13 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 - The generated audit JSON reports both datasets and the combined audit as valid, with empty error lists. The artifact contains 8 game records per dataset, PGNs, UCI moves, per-position FEN/side-to-move/value targets, metadata and the audit report. Artifact ID 14176203642; 90-day retention.
 - This validates dataset generation/preservation and structural consistency only. The independent self-play games are not paired head-to-head evaluation; these small stochastic samples do not establish playing strength, Elo, or value calibration. No model training, checkpoint mutation, or promotion occurred.
 - Next: inspect distributions and label behaviour from the preserved raw data, then define a separate paired held-out evaluation. Do not interpret self-play win/draw counts as candidate strength evidence.
+
+
+## 2026-11-15 — Read-only analysis of preserved self-play datasets
+
+- Downloaded and inspected artifact 14176203642 from successful workflow 43750799705; no checkpoints or source data were modified.
+- Confirmed 8 games per checkpoint, 793 baseline positions and 727 candidate positions. The audit independently replayed PGNs and validated all moves, FENs, side-to-move fields and outcome-derived value targets; zero label/legality errors.
+- Baseline outcomes: 1 decisive / 7 draws (5 move-cap). Candidate: 3 decisive / 5 draws (4 move-cap). These are independent stochastic self-play samples, not head-to-head or paired matches. Same seed does not align openings; only three normalized board states overlap across the two datasets. Do not infer strength or Elo from these counts.
+- No raw model value predictions are present, so value calibration cannot be assessed. Outcome-label means are descriptive only.
+- Found a non-blocking instrumentation issue: every record stores elapsed_seconds=0.0 because the generator script passes a literal zero to MetricsLogger, despite SelfPlayGenerator exposing per-game elapsed time through its completion callback. This does not affect training positions or labels; correct separately before using runtime metrics.
+- Detailed analysis saved in docs/SELF_PLAY_DATASET_DIAGNOSTIC_2026-11-15.md. Recommended next evaluation is a fixed-opening, colour-swapped, paired baseline-vs-candidate held-out match suite with a predeclared statistical criterion.
