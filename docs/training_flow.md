@@ -327,3 +327,10 @@ After confirmatory_v1, do not promote a candidate solely because one curated sui
 After the independent v2 promotion gate failed, the four candidate-as-White losses were reviewed from the preserved PGN/UCI artifact. The sampled games show recurring king-safety and tactical-awareness concerns: exposed king walks, underdeveloped/poorly coordinated pieces, a queen captured by a knight, a bishop lost to a pawn capture, and a rook left en prise. See [the game-by-game diagnostic](V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md).
 
 This review is qualitative only. It did not run Stockfish on these games or independently replay every UCI move through python-chess. Do not translate the observations into centipawn-loss figures, a proven implementation defect, or a general strength claim. Keep the epoch-0 incumbent and epoch-10 candidate immutable. The next step is an engine-backed review of the four losses plus a matched sample of candidate-White draws/wins; only then should a targeted training or architecture change be proposed. No new training run is authorized by this diagnostic.
+
+
+## Engine-backed post-v2 game review — prepared, not yet run
+
+A manual read-only workflow now analyses a fixed nine-game sample from independent v2: all four candidate-White losses, four predeclared White-draw controls (Sicilian Kan, London, English Symmetrical, Pirc), and the only White win (Modern). It replays the recorded UCI stream from each starting FEN, cross-checks SAN from the stored PGN, and uses Stockfish at depth 12 to compare each played move with the engine's best move. See `scripts/analyse_confirmatory_games_stockfish.py` and `.github/workflows/independent-v2-stockfish-game-review.yml`.
+
+The workflow is manual and defaults to NO. It has not yet run; do not infer results from the earlier qualitative review. The engine report must be examined before selecting a training intervention. This diagnostic is read-only and does not authorize training or checkpoint changes.
