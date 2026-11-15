@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import io
 import json
+import math
 
 import chess
 import chess.pgn
@@ -118,7 +119,7 @@ class MetricsLogger:
                     if target_board.turn == chess.WHITE
                     else -expected_white_value
                 )
-                if abs(float(value_target) - expected_target) > 1e-7:
+                if not math.isfinite(float(value_target)) or abs(float(value_target) - expected_target) > 1e-7:
                     raise ValueError(
                         f"Value target mismatch at ply {ply}: "
                         f"expected {expected_target}, received {value_target}."
