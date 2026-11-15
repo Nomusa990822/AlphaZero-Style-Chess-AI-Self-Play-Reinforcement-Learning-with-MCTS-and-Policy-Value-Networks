@@ -383,3 +383,8 @@ The workflow has not yet been dispatched, so no engine conclusions are available
 ## Independent v2 Stockfish game-review replay fix
 
 The initial manual run [43764823179](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43764823179) stopped before Stockfish analysis because the PGN contains opening moves preceding the recorded FEN, whereas the UCI list contains only the continuation. PR #50 ([merged](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/50)) corrects the replay alignment and adds a regression test. Validation passed: 227 CPU tests and the existing Stockfish tactical audit. Re-dispatch the nine-game review manually; no engine conclusions or move-loss measurements are available until that run succeeds.
+
+
+## Stockfish review run 43765868151 — score encoding caveat
+
+Workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) successfully produced the nine-game move-level artifact (14182093603) using Stockfish 17.1, depth 12, one thread and 256 MB hash. A report defect was identified: mate scores are converted to a 100,000-CP sentinel and included in centipawn aggregates, producing artificial ~100k CPL values. Those means and maxima must not be interpreted. The reporting fix will separate mate distance from centipawns and exclude mate-scored positions from finite-CP aggregates. No Elo or strength inference is justified from this selected sample.
