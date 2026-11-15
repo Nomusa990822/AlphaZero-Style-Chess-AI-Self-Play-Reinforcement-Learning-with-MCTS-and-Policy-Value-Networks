@@ -32,7 +32,7 @@ def _normalized_fen(board: chess.Board) -> str:
     return board.fen(en_passant="fen")
 
 
-def load_confirmatory_openings(path: str | Path = SUITE_PATH) -> list[tuple[str, chess.Board]]:
+def load_confirmatory_openings(path: str | Path = SUITE_PATH, suite_version: str = "confirmatory_v1") -> list[tuple[str, chess.Board]]:
     """Load exactly 24 legal, unique, non-terminal positions with family constraints."""
     records: list[tuple[str, chess.Board]] = []
     ids: set[str] = set()
@@ -47,8 +47,8 @@ def load_confirmatory_openings(path: str | Path = SUITE_PATH) -> list[tuple[str,
                 opening_id = str(item["id"]).strip()
                 family = str(item["family"]).strip()
                 moves = item["moves_uci"]
-                if item.get("suite_version") != "confirmatory_v1":
-                    raise ValueError("suite_version must be confirmatory_v1")
+                if item.get("suite_version") != suite_version:
+                    raise ValueError(f"suite_version must be {suite_version}")
                 if not opening_id or not family or not isinstance(moves, list) or not moves:
                     raise ValueError("id, family and non-empty moves_uci are required")
                 if opening_id in ids:
@@ -85,6 +85,11 @@ def load_confirmatory_openings(path: str | Path = SUITE_PATH) -> list[tuple[str,
     tactical_overlap = fens & tactical
     if tactical_overlap:
         raise ValueError(f"confirmatory suite overlaps tactical corpus at {len(tactical_overlap)} position(s)")
+    if suite_version == "independent_v2":
+        prior_confirmatory = load_development_fens(SUITE_PATH)
+        prior_overlap = fens & prior_confirmatory
+        if prior_overlap:
+            raise ValueError(f"independent suite overlaps confirmatory_v1 at {len(prior_overlap)} position(s)")
     return records
 
 
@@ -127,8 +132,10 @@ def paired_student_t_lcb90(pair_scores: tuple[float, ...] | list[float]) -> floa
 class ConfirmatoryPairedEvaluator:
     """Runs 24 colour-swapped pairs through the existing inference-only match engine."""
 
-    def __init__(self, move_encoding: MoveEncoding | None = None) -> None:
-        self.openings = load_confirmatory_openings()
+    def __init__(self, move_encoding: MoveEncoding | None = None, suite_path: str | Path = SUITE_PATH, suite_version: str = "confirmatory_v1") -> None:
+        self.suite_version = suite_version
+        self.suite_path = Path(suite_path)
+        self.openings = load_confirmatory_openings(self.suite_path, suite_version)
         config = MCTSConfig(
             num_simulations=SIMULATIONS,
             add_dirichlet_noise=False,
@@ -208,7 +215,7 @@ class ConfirmatoryPairedEvaluator:
         mean = sum(pair_scores) / PAIR_COUNT
         stddev = math.sqrt(sum((x - mean) ** 2 for x in pair_scores) / (PAIR_COUNT - 1))
         return {
-            "protocol": "confirmatory_v1",
+            "protocol": self.suite_version,
             "games": GAME_COUNT,
             "opening_pairs": PAIR_COUNT,
             "score": score,

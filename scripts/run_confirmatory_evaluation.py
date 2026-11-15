@@ -4,6 +4,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import random
+
+import numpy as np
+import torch
 from pathlib import Path
 
 from src.engine.encoder import BoardEncoder
@@ -45,6 +49,10 @@ def main():
     parser.add_argument("--expected-baseline-sha256", required=True)
     parser.add_argument("--expected-candidate-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--opening-suite", type=Path, default=Path("benchmarks/evaluation_openings_confirmatory_v1.jsonl"))
+    parser.add_argument("--suite-version", default="confirmatory_v1")
+    parser.add_argument("--expected-opening-suite-sha256")
+    parser.add_argument("--seed", type=int)
     args = parser.parse_args()
     for path in (args.baseline, args.candidate):
         if not path.is_file() or path.stat().st_size == 0:
@@ -55,13 +63,25 @@ def main():
     if candidate_hash != args.expected_candidate_sha256:
         raise RuntimeError(f"candidate SHA-256 mismatch: {candidate_hash}")
 
+    suite_hash = digest(args.opening_suite)
+    if args.expected_opening_suite_sha256 and suite_hash != args.expected_opening_suite_sha256:
+        raise RuntimeError(f"opening-suite SHA-256 mismatch: {suite_hash}")
+    if args.seed is not None:
+        random.seed(args.seed)
+        np.random.seed(args.seed)
+        torch.manual_seed(args.seed)
+
     encoding, encoder = MoveEncoding(), BoardEncoder()
     incumbent, incumbent_meta = load_agent(args.baseline, encoding, encoder)
     candidate, candidate_meta = load_agent(args.candidate, encoding, encoder)
-    evaluator = ConfirmatoryPairedEvaluator(encoding)
+    evaluator = ConfirmatoryPairedEvaluator(encoding, suite_path=args.opening_suite, suite_version=args.suite_version)
     report = evaluator.compare(candidate, incumbent)
     report["checkpoints"] = {"incumbent": incumbent_meta, "candidate": candidate_meta}
-    report["opening_suite_sha256"] = digest(Path("benchmarks/evaluation_openings_confirmatory_v1.jsonl"))
+    report["suite_version"] = args.suite_version
+    report["opening_suite_path"] = str(args.opening_suite)
+    report["opening_suite_sha256"] = suite_hash
+    report["random_seed"] = args.seed
+    report["runtime"] = {"python": __import__("platform").python_version(), "torch": torch.__version__, "numpy": np.__version__}
     report["source_commit"] = __import__("os").environ.get("GITHUB_SHA")
     report["execution_mode"] = "cpu_inference_only"
     args.output.parent.mkdir(parents=True, exist_ok=True)

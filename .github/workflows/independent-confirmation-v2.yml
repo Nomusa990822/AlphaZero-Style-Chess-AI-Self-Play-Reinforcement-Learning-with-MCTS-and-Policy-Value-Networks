@@ -1,0 +1,77 @@
+name: Independent paired checkpoint confirmation v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_evaluation:
+        description: "Run the independent 48-game read-only confirmation?"
+        required: true
+        type: choice
+        options: ["NO", "YES"]
+        default: "NO"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: independent-paired-checkpoint-confirmation-v2
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_evaluation == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install CPU dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2.0"
+          python -m pip install -r requirements.txt
+      - name: Download and verify immutable checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRAINING_RUN_ID: "43646981876"
+        run: |
+          set -euo pipefail
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$TRAINING_RUN_ID/artifacts")"
+          ARTIFACT_NAME="$(jq -r --arg prefix "chess-model-checkpoints-$TRAINING_RUN_ID-" '.artifacts | map(select(.expired == false and (.name | startswith($prefix)))) | sort_by(.created_at) | last | .name // empty' <<< "$ARTIFACTS_JSON")"
+          test -n "$ARTIFACT_NAME"
+          mkdir -p checkpoint-artifact
+          gh run download "$TRAINING_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir checkpoint-artifact
+          BASELINE="checkpoint-artifact/data/checkpoints/best_model.pt"
+          CANDIDATE="checkpoint-artifact/data/checkpoints/latest_candidate.pt"
+          test -s "$BASELINE"
+          test -s "$CANDIDATE"
+          echo "BASELINE=$BASELINE" >> "$GITHUB_ENV"
+          echo "CANDIDATE=$CANDIDATE" >> "$GITHUB_ENV"
+      - name: Run pinned read-only independent evaluation
+        env:
+          PYTHONPATH: .
+        run: |
+          set -euo pipefail
+          python scripts/run_confirmatory_evaluation.py \
+            --baseline "$BASELINE" \
+            --candidate "$CANDIDATE" \
+            --expected-baseline-sha256 "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471" \
+            --expected-candidate-sha256 "101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00" \
+            --opening-suite benchmarks/evaluation_openings_independent_v2.jsonl \
+            --suite-version independent_v2 \
+            --expected-opening-suite-sha256 "69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03" \
+            --seed 20261116 \
+            --output reports/independent-confirmation-v2.json
+      - name: Upload immutable independent evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-confirmation-v2-${{ github.run_id }}
+          path: reports/independent-confirmation-v2.json
+          if-no-files-found: error
+          retention-days: 90

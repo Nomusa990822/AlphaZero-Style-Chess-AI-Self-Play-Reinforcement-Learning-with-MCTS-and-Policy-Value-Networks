@@ -357,3 +357,10 @@ the tactical-position corpus. Do not tune or replace its positions after
 viewing checkpoint results. The isolated evaluator uses these 24 positions
 for 48 colour-balanced games; see
 [the implementation notes](../docs/CONFIRMATORY_EVALUATION_IMPLEMENTATION.md).
+
+
+## Independent paired checkpoint confirmation — v2
+
+The first frozen 24-opening confirmatory run completed as workflow [43755129081](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081): 48 games, candidate score 55.21%, paired one-sided 90% Student-t LCB 50.78%, 7 wins / 39 draws / 2 losses. Candidate-as-White scored 4W/20D/0L; candidate-as-Black 3W/19D/2L. All games ended under chess rules. The report is artifact [14179310181](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081/artifacts/14179310181). This is a fixed-suite result, not Elo or general-strength evidence; the candidate remains unpromoted.
+
+`evaluation_openings_independent_v2.jsonl` is a second frozen 24-position sample (9 opening families; SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`). Its loader validates legal replay, unique non-terminal positions, family limits and disjointness from development, tactical and confirmatory_v1 suites. Use the manual `.github/workflows/independent-confirmation-v2.yml` only after it is merged; it compares the same checkpoint hashes with identical MCTS settings and uploads raw game records. Do not pool the two suite results post hoc. Full status and interpretation: [independent evaluation record](../docs/INDEPENDENT_CONFIRMATION_EVALUATION_2026-11-15.md).

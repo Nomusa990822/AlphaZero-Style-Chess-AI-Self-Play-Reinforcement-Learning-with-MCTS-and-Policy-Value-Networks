@@ -1,6 +1,6 @@
 # Paired checkpoint strength-evaluation protocol
 
-**Status:** design approved for implementation planning; not yet executed  
+**Status:** confirmatory v1 implemented and executed; independent v2 prepared for follow-up (2026-11-15)  
 **Protocol version:** 1.0  
 **Prepared:** 2026-11-15  
 **Purpose:** compare one immutable candidate checkpoint directly against one immutable incumbent without training, checkpoint mutation, or automatic promotion during the evaluation itself.
@@ -151,9 +151,19 @@ This document defines the protocol; it does not claim that the protocol is alrea
 - [x] Preserve per-game PGNs, UCI moves, opening FENs, termination reasons and checkpoint/suite hashes.
 - [x] Add tests that illegal moves abort evaluation and prevent promotion; incomplete game pairs cannot be counted.
 - [x] Ensure the workflow is read-only: download and hash-check checkpoints, run inference-only games, upload reports; no optimizer, training, checkpoint overwrite, release publication or promotion action.
-- [ ] Run required CPU and Stockfish checks on the implementation PR.
-- [ ] Only after the implementation is merged should a manually dispatched, explicitly confirmed evaluation be considered.
+- [x] Run required CPU and Stockfish checks on the implementation PR (PR #45; both required checks succeeded).
+- [x] Merge the implementation and complete the manually dispatched, explicitly confirmed v1 evaluation (PR #45; workflow 43755129081).
 
 ## 8. Current decision
 
-The epoch-0 checkpoint remains the incumbent. The epoch-10 checkpoint remains an unpromoted candidate. No training or evaluation dispatch is authorised by this protocol document. First implement and test the frozen 24-pair protocol; then review the exact workflow inputs and checkpoint hashes before deciding whether to run it.
+The epoch-0 checkpoint remains the incumbent. The epoch-10 checkpoint remains an unpromoted candidate. Confirmatory v1 completed on 2026-11-15 and passed its numerical score and paired-LCB thresholds (55.21%; LCB 50.78%). Because the lower-bound margin is narrow and the suite is curated, do not promote on v1 alone. Run the separately frozen independent_v2 suite before a promotion decision. No training or checkpoint mutation is authorised by either evaluation.
+
+## 9. Confirmatory v1 execution record
+
+Workflow [43755129081](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081) completed 24 opening pairs / 48 games on source commit `727639e75b7defcad5a915473258b1f13bf94389`. The candidate scored 7 wins, 39 draws and 2 losses (55.21%). Mean paired score was 0.5520833333, paired sample standard deviation 0.1645013325, and one-sided 90% Student-t lower bound 0.5077775899. Candidate-as-White: 4 wins, 20 draws, 0 losses (58.33%); candidate-as-Black: 3 wins, 19 draws, 2 losses (52.08%). All 48 games ended under chess rules; no move-cap draws. Both pinned checkpoint SHA-256 values were verified. Report artifact [14179310181](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43755129081/artifacts/14179310181); suite SHA-256 `896c7a09997b18d848f1e4452da75dec151c3a4960fac780ad379694859813ca`.
+
+The numerical gate passed, but this is not an Elo estimate, external-strength measurement, or value-calibration study. The lower bound exceeded 0.50 by only about 0.78 percentage points. Keep the candidate unpromoted pending independent_v2 confirmation and human review.
+
+## 10. Independent confirmatory v2
+
+A second frozen 24-position suite, `benchmarks/evaluation_openings_independent_v2.jsonl`, has been added with version `independent_v2` and SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`. It is intended to be disjoint from the development suite, tactical corpus, and confirmatory_v1. The loader enforces this disjointness. The dedicated manual workflow `.github/workflows/independent-confirmation-v2.yml` reuses the exact checkpoint hashes and v1 match settings, changing only the frozen opening suite. It remains unrun until its PR is merged and required checks pass. The two suite results must be considered separately, not pooled post hoc into a larger sample.
