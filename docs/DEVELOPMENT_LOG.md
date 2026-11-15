@@ -1454,3 +1454,8 @@ The workflow is manual, defaults to NO, and has not been dispatched. No model/tr
 - Added a regression test for PGN opening preambles and documented the failed attempt in the v2 loss diagnostic.
 - PR [#50](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/pull/50) merged at `845fc2ffb3046055c3364f9e14fb35bae9589c38`; CPU suite **227 passed** (run [43765191000](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765191000)); Stockfish tactical audit passed (run [43765190998](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765190998)).
 - The nine-game Stockfish review must be manually rerun after this merge. No game-level engine output was produced by the failed attempt. No training, optimizer update, checkpoint write or promotion occurred.
+
+
+## Stockfish review reporting caveat
+
+The nine-game review workflow [43765868151](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43765868151) completed and uploaded the full report (artifact 14182093603). Before interpreting the outcome summaries, note that the first report version converts mate scores to 100,000 centipawns, contaminating CPL means/maxima. A corrected schema must separate mate distances from centipawn values and omit mate-scored rows from finite-CP aggregates. The review is read-only and has no effect on checkpoints or training.
