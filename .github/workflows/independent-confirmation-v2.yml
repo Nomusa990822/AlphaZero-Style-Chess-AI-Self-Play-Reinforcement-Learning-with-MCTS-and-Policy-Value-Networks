@@ -65,6 +65,8 @@ jobs:
             --expected-candidate-sha256 "101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00" \
             --opening-suite benchmarks/evaluation_openings_independent_v2.jsonl \
             --suite-version independent_v2 \
+            --expected-opening-suite-sha256 "69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03" \
+            --seed 20261116 \
             --output reports/independent-confirmation-v2.json
       - name: Upload immutable independent evaluation report
         uses: actions/upload-artifact@v4
