@@ -271,3 +271,16 @@ Completed a detailed analysis of artifact [14176203642](https://github.com/Nomus
 ## Confirmatory paired checkpoint evaluation protocol — prepared 2026-11-15
 
 A versioned protocol is documented in [PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md](PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md). It specifies a new frozen 24-opening confirmatory suite (48 games; each opening played with candidate as White and Black), CPU inference, 50 MCTS simulations, no Dirichlet noise, zero move temperature, 200-ply cap, raw per-game PGNs and checkpoint/suite hashes. Promotion evidence requires a candidate score >0.50 and a one-sided 90% Student-t lower bound >0.50 across the 24 paired opening scores, with zero illegal moves and complete data. The existing 12-opening suite is designated development/regression only. Important implementation gap: `src/training/evaluator.py` currently uses 1.645 × standard error while labelling it a one-sided 90% bound; this is not the correct finite-sample 90% Student-t critical value. The evaluator and tests must be corrected before dispatch. This is a protocol design only: no new suite, code, match run, training, checkpoint write or promotion has been performed. Epoch-0 remains incumbent; epoch-10 remains unpromoted.
+
+
+## Confirmatory evaluation implementation branch
+
+Implementation is being developed on
+`confirmatory-paired-evaluation`, isolated from the routine training
+promotion path. The branch adds a separate 24-opening confirmatory suite,
+suite validation, a dedicated one-sided 90% Student-t paired lower-bound
+calculation, a read-only inference runner/workflow, and game-level PGN/UCI
+records. The existing 12-opening development evaluator and training pipeline
+are not modified. The workflow is manual and defaults to NO; no evaluation,
+training, checkpoint write or promotion is triggered by the PR. Merge and
+workflow checks remain pending until CI completes.
