@@ -70,6 +70,7 @@ class EvaluationResult:
     candidate_black_draws: int = 0
     opening_pair_scores: tuple[float, ...] = ()
     opening_ids: tuple[str, ...] = ()
+    opening_pair_results: tuple[dict[str, str | float], ...] = ()
 
     @property
     def score(self) -> float:
@@ -160,6 +161,7 @@ class NetworkEvaluator:
         black_wins = black_losses = black_draws = 0
         pair_scores: list[float] = []
         opening_ids: list[str] = []
+        pair_results: list[dict[str, str | float]] = []
         agent_a = MCTSAgent(inference_a, self.move_encoding, self.mcts_config)
         agent_b = MCTSAgent(inference_b, self.move_encoding, self.mcts_config)
 
@@ -193,12 +195,19 @@ class NetworkEvaluator:
                     else:
                         black_draws += 1
             pair_scores.append(pair_score / 2.0)
+            pair_results.append({
+                "opening_id": opening_id,
+                "candidate_as_white": white_outcome,
+                "candidate_as_black": black_outcome,
+                "pair_score": pair_score / 2.0,
+            })
 
         return EvaluationResult(
             wins=wins, losses=losses, draws=draws, games_played=num_games,
             candidate_white_wins=white_wins, candidate_white_losses=white_losses, candidate_white_draws=white_draws,
             candidate_black_wins=black_wins, candidate_black_losses=black_losses, candidate_black_draws=black_draws,
             opening_pair_scores=tuple(pair_scores), opening_ids=tuple(opening_ids),
+            opening_pair_results=tuple(pair_results),
         )
 
     @staticmethod
