@@ -87,6 +87,8 @@ jobs:
         run: mkdir -p reports
 
       - name: Run paired-opening match evaluation
+        env:
+          PYTHONPATH: .
         run: |
           python scripts/evaluate_checkpoint_pair.py --baseline "$BASELINE_PATH" --candidate "$CANDIDATE_PATH" --simulations 100 --games 24 --output "reports/checkpoint-pair-evaluation-$TRAINING_RUN_ID.json"
 
