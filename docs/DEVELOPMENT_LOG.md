@@ -1422,3 +1422,17 @@ gates; no checkpoint was trained, changed, or promoted.
 - Artifact structure reconciled: 48 game records, 24 unique opening IDs, 48 unique colour legs; UCI lengths match recorded plies and pair-score arithmetic matches report. Independent external chess-library replay not completed; report omits an explicit illegal-move-count field.
 - Decision: keep epoch 0 incumbent and epoch 10 unpromoted. V1's narrow positive result was not independently replicated; do not pool v1/v2 post hoc. Next task is diagnostic PGN/colour-asymmetry review, not promotion or immediate retraining. No checkpoint writes or training occurred.
 - Updated the combined evaluation record, protocol, project status, training flow and benchmark README; detailed record: `docs/INDEPENDENT_CONFIRMATION_V2_RESULTS_2026-11-15.md`.
+
+
+## 2026-11-15 — qualitative review of independent v2 White-side losses
+
+Reviewed the four candidate-White losses from workflow [43759687103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103), using the preserved JSON artifact [14180972985](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103/artifacts/14180972985). The artifact ZIP SHA-256 is `3b46237e3bd8c3a83a785d8b7c1bb00f7f2b75f2546cdfd4d9406b15e61d3c8e`.
+
+- v2-01-sicilian-taimanov (44 plies): White's king leaves the centre and advances to d5 (17.Kf2, 18.Ke3, 23.Kd4, 25.Kc5, 26.Kd5), where Black finishes with 26...Be6#. The sequence is consistent with serious king-safety failure and inadequate development.
+- v2-14-kings-indian (110 plies): after repeated queen manoeuvres, 27...Nxe3 captures the candidate's queen on e3. The game then continues to a mating finish. This is a concrete queen-hanging/tactical-awareness failure.
+- v2-18-english-reversed (30 plies): 7...dxe3 captures White's bishop on e3; later 17...Qxb1+ and 18...Qxc1# exploit the exposed back rank/queen placement. The score shows material loss and a short mating sequence.
+- v2-21-dutch (136 plies): White repeatedly moves its king into the centre and shuffles rooks; 69...gxf4 captures the rook on f4, followed by 70...Qxa2+ and 71...Qd2#. This combines king exposure, lack of coordination and a hanging rook.
+
+The recurring pattern is not a single opening-specific defect: the sampled losses feature unsafe king placement, poor coordination/development and failure to preserve high-value pieces. These observations are descriptive, not engine-verified blunder classifications. The review did not independently replay the UCI streams with python-chess and did not run Stockfish on these PGNs; no centipawn-loss or best-move claims are made. The complete record and limitations are in [V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md](V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md).
+
+No source-code or model changes, training, checkpoint writes or promotion occurred. Epoch 0 remains incumbent; epoch 10 remains unpromoted. Do not infer a general White-side defect from four losses alone. Follow-up should run engine-backed move-by-move analysis and compare the four losses against candidate-White draws and its single win before selecting a corrective training intervention.

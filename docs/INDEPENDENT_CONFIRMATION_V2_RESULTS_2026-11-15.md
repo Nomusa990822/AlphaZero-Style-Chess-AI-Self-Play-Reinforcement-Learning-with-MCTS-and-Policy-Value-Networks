@@ -38,3 +38,8 @@ This post-run reconciliation did not independently replay every UCI move in a se
 **Do not promote epoch 10.** Keep epoch 0 as incumbent and preserve epoch 10 as an unpromoted candidate. Do not pool v1 and v2 after observing their results: they are separate frozen-suite experiments. v1 passed narrowly (55.21%, LCB 50.78%), while v2 failed (47.92%, LCB 42.33%). The independent result does not replicate the v1 advantage.
 
 No training, optimizer step, checkpoint write, incumbent replacement or promotion occurred in this evaluation. The next work should be diagnostic rather than another immediate promotion test: inspect the v2 White-side losses and full PGNs, investigate the reversal in colour performance, and review the cold-start training/data limitations before designing a new candidate. Any future candidate requires a newly frozen independent suite after development against the existing suites.
+
+
+## Follow-up: candidate-as-White loss review
+
+A qualitative review of all four candidate-as-White losses is documented in [V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md](V2_WHITE_LOSS_DIAGNOSTIC_2026-11-15.md). The recorded games show recurring unsafe king placement/king walks, poor coordination and tactical oversights involving a queen, bishop and rook. This is descriptive only: no Stockfish analysis or independent python-chess replay was completed, and no centipawn-loss claims are made. The four games are not a representative sample of all White-side play. Checkpoint preservation and the no-promotion decision remain unchanged.
