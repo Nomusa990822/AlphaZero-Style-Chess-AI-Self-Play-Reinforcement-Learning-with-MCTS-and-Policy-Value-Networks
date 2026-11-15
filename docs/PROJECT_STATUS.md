@@ -212,11 +212,11 @@ separately collected game-log files and reports outcomes, termination types,
 White/Black sample counts and target distributions. It rejects legacy PGN-only
 records and inconsistent PGN/FEN/target data.
 
-This is data-capture and audit infrastructure only. It does not train, evaluate
-or promote a model, and does not itself generate a candidate-checkpoint dataset.
-A matched pair of baseline and candidate self-play logs is still required for
-the comparison. Existing historical artifacts that omitted game logs cannot be
-retrospectively reconstructed. No checkpoint or promotion state changes.
+This is data-capture and audit infrastructure only. It does not train or promote
+a model. The manual diagnostic workflow generates a matched pair of baseline
+and candidate logs from the preserved checkpoints. Existing historical
+training data that was never retained cannot be retrospectively reconstructed.
+No checkpoint or promotion state changes.
 
 
 The manual read-only workflow
