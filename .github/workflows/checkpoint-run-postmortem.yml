@@ -1,0 +1,117 @@
+name: Checkpoint run postmortem diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_diagnostics:
+        description: "Run read-only diagnostics on a preserved training-run checkpoint artifact?"
+        required: true
+        type: choice
+        options:
+          - "NO"
+          - "YES"
+        default: "NO"
+      training_run_id:
+        description: "Successful training workflow run ID whose checkpoint artifact should be evaluated."
+        required: true
+        type: string
+        default: "43646981876"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: checkpoint-run-postmortem
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirm_diagnostics == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CPU PyTorch and project dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2.0"
+          python -m pip install -r requirements.txt
+
+      - name: Download and verify the selected training-run checkpoints
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRAINING_RUN_ID: ${{ inputs.training_run_id }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$TRAINING_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::training_run_id must contain digits only."
+            exit 1
+          fi
+          ARTIFACTS_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$TRAINING_RUN_ID/artifacts")"
+          ARTIFACT_NAME="$(jq -r --arg prefix "chess-model-checkpoints-$TRAINING_RUN_ID-" '.artifacts | map(select(.expired == false and (.name | startswith($prefix)))) | sort_by(.created_at) | last | .name // empty' <<< "$ARTIFACTS_JSON")"
+            --jq ".artifacts[] | select(.expired == false and (.name | startswith(\"chess-model-checkpoints-$TRAINING_RUN_ID-\"))) | .name" | tail -n 1)"
+          if [[ -z "$ARTIFACT_NAME" ]]; then
+            echo "::error::No unexpired chess-model-checkpoints artifact found for run $TRAINING_RUN_ID."
+            exit 1
+          fi
+          echo "Downloading artifact: $ARTIFACT_NAME"
+          mkdir -p checkpoint-artifact
+          gh run download "$TRAINING_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir checkpoint-artifact
+          BASELINE="checkpoint-artifact/data/checkpoints/best_model.pt"
+          CANDIDATE="checkpoint-artifact/data/checkpoints/latest_candidate.pt"
+          MANIFEST="checkpoint-artifact/reports/checkpoint-manifest.json"
+          test -s "$BASELINE"
+          test -s "$CANDIDATE"
+          test -s "$MANIFEST"
+          EXPECTED_BASELINE="$(jq -r '.checkpoints[] | select(.filename == "best_model.pt") | .sha256' "$MANIFEST")"
+          EXPECTED_CANDIDATE="$(jq -r '.checkpoints[] | select(.filename == "latest_candidate.pt") | .sha256' "$MANIFEST")"
+          test -n "$EXPECTED_BASELINE"
+          test -n "$EXPECTED_CANDIDATE"
+          echo "$EXPECTED_BASELINE  $BASELINE" | sha256sum --check -
+          echo "$EXPECTED_CANDIDATE  $CANDIDATE" | sha256sum --check -
+          echo "TRAINING_RUN_ID=$TRAINING_RUN_ID" >> "$GITHUB_ENV"
+          echo "BASELINE_PATH=$BASELINE" >> "$GITHUB_ENV"
+          echo "CANDIDATE_PATH=$CANDIDATE" >> "$GITHUB_ENV"
+
+      - name: Prepare report directory
+        run: mkdir -p reports
+
+      - name: Run paired-opening match evaluation
+        run: |
+          python scripts/evaluate_checkpoint_pair.py --baseline "$BASELINE_PATH" --candidate "$CANDIDATE_PATH" --simulations 100 --games 24 --output "reports/checkpoint-pair-evaluation-$TRAINING_RUN_ID.json"
+
+      - name: Run policy, value and tactical MCTS diagnostics
+        run: |
+          python checkpoint_diagnostics.py --baseline "$BASELINE_PATH" --candidate "$CANDIDATE_PATH" --simulations 25 --top-k 5 --output "reports/checkpoint-behaviour-$TRAINING_RUN_ID.json"
+
+      - name: Run fixed tactical-position and sequence benchmarks
+        run: |
+          set -euo pipefail
+          for MODEL in baseline candidate; do
+            if [[ "$MODEL" == "baseline" ]]; then CHECKPOINT="$BASELINE_PATH"; else CHECKPOINT="$CANDIDATE_PATH"; fi
+            python evaluate_tactics.py --checkpoint "$CHECKPOINT" --simulations 25 --device cpu --output "reports/tactical-positions-$MODEL-$TRAINING_RUN_ID.json"
+            python evaluate_tactical_sequences.py --checkpoint "$CHECKPOINT" --simulations 25 --device cpu --output "reports/tactical-sequences-$MODEL-$TRAINING_RUN_ID.json"
+          done
+
+      - name: Upload complete postmortem reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-run-postmortem-${{ inputs.training_run_id }}-${{ github.run_id }}
+          path: |
+            reports/checkpoint-pair-evaluation-*.json
+            reports/checkpoint-behaviour-*.json
+            reports/tactical-positions-*.json
+            reports/tactical-sequences-*.json
+          if-no-files-found: error
+          retention-days: 90

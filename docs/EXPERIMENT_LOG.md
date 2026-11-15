@@ -109,3 +109,15 @@ The CI workflow tests the benchmark code and corpus loading. It does not execute
 - **Interpretation:** The candidate was one position better on the individual benchmark but tied the baseline on combined-sequence performance. The individual benchmark measures agreement with an annotated acceptable move, not tactical outcome across every defence. The sequence benchmark follows the curated principal variation; opponent replies are prescribed and alternative defences are not exhaustively searched. Twenty-two positions and five sequences are a small diagnostic sample. These scores do not establish overall playing strength or Elo.
 - **Checkpoint decision:** No training, checkpoint modification, or promotion occurred. Keep the baseline as the selected checkpoint and retain the candidate separately; do not promote based on this small benchmark difference.
 - **Next:** Expand the independently reviewed tactical corpus and add a larger fixed-opponent, colour-balanced match evaluation before making any playing-strength decision.
+
+
+## Postmortem note — first full-run evaluation protocol
+
+The original 24-game comparison in workflow [43646981876](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43646981876) used deterministic MCTS from the same standard starting position on every game. Because the models, search, move selection and starting board were unchanged, it replayed the same path for each colour assignment. The 0-24 aggregate therefore represents losses in the two standard-start colour assignments repeated, not 24 distinct opening trials. The result is retained as observed, but its game-level confidence bound must not be interpreted as 24 independent observations or as a general strength estimate.
+
+PR #30 introduces a fixed suite of 12 distinct opening positions and mirrored colour-swapped games. The revised promotion bound is calculated over the 12 opening-pair scores and remains an approximate gate on this fixed suite. The new postmortem workflow can re-evaluate the preserved run-43646981876 checkpoints without training or modifying them. The earlier result is not retroactively re-scored because per-game PGNs and colour-split outcomes were not recorded.
+
+
+### Additional self-play diagnostic from workflow 43646981876
+
+The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four draws ended at the 250-ply cap. Iteration 1 was White 8 / Black 16 / Draw 16 (three move-cap draws); iteration 2 was White 7 / Black 16 / Draw 17 (one move-cap draw). This pronounced colour imbalance is a diagnostic signal to investigate, not proof of an encoder or search bug: only 80 games were played and every game began from the standard position. The previous evaluator did not preserve individual PGNs or per-colour match results, so its 0-24 candidate score cannot be decomposed beyond the two repeated standard-start colour assignments.

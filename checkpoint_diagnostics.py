@@ -173,10 +173,10 @@ def main():
             "temperature": 0.0, "tactical_root_filter": True,
             "static_exchange_ordering": True,
         },
-        "baseline_random_initialisation": inspect_checkpoint(
+        "baseline": inspect_checkpoint(
             baseline, positions, args.simulations, args.top_k
         ),
-        "candidate_after_one_pilot_iteration": inspect_checkpoint(
+        "candidate": inspect_checkpoint(
             candidate, positions, args.simulations, args.top_k
         ),
         "interpretation_limits": [
