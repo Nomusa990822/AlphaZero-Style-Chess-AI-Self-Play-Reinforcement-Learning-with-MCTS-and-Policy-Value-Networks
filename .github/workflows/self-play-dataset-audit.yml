@@ -54,7 +54,8 @@ jobs:
           mkdir -p data/checkpoints
           cp "$baseline" data/checkpoints/baseline.pt
           cp "$candidate" data/checkpoints/candidate.pt
-          sha256sum data/checkpoints/baseline.pt data/checkpoints/candidate.pt
+          echo "7a9fdacbd14f6423e34b2edb470d255e15081a12b1e66faf204a5e07e24e4471  data/checkpoints/baseline.pt" | sha256sum --check
+          echo "3b471702e89659307f11ec95b3f83316ccae7c29a4c7d9d6faa7afaa4f7231a7  data/checkpoints/candidate.pt" | sha256sum --check
 
       - name: Set up Python
         uses: actions/setup-python@v5
