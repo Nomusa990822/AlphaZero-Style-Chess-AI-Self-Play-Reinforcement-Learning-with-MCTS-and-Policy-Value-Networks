@@ -49,7 +49,7 @@ The audit report marked both datasets and the combined audit valid. The audit re
 All 1,520 recorded position targets (793 baseline + 727 candidate) matched the PGN-reconstructed final outcome from the side-to-move perspective. No label mismatch was found.
 
 - Baseline: 725 draw targets, 34 White-to-move losses, and 34 Black-to-move wins.
-- Candidate: 559 draw targets, 83 White-to-move losses, 85 White-to-move wins, and the corresponding opposite-perspective labels for Black-to-move positions.
+- Candidate by side-to-move: White had 27 losses, 280 draws, and 58 wins (365 positions); Black had 56 losses, 279 draws, and 27 wins (362 positions). Across both sides this totals 83 `-1`, 559 `0`, and 85 `+1` targets.
 - Baseline mean target by side-to-move: White -0.08564; Black +0.08586.
 - Candidate mean target by side-to-move: White +0.08493; Black -0.08011.
 
