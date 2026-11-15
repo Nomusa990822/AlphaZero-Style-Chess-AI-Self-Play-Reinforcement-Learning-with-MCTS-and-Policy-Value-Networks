@@ -129,3 +129,22 @@ The deterministic standard-start match protocol was corrected: repeating the sam
 ### Additional self-play diagnostic from workflow 43646981876
 
 The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four draws ended at the 250-ply cap. Iteration 1 was White 8 / Black 16 / Draw 16 (three move-cap draws); iteration 2 was White 7 / Black 16 / Draw 17 (one move-cap draw). This pronounced colour imbalance is a diagnostic signal to investigate, not proof of an encoder or search bug: only 80 games were played and every game began from the standard position. The previous evaluator did not preserve individual PGNs or per-colour match results, so its 0-24 candidate score cannot be decomposed beyond the two repeated standard-start colour assignments.
+
+
+## Completed postmortem of full training run 43646981876
+
+The read-only postmortem [43662614909](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43662614909) completed successfully on 2026-11-15. Checkpoint hashes were verified and all six JSON reports were uploaded in artifact [14141986519](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43662614909/artifacts/14141986519) (23,281 bytes; SHA-256 03a211d6465bc026a681e4ed42352c29f33539bce75b8cb973050a8ba3d246ec). No training, checkpoint mutation or promotion occurred.
+
+- **Paired opening suite:** 24 games / 12 mirrored opening pairs; candidate epoch 10 scored 0.500 (1 win, 1 loss, 22 draws); one-sided 90% paired lower bound 0.4494. Candidate-as-White: 0 wins, 12 draws; candidate-as-Black: 1 win, 1 loss, 10 draws. Promotion correctly rejected.
+- **35-position tactical benchmark:** baseline 6/35 (17.14%) versus candidate 8/35 (22.86%) at 25 MCTS simulations; policy top-1 1/35 versus 3/35. Zero illegal moves for both. The MCTS increase came from White-to-move positions (3/19 to 5/19); Black remained 3/16. Endgame accuracy moved 1/7 to 3/7; middlegame remained 5/28.
+- **11 annotated sequences / 13 attempted plies:** both checkpoints 3/13 (23.08%) and 1/11 completed sequences (9.09%); zero illegal moves.
+
+The candidate therefore has a modest fixed-corpus position/policy signal but no head-to-head advantage and no sequence improvement. These small curated diagnostics do not establish general playing strength or Elo. The epoch-0 baseline remains the selected checkpoint; epoch-10 remains unpromoted.
+
+## Revised priorities after postmortem
+
+1. Diagnose the White/Black asymmetry and weak sequence performance using targeted, controlled evaluation before changing training code.
+2. Review policy/value calibration and MCTS decision traces on the 35-position corpus; distinguish policy ranking errors from search-selection errors.
+3. Resolve the cold-start iteration issue in a documented design proposal, preserving incumbent/candidate separation and the promotion gate.
+4. Do not start another full training run or promote the candidate until these diagnostics produce a controlled corrective plan.
+5. Keep the immutable baseline and rejected candidate separately preserved; use the postmortem artifact as the raw evidence source.

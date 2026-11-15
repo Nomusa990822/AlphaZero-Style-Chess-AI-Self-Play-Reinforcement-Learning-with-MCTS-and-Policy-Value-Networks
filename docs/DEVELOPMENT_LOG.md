@@ -1,3 +1,12 @@
+## 2026-11-15 — Complete full-run checkpoint postmortem and preserve diagnostics
+
+- **Workflow:** [Checkpoint run postmortem 43662614909](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43662614909) completed successfully on main revision 6074fd1c7656dfe6ed223bf9bde5675b39b5fdb4. The workflow verified checkpoint hashes, completed the 12-opening/24-game paired comparison, generated policy/value/MCTS and fixed tactical reports, and uploaded the artifact. No training or checkpoint mutation occurred.
+- **Artifact:** [14141986519](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43662614909/artifacts/14141986519), 23,281 bytes, SHA-256 03a211d6465bc026a681e4ed42352c29f33539bce75b8cb973050a8ba3d246ec; contains six raw JSON reports.
+- **Paired match:** candidate epoch 10 scored 0.500 over 24 games (1 win, 1 loss, 22 draws); one-sided 90% paired lower bound 0.4494. Candidate-as-White: 0/12 wins, 12 draws; candidate-as-Black: 1 win, 1 loss, 10 draws. Neither promotion condition passed; baseline remains selected.
+- **Tactical positions:** 35 positions, 25 MCTS simulations. Baseline 6/35 (17.14%) versus candidate 8/35 (22.86%); policy top-1 1/35 versus 3/35. Both had zero illegal moves. By colour, White moved from 3/19 to 5/19; Black remained 3/16. By phase, endgame moved 1/7 to 3/7 and middlegame remained 5/28.
+- **Sequences:** both checkpoints scored 3/13 annotated plies (23.08%) and completed 1/11 sequences (9.09%); zero illegal moves. No sequence improvement was observed.
+- **Assessment:** the candidate shows limited gains on the fixed single-position tactical corpus, but the corrected paired match is exactly level and the sequence benchmark is unchanged. This is not evidence of general playing-strength improvement. Keep the epoch-0 baseline as incumbent and do not start another full run until the colour asymmetry, weak sequence performance and cold-start iteration behaviour have been investigated.
+
 ## 2026-11-13 — Verify paired tactical-filter runner and final tracking revision
 
 ### Verification
