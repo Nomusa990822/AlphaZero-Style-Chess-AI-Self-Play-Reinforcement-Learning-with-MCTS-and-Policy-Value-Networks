@@ -229,3 +229,14 @@ PGN/position-target logs plus the validated comparison report. It is inference
 only: no optimizer, training loop, checkpoint write, promotion or release
 operation is invoked. The workflow is manual and has not been dispatched by
 this source change.
+
+
+### Diagnostic workflow correction — checkpoint digest
+
+The first manual dispatch (run 43749569356) stopped before Python setup or
+self-play generation. The baseline checkpoint SHA-256 matched, but the
+candidate digest pinned in the workflow did not. Rechecking the actual
+preserved artifact ZIP established the candidate digest as
+`101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`.
+The workflow pin has been corrected. No dataset was generated and no model
+weights were changed in the failed run. The workflow must be dispatched again.
