@@ -454,15 +454,15 @@ Copy this section for each future engineering batch.
 ## 2026-11-13 — Exercise the MCTS configuration benchmark execution path
 
 ### Changes
-- Refactored the sweep orchestration into `run_benchmark(args)` so the execution path can be tested independently of CLI parsing and with replaceable model/search components.
+- Refactored the sweep orchestration into \`run_benchmark(args)\` so the execution path can be tested independently of CLI parsing and with replaceable model/search components.
 - Added mocked end-to-end orchestration coverage for all simulation-budget, PUCT and filter-mode combinations, single network construction, deterministic search settings, checkpoint SHA-256/epoch metadata, per-position selections, and persisted JSON report round-tripping.
 - Added preflight regression coverage proving an over-budget plan is rejected before network construction and a missing checkpoint is rejected before corpus loading.
-- Hardened the PUCT parser to reject non-finite values (`nan`, positive/negative infinity) as well as non-positive values.
+- Hardened the PUCT parser to reject non-finite values (\`nan\`, positive/negative infinity) as well as non-positive values.
 - No training or actual checkpoint search is performed by these tests.
 
 ### Verification
 - Implementation/test revision `0f12e052434a66f03499bd1f91abafa1afeeb2fa`: CPU CI and Stockfish audit both **passed** (details below).
-- Existing latest verified baseline remains `040877a1ab822e7023a68b8f025eb17535eac073`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
+- Existing latest verified baseline remains \`040877a1ab822e7023a68b8f025eb17535eac073\`: 135 CPU tests passed in 3.58 seconds (run [43411211787](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211787)); Stockfish audit [43411211867](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43411211867) passed.
 - No compatible trained checkpoint is available; no search sweep, training run, playing-strength result or Elo claim is produced.
 
 ### Follow-up
@@ -471,8 +471,8 @@ Copy this section for each future engineering batch.
 
 ### CI verification
 - CPU test workflow [43412113192](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113192): **passed; 142 tests passed in 3.20 seconds** on Python 3.11.
-- Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the `tactical-engine-audit` artifact uploaded successfully (artifact ID `14030281382`).
-- Both workflows tested the same revision `0f12e052434a66f03499bd1f91abafa1afeeb2fa`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
+- Stockfish tactical audit workflow [43412113210](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43412113210): **passed**; the \`tactical-engine-audit\` artifact uploaded successfully (artifact ID \`14030281382\`).
+- Both workflows tested the same revision \`0f12e052434a66f03499bd1f91abafa1afeeb2fa\`. The new mocked execution-path and parser tests are included in the 142-test CPU suite.
 - The benchmark has still **not** been run against a real checkpoint. No training, actual search experiment, playing-strength gain or Elo claim is made.
 
 
