@@ -344,3 +344,16 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 ## Confirmatory paired checkpoint evaluation protocol
 
 The current `evaluation_openings.jsonl` (12 positions) is the development/regression suite; it has already been used in prior checkpoint diagnostics. Do not treat repeated results on that suite as an untouched confirmatory test. The new confirmatory design is documented in [docs/PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md](../docs/PAIRED_CHECKPOINT_EVALUATION_PROTOCOL.md): create a separate frozen 24-opening suite from at least 8 opening families and run 48 head-to-head games, pairing candidate-White and candidate-Black games for each opening. The primary score is the mean of 24 pair scores. Promotion evidence requires score >0.50 and a one-sided 90% Student-t lower bound >0.50, with no illegal moves or incomplete pairs. Implementation and statistical tests must be completed before dispatch. The protocol is design-only; no new benchmark suite has been generated or run.
+
+
+## Confirmatory paired opening suite
+
+`evaluation_openings_confirmatory_v1.jsonl` is the frozen 24-position
+confirmatory suite. It is separate from the existing 12-position development
+suite and is validated at load time for legal UCI replay, valid non-terminal
+positions, unique IDs/FENs, at least eight opening-family labels, no more than
+four positions per family, and no overlap with either the development suite or
+the tactical-position corpus. Do not tune or replace its positions after
+viewing checkpoint results. The isolated evaluator uses these 24 positions
+for 48 colour-balanced games; see
+[the implementation notes](../docs/CONFIRMATORY_EVALUATION_IMPLEMENTATION.md).
