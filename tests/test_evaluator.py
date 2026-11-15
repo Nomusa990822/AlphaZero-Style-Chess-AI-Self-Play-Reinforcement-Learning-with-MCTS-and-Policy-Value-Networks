@@ -52,6 +52,8 @@ def test_compare_models_uses_each_opening_in_both_colours(monkeypatch):
     assert result.candidate_white_wins == result.candidate_black_wins == 12
     assert result.opening_pair_scores == (1.0,) * 12
     assert len(result.opening_ids) == 12
+    assert len(result.opening_pair_results) == 12
+    assert all(item["candidate_as_white"] == "win" and item["candidate_as_black"] == "win" for item in result.opening_pair_results)
 
 
 def test_confidence_bound_uses_independent_opening_pair_scores():
