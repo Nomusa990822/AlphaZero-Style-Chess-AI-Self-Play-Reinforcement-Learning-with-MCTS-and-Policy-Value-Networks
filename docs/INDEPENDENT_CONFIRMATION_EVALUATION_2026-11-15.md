@@ -47,14 +47,21 @@ The run passes the numerical promotion-evidence threshold for this frozen suite.
 
 **Decision: do not promote yet.** Preserve epoch 0 as incumbent and epoch 10 as candidate. Obtain an independent second opening-suite result before making a promotion decision.
 
-## Independent suite v2 — merged, ready for manual dispatch
+## Independent suite v2 — completed; promotion gate failed
 
-- Suite: `benchmarks/evaluation_openings_independent_v2.jsonl`
-- Version: `independent_v2`
-- SHA-256: `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`
-- 24 opening positions across 9 labelled families; maximum 4 positions per family.
-- The loader validates legal UCI replay, non-terminal valid positions, unique IDs/FENs, family constraints, and disjointness from the development suite, tactical corpus, and confirmatory v1.
-- Uses the same fixed checkpoints and match settings as v1, so only the opening sample changes. NumPy, Python and PyTorch RNGs are seeded with `20261116`; the workflow checks the exact suite SHA-256 before model loading and records the seed/runtime metadata in the report.
-- Workflow: `.github/workflows/independent-confirmation-v2.yml`; manual dispatch only, main branch only, explicit YES, CPU inference-only, hash-pinned checkpoints, 90-day report artifact.
+Workflow [43759687103](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103) completed successfully on source commit `d84015b8cfe4de536065cbf284d033bbe99e2ca3`. The raw report artifact is [14180972985](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759687103/artifacts/14180972985), ZIP SHA-256 `3b46237e3bd8c3a83a785d8b7c1bb00f7f2b75f2546cdfd4d9406b15e61d3c8e`. The frozen suite hash was verified as `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03`; seed `20261116`; same pinned checkpoint hashes and match settings as v1.
 
-PR #46 merged at `cbf96a41089efbbb2f23a51d1b1c12a05e72657d`. Required checks passed: [CPU suite 43759061879](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759061879) completed with **221 tests passed**; [Stockfish audit 43759061894](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759061894) supported **35/35 positions and 11/11 sequences with zero flagged entries** (artifact [14179282087](https://github.com/Nomusa990822/AlphaZero-Style-Chess-AI-Self-Play-Reinforcement-Learning-with-MCTS-and-Policy-Value-Networks/actions/runs/43759061894/artifacts/14179282087)). The v2 workflow is now available on `main` and awaits manual dispatch with `confirm_evaluation=YES`. It pins suite SHA-256 `69d2582e175bf0a4bfd2867537ea7de4e43f0cfe0a2dfdc5ca6f6d5e0c2fff03` and uses RNG seed `20261116`. The v2 workflow has not yet been run. The second result will be reported alongside v1, not pooled with it as if the two suites were one predeclared 48-pair sample. Any future promotion decision requires human review of both reports and the colour splits. No training or checkpoint mutation is part of this work.
+| Measure | v2 result |
+|---|---:|
+| Candidate score / paired mean | 47.92% |
+| Paired-score SD | 0.2074255585 |
+| One-sided 90% Student-t LCB | 42.33% |
+| Wins / draws / losses | 6 / 34 / 8 |
+| Candidate as White | 1W / 19D / 4L (35.42%) |
+| Candidate as Black | 5W / 15D / 4L (52.08%) |
+| Chess-rule endings / 200-ply cap draws | 45 / 3 |
+| Promotion evidence eligible | No |
+
+Both primary numerical promotion conditions fail: the aggregate score and lower confidence bound are below 0.50. The White score is below the protocol's 0.40 human-review threshold. This colour split reverses v1's White result (58.33%); it requires diagnosis rather than averaging away. Do not pool v1 and v2 post hoc. The independent v2 artifact was reconciled: 48 records, 24 unique openings, all 48 colour legs, UCI counts matching ply counts, and recomputed pair-score mean/SD matching the report. This reconciliation did not independently replay all UCI moves in a separate chess library; the report also lacks an explicit illegal-move-count field. See [the detailed v2 execution record](../docs/INDEPENDENT_CONFIRMATION_V2_RESULTS_2026-11-15.md).
+
+**Decision: do not promote.** Epoch 0 remains incumbent; epoch 10 remains unpromoted. No training or checkpoint mutation occurred. Next work is diagnostic review of the v2 White-side losses, full PGNs, colour-performance reversal and cold-start data/training limitations.
