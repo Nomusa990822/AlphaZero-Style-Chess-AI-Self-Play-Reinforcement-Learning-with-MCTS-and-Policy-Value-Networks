@@ -1332,3 +1332,10 @@ The 80 self-play games produced 15 White wins, 32 Black wins and 33 draws; four 
 
 - Added `.github/workflows/self-play-dataset-audit.yml` and `scripts/generate_self_play_dataset.py`. The manual workflow downloads the preserved baseline/candidate pair from run 43646981876, generates separate inference-only self-play datasets with the same seed and declared MCTS/game limits, runs the strict dataset comparator, and retains both raw JSONL datasets plus the report as a 90-day artifact.
 - Defaults are eight games per checkpoint, 40 simulations per move and a 120-ply cap to bound diagnostic compute. The workflow is manual; it has not been dispatched. This does not run training or mutate either checkpoint.
+
+
+## 2026-11-15 — Correct diagnostic candidate checkpoint digest
+
+- Investigated failed self-play dataset audit run 43749569356. It stopped at the checkpoint integrity gate before environment setup or inference.
+- Downloaded the exact preserved checkpoint artifact and independently recalculated both file digests. The epoch-0 baseline matched its pinned SHA-256; the epoch-10 candidate's actual SHA-256 is `101294ee17c79fd9e4816b3e2676b8f87487c4932172861f59b96550c345af00`, not the value previously entered in the workflow.
+- Corrected the candidate digest pin. The failed run produced no datasets and did not train, modify or promote any checkpoint. A fresh manual dispatch is required.
